@@ -95,10 +95,7 @@
   .day-detail { background: var(--gray-900); border:1px solid var(--gray-800); border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
   footer { text-align: center; font-size: 0.75rem; color: var(--gray-400); padding: 16px; border-top: 1px solid var(--gray-800); }
   .toast { position: fixed; top: 16px; right: 16px; background: #22c55e; color: #fff; font-weight: 700; padding: 16px 24px; border-radius: 8px; max-width: 350px; font-size: 1rem; z-index: 10000; border: 2px solid #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.6); animation: slideIn 0.3s ease-out; }
-  @keyframes slideIn {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-  }
+  @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
   .toast button { background: none; border: none; float: right; margin-left: 12px; cursor: pointer; font-weight: 700; font-size: 1.2rem; color: #fff; }
 
   .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
@@ -180,12 +177,12 @@
     </div>
   </div>
 
-  <footer class="no-print" id="footerStatus">🌐 Real-time cloud sync enabled - All users see updates instantly!</footer>
+  <footer class="no-print" id="footerStatus">🔄 Hybrid Sync: Cloud + Local Backup (Data will NOT disappear)</footer>
 </div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-// 🔥 FIREBASE CONFIGURATION - REAL CREDENTIALS INSERTED
+// 🔥 FIREBASE CONFIGURATION
 // ═══════════════════════════════════════════════════════════════
 const firebaseConfig = {
   apiKey: "AIzaSyA7wQjSY7hZUL71Z66FkOENqWUIrGfYOzo",
@@ -197,8 +194,21 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+let db = null;
+let useLocalBackupOnly = true;
+
+if (typeof firebase !== 'undefined' && firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+    try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        useLocalBackupOnly = false;
+        console.log("✅ Firebase connected");
+        document.getElementById('footerStatus').innerText = "🌐 Real-time Cloud Sync Active";
+    } catch (e) { 
+        console.warn("Firebase failed, using local backup", e); 
+        document.getElementById('footerStatus').innerText = "⚠️ Cloud Sync Failed - Using Local Backup Only";
+    }
+}
 
 const DEFAULT_USER = "admin"; const DEFAULT_PASS = "2kcare"; 
 const TEAMS = ["Team 1", "Team 2", "Team 3", "Team 4", "Team 5"];
@@ -216,6 +226,34 @@ let selectedDay = null; let capacityCheckDate = todayStr();
 let jobToDelete = null;
 const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
+// ═══════════════════════════════════════════════════════════════
+// 💾 HYBRID STORAGE: LOCAL BACKUP + CLOUD SYNC
+// ═══════════════════════════════════════════════════════════════
+const LOCAL_STORAGE_KEY = '2kcc_hybrid_data_v1';
+
+function saveLocalBackup() {
+    try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({
+            jobs: state.jobs,
+            counter: state.counter
+        }));
+    } catch(e) { console.error("Local save failed", e); }
+}
+
+function loadLocalBackup() {
+    try {
+        const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            // Only load if we don't have cloud data yet
+            if (state.jobs.length === 0) {
+                state.jobs = parsed.jobs || [];
+                state.counter = parsed.counter || 1;
+            }
+        }
+    } catch(e) { console.error("Local load failed", e); }
+}
+
 function getTeamWorkload() {
   const workload = { "Team 1": 0, "Team 2": 0, "Team 3": 0, "Team 4": 0, "Team 5": 0 };
   state.jobs.forEach(j => {
@@ -228,20 +266,29 @@ function getTeamWorkload() {
 // 🔄 REAL-TIME SYNC WITH FIREBASE
 // ═══════════════════════════════════════════════════════════════
 function startRealtimeSync() {
-  // Listen to jobs collection - updates instantly when ANY user changes data
-  db.collection("jobs").onSnapshot((snapshot) => {
-    state.jobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    if (view === "search") updateSearchResults(); else render();
-  }, (error) => {
-    console.error("Firestore error:", error);
-    toast("❌ Sync error: " + error.message);
-  });
+    // 1. Load local backup immediately so UI isn't empty
+    loadLocalBackup();
+    render();
 
-  // Listen to counter
-  db.collection("settings").doc("app").onSnapshot((doc) => {
-    if (doc.exists) state.counter = doc.data().counter || 1; 
-    else { db.collection("settings").doc("app").set({ counter: 1 }); state.counter = 1; }
-  });
+    // 2. Connect to Cloud if available
+    if (db && !useLocalBackupOnly) {
+        db.collection("jobs").onSnapshot((snapshot) => {
+            const cloudJobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            // Update state with cloud data
+            state.jobs = cloudJobs;
+            // Save to local backup as well
+            saveLocalBackup();
+            if (view === "search") updateSearchResults(); else render();
+        }, (error) => {
+            console.error("Firestore error:", error);
+            toast("⚠️ Cloud sync error. Using local data.");
+        });
+
+        db.collection("settings").doc("app").onSnapshot((doc) => {
+            if (doc.exists) state.counter = doc.data().counter || 1; 
+            else { db.collection("settings").doc("app").set({ counter: 1 }); state.counter = 1; }
+        });
+    }
 }
 
 function checkAuth() {
@@ -453,10 +500,15 @@ function toggleWorkItem(jobId, index) {
   items[index].done = !items[index].done;
   job.workItems = items;
   
-  // Save to Firebase - ALL users will see this update instantly!
-  db.collection("jobs").doc(jobId).update({ workItems: items })
-    .then(() => toast("✅ Updated"))
-    .catch(e => toast("❌ Failed to save"));
+  // Save to Local Backup immediately
+  saveLocalBackup();
+
+  // Save to Firebase
+  if (db && !useLocalBackupOnly) {
+      db.collection("jobs").doc(jobId).update({ workItems: items })
+        .catch(e => toast("❌ Cloud update failed"));
+  }
+  render();
 }
 
 function renderDashboard() {
@@ -697,9 +749,15 @@ function shareWhatsApp(jobId) {
 }
 
 function updateStatus(id, status) { 
-  db.collection("jobs").doc(id).update({ status: status })
-    .then(() => toast("✅ Status updated"))
-    .catch(e => toast("❌ Update failed: " + e.message));
+  const job = state.jobs.find(j => j.id === id);
+  if(job) {
+      job.status = status;
+      saveLocalBackup(); // Save locally immediately
+      if (db && !useLocalBackupOnly) {
+          db.collection("jobs").doc(id).update({ status: status }).catch(e => toast("Cloud update failed"));
+      }
+      render();
+  }
 }
 
 function requestDelete(id) {
@@ -713,9 +771,17 @@ function closeDeleteModal() { document.getElementById('deleteModal').style.displ
 function executeDelete() {
   const pwd = document.getElementById('deletePasswordInput').value;
   if (pwd === DEFAULT_PASS) {
-    db.collection("jobs").doc(jobToDelete).delete()
-      .then(() => { toast("✅ Job deleted"); closeDeleteModal(); })
-      .catch(e => toast("❌ Delete failed: " + e.message));
+    // Remove from local state and backup immediately
+    state.jobs = state.jobs.filter(j => j.id !== jobToDelete);
+    saveLocalBackup();
+    render();
+    toast("✅ Job deleted");
+    closeDeleteModal();
+
+    // Remove from Cloud
+    if (db && !useLocalBackupOnly) {
+        db.collection("jobs").doc(jobToDelete).delete().catch(e => console.error(e));
+    }
   } else {
     toast("❌ Invalid password");
     document.getElementById('deletePasswordInput').value = '';
@@ -771,21 +837,38 @@ function submitJob() {
   const workItems = notes ? notes.split(',').map(item => ({ name: item.trim(), done: false })).filter(item => item.name !== "") : [];
 
   const newJob = { 
+    id: "local-" + Date.now(), // Temporary ID for local backup
     vehicleMaker, jobCardNo, vehicleNo: vehicleClean, customerName, phone: fullPhone, jobType, 
     durationDays: jobType === "Major" ? majorDays : (jobType === "Minor" ? 3 : 1),
     team: assignedTeam, startDate, deliveryDate, status: "In Progress", notes, workItems,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    createdAt: new Date().toISOString()
   };
 
-  // Save to Firebase - ALL users will see this new job instantly!
-  db.collection("jobs").add(newJob)
-    .then(() => { 
-      toast(`✅ Job added successfully! (Card No: ${jobCardNo})`); 
-      view = "dashboard"; 
-    })
-    .catch(e => alert("❌ Failed to save: " + e.message));
-  
-  db.collection("settings").doc("app").set({ counter: firebase.firestore.FieldValue.increment(1) }, { merge: true });
+  // 1. Add to Local State & Backup IMMEDIATELY (So it never disappears on refresh)
+  state.jobs.push(newJob);
+  state.counter++;
+  saveLocalBackup();
+  toast(`✅ Job added successfully! (Card No: ${jobCardNo})`); 
+  view = "dashboard";
+  render();
+
+  // 2. Sync to Cloud (Firebase)
+  if (db && !useLocalBackupOnly) {
+      // Remove temporary local ID for cloud
+      const cloudJob = {...newJob};
+      delete cloudJob.id; 
+      
+      db.collection("jobs").add(cloudJob)
+        .then((docRef) => {
+            // Update local job with real cloud ID
+            const localJob = state.jobs.find(j => j.id === newJob.id);
+            if(localJob) localJob.id = docRef.id;
+            saveLocalBackup();
+        })
+        .catch(e => console.error("Cloud sync failed", e));
+      
+      db.collection("settings").doc("app").set({ counter: firebase.firestore.FieldValue.increment(1) }, { merge: true });
+  }
 }
 
 function attachHandlers() {
