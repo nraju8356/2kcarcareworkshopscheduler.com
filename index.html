@@ -180,36 +180,30 @@
     </div>
   </div>
 
-  <footer class="no-print">Real-time cloud sync + Local Backup enabled. Data will NOT disappear on refresh.</footer>
+  <footer class="no-print" id="footerStatus">🌐 Real-time cloud sync enabled - All users see updates instantly!</footer>
 </div>
 
 <script>
-// --- FIREBASE CONFIGURATION ---
+// ═══════════════════════════════════════════════════════════════
+// 🔥 FIREBASE CONFIGURATION - REAL CREDENTIALS INSERTED
+// ═══════════════════════════════════════════════════════════════
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyA7wQjSY7hZUL71Z66FkOENqWUIrGfYOzo",
+  authDomain: "k-car-care.firebaseapp.com",
+  projectId: "k-car-care",
+  storageBucket: "k-car-care.firebasestorage.app",
+  messagingSenderId: "670021530342",
+  appId: "1:670021530342:web:0e47f02461c42e352bc127"
 };
 
-let db = null;
-let useLocalBackupOnly = true;
-
-if (typeof firebase !== 'undefined' && firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
-    try {
-        firebase.initializeApp(firebaseConfig);
-        db = firebase.firestore();
-        useLocalBackupOnly = false;
-    } catch (e) { console.warn("Firebase connection failed, using local backup.", e); }
-}
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 const DEFAULT_USER = "admin"; const DEFAULT_PASS = "2kcare"; 
 const TEAMS = ["Team 1", "Team 2", "Team 3", "Team 4", "Team 5"];
 const CAPACITY_PER_DAY = 5;
 const VEHICLE_MAKERS = ["Maruti Suzuki", "Hyundai", "Tata", "Mahindra", "Honda", "Toyota", "Kia", "MG", "Renault", "Nissan", "Skoda", "Volkswagen", "Ford", "Fiat", "Jeep", "Volvo", "BMW", "Mercedes", "Audi", "Other"];
-const BACKUP_KEY = "2kcc_local_backup";
 
 let state = { jobs: [], counter: 1 };
 let view = "dashboard"; 
@@ -230,34 +224,24 @@ function getTeamWorkload() {
   return workload;
 }
 
-function saveBackup() {
-  try { localStorage.setItem(BACKUP_KEY, JSON.stringify({ jobs: state.jobs, counter: state.counter })); } 
-  catch(e) { console.error("Local backup failed", e); }
-}
-
-function loadBackup() {
-  try {
-    const raw = localStorage.getItem(BACKUP_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      state.jobs = parsed.jobs || [];
-      state.counter = parsed.counter || 1;
-    }
-  } catch(e) { console.error("Local load failed", e); }
-}
-
+// ═══════════════════════════════════════════════════════════════
+// 🔄 REAL-TIME SYNC WITH FIREBASE
+// ═══════════════════════════════════════════════════════════════
 function startRealtimeSync() {
-  if (useLocalBackupOnly || !db) { loadBackup(); render(); return; }
+  // Listen to jobs collection - updates instantly when ANY user changes data
   db.collection("jobs").onSnapshot((snapshot) => {
     state.jobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    saveBackup();
     if (view === "search") updateSearchResults(); else render();
-  }, () => { loadBackup(); render(); });
+  }, (error) => {
+    console.error("Firestore error:", error);
+    toast("❌ Sync error: " + error.message);
+  });
 
+  // Listen to counter
   db.collection("settings").doc("app").onSnapshot((doc) => {
     if (doc.exists) state.counter = doc.data().counter || 1; 
     else { db.collection("settings").doc("app").set({ counter: 1 }); state.counter = 1; }
-  }, () => { loadBackup(); render(); });
+  });
 }
 
 function checkAuth() {
@@ -278,11 +262,10 @@ function handleLogin(e) {
 
 function logout() { if(confirm("Logout?")) { sessionStorage.removeItem('2kcc_auth'); checkAuth(); } }
 
-function flash(msg) { const el = document.getElementById("saveStatus"); el.textContent = msg; setTimeout(()=>{ if(el.textContent===msg) el.textContent=""; }, 1500); }
 function toast(msg) { 
   const area = document.getElementById("toastArea");
   area.innerHTML = `<div class="toast no-print">${msg}<button onclick="document.getElementById('toastArea').innerHTML=''">✕</button></div>`; 
-  setTimeout(()=>{ if(area.innerHTML.includes(msg)) area.innerHTML=""; }, 5000);
+  setTimeout(()=>{ area.innerHTML=""; }, 5000);
 }
 
 function todayStr() { return new Date().toISOString().split("T")[0]; }
@@ -302,9 +285,7 @@ function renderDateSelect(id, selectedDate) {
   return html + `</select>`;
 }
 
-function changeView(newView) {
-  try { view = newView; render(); } catch (err) { console.error("View change error:", err); }
-}
+function changeView(newView) { view = newView; render(); }
 function setFilter(f) { 
   filter = f; 
   workTypeFilter = "all";
@@ -472,11 +453,10 @@ function toggleWorkItem(jobId, index) {
   items[index].done = !items[index].done;
   job.workItems = items;
   
-  if (db && !useLocalBackupOnly) {
-    db.collection("jobs").doc(jobId).update({ workItems: items }).catch(e => toast("Failed to save"));
-  }
-  saveBackup();
-  render();
+  // Save to Firebase - ALL users will see this update instantly!
+  db.collection("jobs").doc(jobId).update({ workItems: items })
+    .then(() => toast("✅ Updated"))
+    .catch(e => toast("❌ Failed to save"));
 }
 
 function renderDashboard() {
@@ -484,7 +464,6 @@ function renderDashboard() {
   let html = `<h2>Dashboard</h2>`;
   if(jobs.length===0){ return html + `<div class="empty">No job cards found. Click '+ Add Job' to create one.</div>`; }
   
-  // NEW: Added S.No column
   html += `<div style="overflow-x:auto"><table><thead><tr><th>S.No</th><th>Job Card</th><th>Maker</th><th>Vehicle</th><th>Customer</th><th>Type</th><th>Team</th><th>Start</th><th>Delivery</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
   jobs.forEach((j, index)=>{
     html += `<tr class="${j.deliveryDate===today && j.status!=="Delivered" ? "due-today" : ""}">
@@ -528,13 +507,13 @@ function renderAddForm() {
         <div style="display: flex; gap: 8px;">
           <select id="f_countryCode" style="width: 110px; background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 6px; padding: 10px; color: #fff; font-size: 0.9rem;">
             <option value="+91">🇮🇳 +91</option>
-            <option value="+971">🇦🇪 +971</option>
+            <option value="+971">🇦 +971</option>
             <option value="+968">🇴🇲 +968</option>
             <option value="+966">🇸🇦 +966</option>
             <option value="+974">🇶🇦 +974</option>
             <option value="+1">🇺🇸 +1</option>
             <option value="+44">🇬🇧 +44</option>
-            <option value="+92">🇵🇰 +92</option>
+            <option value="+92">🇵 +92</option>
             <option value="+880">🇧🇩 +880</option>
           </select>
           <input id="f_phone" placeholder="10 digit mobile number" maxlength="10" inputmode="numeric" pattern="[0-9]*" autocomplete="off" style="flex: 1;">
@@ -564,7 +543,6 @@ function updateSearchResults() {
   if(searchTerm.trim()===""){ html += `<div class="empty">Type to search...</div>`; } 
   else if(jobs.length===0){ html += `<div class="empty">No matching job cards found.</div>`; } 
   else {
-    // NEW: Added serial number to search results
     jobs.forEach((j, index)=>{
       html += `<div class="search-result"><div>
         <div style="display:flex; align-items:center; gap:10px;">
@@ -616,7 +594,6 @@ function renderCalendar() {
     html += `<h3 style="margin-top:20px; font-size:0.9rem; color:var(--yellow)">Jobs on ${formatDate(selectedDay)}</h3>`;
     if (dayJobs.length === 0) html += `<div class="empty" style="padding:16px">No jobs.</div>`;
     else dayJobs.forEach((j, index) => { 
-      // NEW: Added serial number to calendar day details
       html += `<div class="day-detail"><div style="display:flex; align-items:center; gap:10px;">
         <span style="background:var(--yellow); color:#000; font-weight:800; padding:4px 10px; border-radius:4px; min-width:30px; text-align:center;">${index + 1}</span>
         <div>
@@ -641,7 +618,6 @@ function renderAlerts() {
   const today = todayStr(); const dueToday = state.jobs.filter(j=>j.deliveryDate===today && j.status!=="Delivered");
   let html = `<h2>Delivery Alerts &mdash; Due Today</h2>`;
   if(dueToday.length===0) return html + `<div class="empty">No vehicles due today.</div>`;
-  // NEW: Added serial number to alerts
   dueToday.forEach((j, index)=>{ 
     html += `<div class="alert-row"><div style="display:flex; align-items:center; gap:10px;">
       <span style="background:var(--yellow); color:#000; font-weight:800; padding:4px 10px; border-radius:4px; min-width:30px; text-align:center;">${index + 1}</span>
@@ -721,12 +697,9 @@ function shareWhatsApp(jobId) {
 }
 
 function updateStatus(id, status) { 
-  if (db && !useLocalBackupOnly) {
-    db.collection("jobs").doc(id).update({ status: status }).catch(e => toast("Update failed"));
-  } else {
-    const job = state.jobs.find(j => j.id === id);
-    if (job) { job.status = status; saveBackup(); render(); }
-  }
+  db.collection("jobs").doc(id).update({ status: status })
+    .then(() => toast("✅ Status updated"))
+    .catch(e => toast("❌ Update failed: " + e.message));
 }
 
 function requestDelete(id) {
@@ -740,12 +713,9 @@ function closeDeleteModal() { document.getElementById('deleteModal').style.displ
 function executeDelete() {
   const pwd = document.getElementById('deletePasswordInput').value;
   if (pwd === DEFAULT_PASS) {
-    if (db && !useLocalBackupOnly) {
-      db.collection("jobs").doc(jobToDelete).delete().then(() => { toast("✅ Job deleted"); closeDeleteModal(); }).catch(e => toast("❌ Delete failed: " + e.message));
-    } else {
-      state.jobs = state.jobs.filter(j => j.id !== jobToDelete);
-      saveBackup(); toast("✅ Job deleted"); closeDeleteModal(); render();
-    }
+    db.collection("jobs").doc(jobToDelete).delete()
+      .then(() => { toast("✅ Job deleted"); closeDeleteModal(); })
+      .catch(e => toast("❌ Delete failed: " + e.message));
   } else {
     toast("❌ Invalid password");
     document.getElementById('deletePasswordInput').value = '';
@@ -807,6 +777,7 @@ function submitJob() {
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 
+  // Save to Firebase - ALL users will see this new job instantly!
   db.collection("jobs").add(newJob)
     .then(() => { 
       toast(`✅ Job added successfully! (Card No: ${jobCardNo})`); 
