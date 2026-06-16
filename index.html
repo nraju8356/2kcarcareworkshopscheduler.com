@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>2K Car Care - Workshop Scheduler</title>
+
+<!-- FIREBASE SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<style>
+  :root {
+    --red: #dc2626; --red-dark: #b91c1c; --yellow: #facc15; --black: #0a0a0a;
+    --gray-900: #111827; --gray-800: #1f2937; --gray-700: #374151; --gray-400: #9ca3af;
+    --whatsapp: #25D366; --green: #22c55e;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--black); color: #fff; }
+  
+  .login-screen { position: fixed; inset: 0; background: var(--black); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+  .login-card { background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 12px; padding: 32px 24px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+  .login-card h2 { color: var(--yellow); margin: 0 0 8px 0; font-size: 1.5rem; }
+  .login-card p { color: var(--gray-400); font-size: 0.85rem; margin: 0 0 24px 0; }
+  .login-field { margin-bottom: 16px; text-align: left; }
+  .login-field label { display: block; font-size: 0.75rem; color: var(--gray-400); font-weight: 600; margin-bottom: 6px; }
+  .login-field input { width: 100%; background: var(--black); border: 1px solid var(--gray-700); border-radius: 6px; padding: 12px; color: #fff; font-size: 1rem; }
+  .login-field input:focus { outline: 2px solid var(--yellow); border-color: var(--yellow); }
+  .login-btn { width: 100%; background: var(--red); color: #fff; font-weight: 700; padding: 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 1rem; margin-top: 8px; }
+  .login-error { color: #ef4444; font-size: 0.8rem; margin-top: 12px; display: none; }
+
+  #appContainer { display: none; }
+  header { background: linear-gradient(to right, var(--red-dark), var(--red), #000); border-bottom: 4px solid var(--yellow); padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  header h1 { margin: 0; color: var(--yellow); font-size: 1.8rem; letter-spacing: 1px; }
+  header p { margin: 2px 0 0; color: #e5e7eb; font-size: 0.85rem; }
+  .toolbar { background: #000; padding: 10px 24px; display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid var(--gray-800); align-items: center; }
+  button.tool { background: var(--gray-800); color: #d1d5db; border: none; padding: 10px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  button.tool.red { color: #f87171; } button.tool.red.active { background: var(--red); color: #fff; }
+  button.tool.yellow { color: var(--yellow); } button.tool.yellow.active { background: var(--yellow); color: #000; }
+  button.tool.gray.active { background: #4b5563; color: #fff; }
+  button.tool.alert { background: var(--red); color: #fff; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+  .logout-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
+  
+  main { max-width: 1100px; margin: 0 auto; padding: 24px; }
+  h2 { color: var(--yellow); margin-top: 0; }
+  .empty { text-align: center; color: var(--gray-400); border: 1px dashed var(--gray-700); border-radius: 8px; padding: 48px 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  thead { background: var(--gray-900); color: var(--yellow); }
+  th { text-align: left; padding: 10px; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.5px; }
+  td { padding: 10px; border-top: 1px solid var(--gray-800); background: rgba(17,24,39,0.4); vertical-align: middle; }
+  tr.due-today td { background: rgba(127,29,29,0.3); }
+  .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; display: inline-block; }
+  .badge-major { background: var(--red); color: #fff; } .badge-minor { background: #2563eb; color: #fff; } .badge-emergency { background: #f97316; color: #fff; }
+  .status-select { font-size: 0.75rem; font-weight: 700; border-radius: 4px; padding: 6px 8px; border: none; min-width: 110px; }
+  .status-In_Progress { background: var(--yellow); color: #000; } .status-Ready { background: #60a5fa; color: #000; } .status-Delivered { background: #22c55e; color: #fff; }
+  
+  .icon-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--gray-700); color: #d1d5db; cursor: pointer; padding: 8px 12px; border-radius: 6px; font-size: 1.1rem; display: inline-flex; align-items: center; justify-content: center; min-width: 40px; min-height: 40px; }
+  .icon-btn:hover, .icon-btn:active { background: rgba(250, 204, 21, 0.15); color: var(--yellow); border-color: var(--yellow); }
+  .icon-btn.danger:hover, .icon-btn.danger:active { background: rgba(239, 68, 68, 0.15); color: #ef4444; border-color: #ef4444; }
+
+  .card { background: var(--gray-900); border: 1px solid var(--gray-800); border-radius: 8px; padding: 20px; max-width: 600px; }
+  .field { margin-bottom: 14px; display: block; }
+  .field span { display: block; font-size: 0.75rem; color: var(--gray-400); font-weight: 600; margin-bottom: 4px; }
+  .field input, .field select, .field textarea { width: 100%; background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 6px; padding: 10px 12px; color: #fff; font-size: 0.9rem; }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid var(--yellow); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } .toolbar { padding: 10px 12px; } button.tool { padding: 10px 12px; font-size: 0.8rem; } }
+  .info-box { background: rgba(0,0,0,0.4); border: 1px solid var(--gray-700); border-radius: 6px; padding: 10px 12px; font-size: 0.85rem; margin-bottom: 14px; }
+  .info-box.yellow { border-color: rgba(250,204,21,0.4); }
+  .submit-btn { width: 100%; background: var(--red); color: #fff; font-weight: 700; padding: 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 1rem; }
+  .search-box { position: relative; margin-bottom: 16px; }
+  .search-box input { width: 100%; background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 8px; padding: 12px 14px 12px 40px; color: #fff; font-size: 0.95rem; }
+  .search-box .icon { position: absolute; left: 12px; top: 13px; color: var(--gray-400); font-size: 1.1rem; }
+  .search-result { background: var(--gray-900); border: 1px solid var(--gray-800); border-radius: 8px; padding: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; }
+  .search-result .jobno { color: var(--yellow); font-family: monospace; font-size: 0.85rem; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px,1fr)); gap: 10px; margin-bottom: 20px; }
+  .stat { background: rgba(0,0,0,0.4); border-radius: 8px; padding: 12px; text-align: center; }
+  .stat .val { font-size: 1.6rem; font-weight: 800; } .stat .lbl { font-size: 0.7rem; color: var(--gray-400); margin-top: 4px; }
+  .day-row { display: flex; justify-content: space-between; align-items: center; background: var(--gray-900); border: 1px solid var(--gray-800); border-radius: 6px; padding: 10px 12px; font-size: 0.85rem; margin-bottom: 6px; }
+  .bar { width: 120px; height: 8px; background: var(--gray-800); border-radius: 4px; overflow: hidden; margin-right: 8px; }
+  .bar-fill { height: 100%; background: var(--yellow); } .bar-fill.full { background: var(--red); }
+  .alert-row { background: rgba(127,29,29,0.3); border: 1px solid var(--red); border-radius: 8px; padding: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; }
+
+  .cal-toolbar { display:flex; align-items:center; gap:8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .cal-toolbar select, .cal-toolbar button.navbtn { background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 6px; color: #fff; font-size: 0.85rem; padding: 8px 10px; cursor: pointer; }
+  .cal-weekdays { display:grid; grid-template-columns: repeat(7,1fr); gap:4px; text-align:center; font-size:0.7rem; color:var(--gray-400); text-transform:uppercase; font-weight:700; margin-bottom:4px; }
+  .cal-grid { display:grid; grid-template-columns: repeat(7,1fr); gap:4px; }
+  .cal-cell { min-height:64px; border-radius:6px; border:1px solid var(--gray-800); background:var(--gray-900); display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; color:#fff; padding:4px; }
+  .cal-cell.empty { background:transparent; border:none; cursor:default; }
+  .cal-cell.full { background: rgba(127,29,29,0.5); border-color:#b91c1c; }
+  .cal-cell.selected { box-shadow: 0 0 0 2px var(--yellow) inset; }
+  .cal-cell .num { font-size:0.9rem; font-weight:700; } .cal-cell .num.today { color: var(--yellow); }
+  .cal-cell .cnt { font-size:0.7rem; font-weight:700; margin-top:2px; } .cal-cell .cnt.ok { color:#4ade80; } .cal-cell .cnt.full { color:#ef4444; }
+  .day-detail { background: var(--gray-900); border:1px solid var(--gray-800); border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+  footer { text-align: center; font-size: 0.75rem; color: var(--gray-400); padding: 16px; border-top: 1px solid var(--gray-800); }
+  .toast { position: fixed; top: 16px; right: 16px; background: #22c55e; color: #fff; font-weight: 700; padding: 16px 24px; border-radius: 8px; max-width: 350px; font-size: 1rem; z-index: 10000; border: 2px solid #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.6); animation: slideIn 0.3s ease-out; }
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  .toast button { background: none; border: none; float: right; margin-left: 12px; cursor: pointer; font-weight: 700; font-size: 1.2rem; color: #fff; }
+
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
+  .modal { background: #fff; color: #000; border-radius: 8px; max-width: 420px; width: 100%; padding: 24px; position: relative; max-height: 90vh; overflow-y: auto; }
+  .modal .close { position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 8px; }
+  .modal h2 { color: var(--red); margin: 0; }
+  .modal .row { display: flex; justify-content: space-between; border-bottom: 1px solid #e5e7eb; padding: 8px 0; font-size: 0.9rem; }
+  .modal .row span:first-child { color: #6b7280; }
+  .modal .row.bold span:last-child { font-weight: 700; }
+  .print-btn { margin-top: 16px; width: 100%; background: var(--red); color: #fff; font-weight: 700; padding: 14px; border-radius: 8px; border: none; cursor: pointer; margin-bottom: 8px; font-size: 1rem; }
+  .whatsapp-btn { width: 100%; background: var(--whatsapp); color: #fff; font-weight: 700; padding: 14px; border-radius: 8px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1rem; }
+
+  @media print {
+    .no-print, header, .toolbar, footer, #toastArea, main, #deleteModal { display: none !important; }
+    .modal-bg { position: static !important; background: #ffffff !important; display: block !important; inset: auto !important; padding: 0 !important; margin: 0 !important; }
+    .modal { box-shadow: none !important; border: 1px solid #000 !important; max-width: 100% !important; width: 100% !important; color: #000 !important; background: #fff !important; padding: 20px !important; }
+    .modal * { color: #000 !important; }
+    .modal .close, .modal .print-btn, .modal .whatsapp-btn { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <h2>2K CAR CARE</h2>
+    <p>Workshop Scheduler Login</p>
+    <form onsubmit="handleLogin(event)">
+      <div class="login-field"><label>User ID</label><input type="text" id="loginUser" placeholder="Enter ID" required></div>
+      <div class="login-field"><label>Password</label><input type="password" id="loginPass" placeholder="Enter Password" required></div>
+      <button type="submit" class="login-btn">🔓 Login</button>
+      <div id="loginError" class="login-error">Invalid ID or Password</div>
+    </form>
+  </div>
+</div>
+
+<div id="appContainer">
+  <header class="no-print">
+    <div><h1>2K CAR CARE</h1><p>Workshop Scheduler & Job Card System</p></div>
+    <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+      <div><p>Today: <strong id="todayLabel"></strong></p><p id="saveStatus" style="color:#fde68a;font-size:0.7rem;"></p></div>
+      <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+  </header>
+
+  <div class="toolbar no-print">
+    <button class="tool red" onclick="changeView('add')">+ Add Job</button>
+    <button class="tool red" onclick="changeView('search')">🔍 Search</button>
+    <button class="tool gray" onclick="changeView('dashboard'); toast('Refreshed.');">↻ Refresh</button>
+    <button class="tool gray" onclick="changeView('capacity')">📊 Capacity</button>
+    <button class="tool gray" onclick="changeView('calendar')">📅 Calendar</button>
+    <button class="tool yellow" onclick="setFilter('emergency')">Emergency</button>
+    <button class="tool yellow" onclick="setFilter('major')">Major</button>
+    <button class="tool yellow" onclick="setFilter('minor')">Minor</button>
+    <button class="tool gray" onclick="setWorkTypeFilter('denting')">🔧 Denting</button>
+    <button class="tool gray" onclick="setWorkTypeFilter('painting')">🎨 Painting</button>
+    <button class="tool gray" onclick="setWorkTypeFilter('polishing')">✨ Polishing</button>
+    <button class="tool gray" onclick="clearFilters()">Clear</button>
+    <select id="filterDate" style="background: var(--gray-800); color: #d1d5db; border: none; padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 120px;" onchange="setDateFilter(this.value)">
+      <option value="all">All Dates</option><option value="today">Due Today</option><option value="week">Due This Week</option><option value="overdue">Overdue</option>
+    </select>
+    <button class="tool red" onclick="changeView('report')">📄 Report</button>
+    <button class="tool gray" id="alertBtn" onclick="changeView('alerts')">🔔 Alerts</button>
+  </div>
+
+  <main id="mainArea"></main>
+  <div id="modalArea"></div>
+  <div id="toastArea"></div>
+  
+  <div id="deleteModal" class="modal-bg" style="display:none;">
+    <div class="modal">
+      <button class="close" onclick="closeDeleteModal()">✕</button>
+      <h2>⚠️ Confirm Deletion</h2>
+      <p class="sub">Enter admin password to permanently delete this job card.</p>
+      <div class="field">
+        <input type="password" id="deletePasswordInput" placeholder="Enter Admin Password" style="width:100%; padding:12px; margin-bottom:16px; border-radius:6px; border:1px solid var(--gray-700); background:var(--gray-900); color:#fff; font-size:1rem;">
+      </div>
+      <button class="submit-btn" onclick="executeDelete()" style="background:#ef4444;">🗑️ Delete Job</button>
+    </div>
+  </div>
+
+  <footer class="no-print">Real-time cloud sync + Local Backup enabled. Data will NOT disappear on refresh.</footer>
+</div>
+
+<script>
+// --- FIREBASE CONFIGURATION ---
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+let db = null;
+let useLocalBackupOnly = true;
+
+if (typeof firebase !== 'undefined' && firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+    try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        useLocalBackupOnly = false;
+    } catch (e) { console.warn("Firebase connection failed, using local backup.", e); }
+}
+
+const DEFAULT_USER = "admin"; const DEFAULT_PASS = "2kcare"; 
+const TEAMS = ["Team 1", "Team 2", "Team 3", "Team 4", "Team 5"];
+const CAPACITY_PER_DAY = 5;
+const VEHICLE_MAKERS = ["Maruti Suzuki", "Hyundai", "Tata", "Mahindra", "Honda", "Toyota", "Kia", "MG", "Renault", "Nissan", "Skoda", "Volkswagen", "Ford", "Fiat", "Jeep", "Volvo", "BMW", "Mercedes", "Audi", "Other"];
+const BACKUP_KEY = "2kcc_local_backup";
+
+let state = { jobs: [], counter: 1 };
+let view = "dashboard"; 
+let filter = "all"; 
+let workTypeFilter = "all";
+let dateFilter = "all"; 
+let searchTerm = "";
+let printJob = null; let calendarMonth = new Date().getMonth(); let calendarYear = new Date().getFullYear();
+let selectedDay = null; let capacityCheckDate = todayStr(); 
+let jobToDelete = null;
+const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+function getTeamWorkload() {
+  const workload = { "Team 1": 0, "Team 2": 0, "Team 3": 0, "Team 4": 0, "Team 5": 0 };
+  state.jobs.forEach(j => {
+    if (j.status !== "Delivered" && workload[j.team] !== undefined) workload[j.team]++;
+  });
+  return workload;
+}
+
+function saveBackup() {
+  try { localStorage.setItem(BACKUP_KEY, JSON.stringify({ jobs: state.jobs, counter: state.counter })); } 
+  catch(e) { console.error("Local backup failed", e); }
+}
+
+function loadBackup() {
+  try {
+    const raw = localStorage.getItem(BACKUP_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      state.jobs = parsed.jobs || [];
+      state.counter = parsed.counter || 1;
+    }
+  } catch(e) { console.error("Local load failed", e); }
+}
+
+function startRealtimeSync() {
+  if (useLocalBackupOnly || !db) { loadBackup(); render(); return; }
+  db.collection("jobs").onSnapshot((snapshot) => {
+    state.jobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    saveBackup();
+    if (view === "search") updateSearchResults(); else render();
+  }, () => { loadBackup(); render(); });
+
+  db.collection("settings").doc("app").onSnapshot((doc) => {
+    if (doc.exists) state.counter = doc.data().counter || 1; 
+    else { db.collection("settings").doc("app").set({ counter: 1 }); state.counter = 1; }
+  }, () => { loadBackup(); render(); });
+}
+
+function checkAuth() {
+  const isAuth = sessionStorage.getItem('2kcc_auth') === 'true';
+  document.getElementById('loginScreen').style.display = isAuth ? 'none' : 'flex';
+  document.getElementById('appContainer').style.display = isAuth ? 'block' : 'none';
+  if(isAuth) render();
+}
+
+function handleLogin(e) {
+  e.preventDefault();
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  if (u === DEFAULT_USER && p === DEFAULT_PASS) {
+    sessionStorage.setItem('2kcc_auth', 'true'); checkAuth();
+  } else { document.getElementById('loginError').style.display = 'block'; }
+}
+
+function logout() { if(confirm("Logout?")) { sessionStorage.removeItem('2kcc_auth'); checkAuth(); } }
+
+function flash(msg) { const el = document.getElementById("saveStatus"); el.textContent = msg; setTimeout(()=>{ if(el.textContent===msg) el.textContent=""; }, 1500); }
+function toast(msg) { 
+  const area = document.getElementById("toastArea");
+  area.innerHTML = `<div class="toast no-print">${msg}<button onclick="document.getElementById('toastArea').innerHTML=''">✕</button></div>`; 
+  setTimeout(()=>{ if(area.innerHTML.includes(msg)) area.innerHTML=""; }, 5000);
+}
+
+function todayStr() { return new Date().toISOString().split("T")[0]; }
+function addDays(dateStr, days) { const d = new Date(dateStr); d.setDate(d.getDate()+days); return d.toISOString().split("T")[0]; }
+function formatDate(dateStr) { if(!dateStr) return ""; const d = new Date(dateStr+"T00:00:00"); return d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}); }
+function rangeDates(start,end) { const dates=[]; let cur=new Date(start); const last=new Date(end); while(cur<=last){ dates.push(cur.toISOString().split("T")[0]); cur.setDate(cur.getDate()+1); } return dates; }
+function getDeliveryDate(jobType,startDate,majorDays) { if (jobType === "Emergency") return addDays(startDate, 1); if (jobType === "Minor") return addDays(startDate, 3); return addDays(startDate, majorDays || 5); }
+function getCapacityForDate(date, excludeId) { return state.jobs.filter(j=>{ if(j.id===excludeId) return false; if(j.status==="Delivered") return false; return rangeDates(j.startDate,j.deliveryDate).includes(date); }).length; }
+
+function renderDateSelect(id, selectedDate) {
+  let html = `<select id="${id}" style="width: 100%; background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 6px; padding: 10px 12px; color: #fff; font-size: 0.9rem;">`;
+  for (let i = 0; i < 30; i++) {
+    const d = addDays(todayStr(), i); const count = getCapacityForDate(d, null); const remaining = CAPACITY_PER_DAY - count;
+    let statusText = remaining > 0 ? `(${remaining} slots avail)` : '(FULL)';
+    html += `<option value="${d}" ${d === selectedDate ? 'selected' : ''} ${remaining <= 0 ? 'disabled' : ''}>${formatDate(d)} ${statusText}</option>`;
+  }
+  return html + `</select>`;
+}
+
+function changeView(newView) {
+  try { view = newView; render(); } catch (err) { console.error("View change error:", err); }
+}
+function setFilter(f) { 
+  filter = f; 
+  workTypeFilter = "all";
+  view = "dashboard"; 
+  render(); 
+}
+
+function setWorkTypeFilter(workType) {
+  workTypeFilter = workType;
+  filter = "all";
+  view = "dashboard";
+  render();
+}
+
+function clearFilters() { 
+  filter = "all"; 
+  workTypeFilter = "all";
+  searchTerm = ""; 
+  dateFilter = "all"; 
+  document.getElementById("filterDate").value = "all"; 
+  view = "dashboard"; 
+  render(); 
+}
+
+function setDateFilter(val) { dateFilter = val; view = "dashboard"; render(); }
+
+function render() {
+  document.getElementById("todayLabel").textContent = formatDate(todayStr());
+  document.querySelectorAll(".toolbar button").forEach(b=>b.classList.remove("active"));
+  
+  const addBtn = document.querySelector('button[onclick="changeView(\'add\')"]');
+  const searchBtn = document.querySelector('button[onclick="changeView(\'search\')"]');
+  if(addBtn && view==="add") addBtn.classList.add("active");
+  if(searchBtn && view==="search") searchBtn.classList.add("active");
+  if(filter==="emergency") document.querySelector('button[onclick="setFilter(\'emergency\')"]').classList.add("active");
+  if(filter==="major") document.querySelector('button[onclick="setFilter(\'major\')"]').classList.add("active");
+  if(filter==="minor") document.querySelector('button[onclick="setFilter(\'minor\')"]').classList.add("active");
+  
+  if(workTypeFilter==="denting") document.querySelector('button[onclick="setWorkTypeFilter(\'denting\')"]').classList.add("active");
+  if(workTypeFilter==="painting") document.querySelector('button[onclick="setWorkTypeFilter(\'painting\')"]').classList.add("active");
+  if(workTypeFilter==="polishing") document.querySelector('button[onclick="setWorkTypeFilter(\'polishing\')"]').classList.add("active");
+
+  const alertBtn = document.getElementById("alertBtn");
+  const today = todayStr();
+  const dueToday = state.jobs.filter(j=>j.deliveryDate===today && j.status!=="Delivered");
+  alertBtn.textContent = "🔔" + (dueToday.length?` (${dueToday.length})`:"");
+  alertBtn.className = "tool no-print " + (dueToday.length ? "alert" : "gray");
+  if(view==="alerts") alertBtn.classList.add("active");
+
+  const activeEl = document.activeElement;
+  let inputStates = {};
+  const currentInputs = document.querySelectorAll("#mainArea input, #mainArea textarea, #mainArea select");
+  currentInputs.forEach(el => {
+    if (el.id) {
+      inputStates[el.id] = { value: el.value, scrollTop: el.scrollTop || 0 };
+      if (el === activeEl) {
+        inputStates[el.id].selectionStart = el.selectionStart;
+        inputStates[el.id].selectionEnd = el.selectionEnd;
+        inputStates[el.id].active = true;
+      }
+    }
+  });
+
+  const main = document.getElementById("mainArea");
+  try {
+    if(view==="dashboard") main.innerHTML = renderDashboard();
+    else if(view==="add") main.innerHTML = renderAddForm();
+    else if(view==="search") main.innerHTML = renderSearch();
+    else if(view==="capacity") main.innerHTML = renderCapacity();
+    else if(view==="calendar") main.innerHTML = renderCalendar();
+    else if(view==="report") main.innerHTML = renderReport();
+    else if(view==="alerts") main.innerHTML = renderAlerts();
+  } catch(e) { main.innerHTML = `<div class="empty" style="color:red">Error: ${e.message}</div>`; }
+
+  renderModal();
+
+  for (const id in inputStates) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.value = inputStates[id].value;
+      el.scrollTop = inputStates[id].scrollTop;
+      if (inputStates[id].active) {
+        setTimeout(() => {
+          el.focus({ preventScroll: true });
+          if (typeof inputStates[id].selectionStart === 'number' && el.setSelectionRange) {
+            try { el.setSelectionRange(inputStates[id].selectionStart, inputStates[id].selectionEnd); } catch (e) {}
+          }
+        }, 0);
+      }
+    }
+  }
+
+  if (view === "search") {
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) searchInput.value = searchTerm;
+  }
+
+  attachHandlers();
+  if (view === "search") updateSearchResults();
+}
+
+function normalizeWorkItems(wi) {
+  if (!wi || !Array.isArray(wi)) return [];
+  return wi.map(item => {
+    if (typeof item === 'string') return { name: item, done: false };
+    if (typeof item === 'object' && item.name) return { name: item.name, done: !!item.done };
+    return null;
+  }).filter(Boolean);
+}
+
+function getVisibleJobs() {
+  let jobs = [...state.jobs].sort((a,b)=> a.startDate<b.startDate?1:-1);
+  
+  if(filter==="emergency") jobs = jobs.filter(j=>j.jobType==="Emergency");
+  if(filter==="major") jobs = jobs.filter(j=>j.jobType==="Major");
+  if(filter==="minor") jobs = jobs.filter(j=>j.jobType==="Minor");
+  
+  if(workTypeFilter !== "all") {
+    jobs = jobs.filter(j => {
+      const items = normalizeWorkItems(j.workItems);
+      return items.some(item => 
+        item.name && item.name.toLowerCase().includes(workTypeFilter.toLowerCase())
+      );
+    });
+  }
+  
+  const today = todayStr();
+  if(dateFilter === "today") jobs = jobs.filter(j => j.deliveryDate === today && j.status !== "Delivered");
+  else if(dateFilter === "week") { const endOfWeek = addDays(today, 7); jobs = jobs.filter(j => j.deliveryDate >= today && j.deliveryDate <= endOfWeek && j.status !== "Delivered"); }
+  else if(dateFilter === "overdue") jobs = jobs.filter(j => j.deliveryDate < today && j.status !== "Delivered");
+  
+  if(searchTerm.trim()){
+    const t=searchTerm.trim().toLowerCase();
+    jobs = jobs.filter(j=> 
+      j.vehicleNo.toLowerCase().includes(t) || 
+      (j.vehicleMaker && j.vehicleMaker.toLowerCase().includes(t)) || 
+      j.customerName.toLowerCase().includes(t) || 
+      j.jobCardNo.toLowerCase().includes(t)
+    );
+  }
+  return jobs;
+}
+function statusClass(s){ return "status-"+s.replace(" ","_"); }
+
+function renderWorkTags(job) {
+  const items = normalizeWorkItems(job.workItems);
+  if (items.length === 0) return '';
+  const tags = items.map((item, idx) => {
+    const isDone = item.done;
+    const bg = isDone ? 'rgba(34,197,94,0.2)' : 'rgba(250,204,21,0.1)';
+    const border = isDone ? 'var(--green)' : 'var(--yellow)';
+    const color = isDone ? '#4ade80' : 'var(--yellow)';
+    const check = isDone ? '✅ ' : ''; 
+    const strike = isDone ? 'text-decoration: line-through; opacity: 0.8;' : '';
+    return `<span onclick="toggleWorkItem('${job.id}', ${idx})" style="background:${bg}; border:1px solid ${border}; color:${color}; padding:4px 8px; border-radius:4px; font-size:0.7rem; white-space:nowrap; cursor:pointer; user-select:none; ${strike}" title="Click to mark ${isDone ? 'incomplete' : 'complete'}">${check}${item.name}</span>`;
+  }).join(' ');
+  return `<div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">${tags}</div>`;
+}
+
+function toggleWorkItem(jobId, index) {
+  const job = state.jobs.find(j => j.id === jobId);
+  if (!job) return;
+  const items = normalizeWorkItems(job.workItems);
+  if (index < 0 || index >= items.length) return;
+  items[index].done = !items[index].done;
+  job.workItems = items;
+  
+  if (db && !useLocalBackupOnly) {
+    db.collection("jobs").doc(jobId).update({ workItems: items }).catch(e => toast("Failed to save"));
+  }
+  saveBackup();
+  render();
+}
+
+function renderDashboard() {
+  const jobs = getVisibleJobs(); const today = todayStr();
+  let html = `<h2>Dashboard</h2>`;
+  if(jobs.length===0){ return html + `<div class="empty">No job cards found. Click '+ Add Job' to create one.</div>`; }
+  
+  // NEW: Added S.No column
+  html += `<div style="overflow-x:auto"><table><thead><tr><th>S.No</th><th>Job Card</th><th>Maker</th><th>Vehicle</th><th>Customer</th><th>Type</th><th>Team</th><th>Start</th><th>Delivery</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+  jobs.forEach((j, index)=>{
+    html += `<tr class="${j.deliveryDate===today && j.status!=="Delivered" ? "due-today" : ""}">
+      <td style="font-weight:700; color:var(--yellow); text-align:center;">${index + 1}</td>
+      <td style="font-family:monospace;color:var(--yellow)">${j.jobCardNo}</td>
+      <td>${j.vehicleMaker || '-'}</td>
+      <td><strong>${j.vehicleNo}</strong></td><td>${j.customerName}</td>
+      <td><span class="badge ${j.jobType==="Major"?"badge-major":j.jobType==="Minor"?"badge-minor":"badge-emergency"}">${j.jobType}</span></td><td>${j.team}</td>
+      <td>${formatDate(j.startDate)}</td><td>${formatDate(j.deliveryDate)}</td>
+      <td>
+        <select class="status-select ${statusClass(j.status)}" onchange="updateStatus('${j.id}',this.value)">
+          <option value="In Progress" ${j.status==="In Progress"?"selected":""}>In Progress</option>
+          <option value="Ready" ${j.status==="Ready"?"selected":""}>Ready</option>
+          <option value="Delivered" ${j.status==="Delivered"?"selected":""}>Delivered</option>
+        </select>
+        ${renderWorkTags(j)}
+      </td>
+      <td style="text-align:center;"><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></td></tr>`;
+  });
+  return html + `</tbody></table></div>`;
+}
+
+function renderAddForm() {
+  const year = new Date().getFullYear();
+  const workload = getTeamWorkload();
+  const teamOptions = `<option value="Auto">✨ Auto-Assign (Least Workload)</option>` + 
+    TEAMS.map(t => `<option value="${t}">${t} (${workload[t]} active jobs)</option>`).join("");
+
+  return `<h2>Add New Job</h2><div class="card">
+    <div class="info-box yellow">Job Card No. (auto): <span style="font-family:monospace;color:var(--yellow);font-weight:700">2K-${year}-${String(state.counter).padStart(4,"0")}</span></div>
+    <div class="grid2">
+      <label class="field"><span>Vehicle Maker *</span>
+        <select id="f_maker" required>
+          <option value="">Select Maker</option>
+          ${VEHICLE_MAKERS.map(m=>`<option value="${m}">${m}</option>`).join("")}
+        </select>
+      </label>
+      <label class="field"><span>Vehicle Number *</span><input id="f_vehicle" placeholder="e.g. AP16AB1234" maxlength="10"></label>
+      <label class="field"><span>Customer Name *</span><input id="f_customer" placeholder="e.g. Ramesh Kumar"></label>
+      <label class="field"><span>Phone Number</span>
+        <div style="display: flex; gap: 8px;">
+          <select id="f_countryCode" style="width: 110px; background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 6px; padding: 10px; color: #fff; font-size: 0.9rem;">
+            <option value="+91">🇮🇳 +91</option>
+            <option value="+971">🇦🇪 +971</option>
+            <option value="+968">🇴🇲 +968</option>
+            <option value="+966">🇸🇦 +966</option>
+            <option value="+974">🇶🇦 +974</option>
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+92">🇵🇰 +92</option>
+            <option value="+880">🇧🇩 +880</option>
+          </select>
+          <input id="f_phone" placeholder="10 digit mobile number" maxlength="10" inputmode="numeric" pattern="[0-9]*" autocomplete="off" style="flex: 1;">
+        </div>
+      </label>
+      <label class="field"><span>Job Type</span><select id="f_type"><option value="Emergency">Emergency (1 day)</option><option value="Minor">Minor Job (3 days)</option><option value="Major" selected>Major Job (5-15 days)</option></select></label>
+      <label class="field" id="majorDaysField"><span>Major Job Duration (5-15 days)</span><input type="number" id="f_majorDays" min="5" max="15" value="5" inputmode="numeric"></label>
+      <label class="field"><span>Assigned Team</span><select id="f_team">${teamOptions}</select></label>
+      <label class="field"><span>Start Date</span>${renderDateSelect("f_start", todayStr())}</label>
+    </div>
+    <label class="field"><span>Notes (Separate tasks with commas)</span><textarea id="f_notes" rows="2" placeholder="e.g., denting, painting, front bumper repair"></textarea></label>
+    <div class="info-box" id="deliveryPreview"></div>
+    <button class="submit-btn" onclick="submitJob()">✓ Add Job</button></div>`;
+}
+
+function renderSearch() {
+  return `<h2>Search Vehicle</h2>
+  <div class="search-box"><span class="icon">🔍</span><input id="searchInput" placeholder="Search by maker, vehicle, customer, or job card..."></div>
+  <div id="searchResults"></div>`;
+}
+
+function updateSearchResults() {
+  const resultsContainer = document.getElementById("searchResults");
+  if (!resultsContainer) return;
+  const jobs = getVisibleJobs();
+  let html = "";
+  if(searchTerm.trim()===""){ html += `<div class="empty">Type to search...</div>`; } 
+  else if(jobs.length===0){ html += `<div class="empty">No matching job cards found.</div>`; } 
+  else {
+    // NEW: Added serial number to search results
+    jobs.forEach((j, index)=>{
+      html += `<div class="search-result"><div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="background:var(--yellow); color:#000; font-weight:800; padding:4px 10px; border-radius:4px; min-width:30px; text-align:center;">${index + 1}</span>
+          <div>
+            <div class="jobno">${j.jobCardNo}</div>
+            <div><strong>${j.vehicleMaker || ''}</strong> &middot; <strong>${j.vehicleNo}</strong> &middot; ${j.customerName}</div>
+            <div style="font-size:0.75rem;color:#9ca3af">${j.jobType} &middot; ${j.team} &middot; Delivery: ${formatDate(j.deliveryDate)}</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px"><span class="badge ${statusClass(j.status)}" style="background:none;border:1px solid currentColor">${j.status}</span><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button></div></div>`;
+    });
+  }
+  resultsContainer.innerHTML = html;
+}
+
+function renderCapacity() {
+  const count = getCapacityForDate(capacityCheckDate, null); const remaining = CAPACITY_PER_DAY - count;
+  let dateOptions = '';
+  for (let i = 0; i < 30; i++) { const d = addDays(todayStr(), i); dateOptions += `<option value="${d}" ${d === capacityCheckDate ? 'selected' : ''}>${formatDate(d)} (${getCapacityForDate(d, null)}/${CAPACITY_PER_DAY})</option>`; }
+  const workload = getTeamWorkload();
+  let teamStats = '';
+  TEAMS.forEach(t => { teamStats += `<div class="stat"><div class="val" style="color:var(--yellow)">${workload[t]}</div><div class="lbl">${t}</div></div>`; });
+  return `<h2>Capacity & Team Workload</h2><div class="card">
+  <h3 style="font-size:0.85rem; color:#9ca3af; margin-bottom:12px">Current Active Jobs per Team</h3>
+  <div class="stats-grid">${teamStats}</div>
+  <label class="field" style="margin-top:20px"><span>Check daily capacity for date</span><select id="capacityDate" style="width: 100%; background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 6px; padding: 10px; color: #fff;" onchange="updateCapacityDate(this.value)">${dateOptions}</select></label>
+  <div class="stats-grid" style="margin-top:16px"><div class="stat"><div class="val">${count}</div><div class="lbl">Scheduled</div></div><div class="stat"><div class="val" style="color:var(--yellow)">${CAPACITY_PER_DAY}</div><div class="lbl">Capacity</div></div><div class="stat"><div class="val" style="color:${remaining>0?'#4ade80':'#ef4444'}">${remaining}</div><div class="lbl">Remaining</div></div></div></div>`;
+}
+function updateCapacityDate(val) { capacityCheckDate = val; render(); }
+
+function renderCalendar() {
+  const firstDay = new Date(calendarYear, calendarMonth, 1).getDay(); const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+  let html = `<h2>Calendar View</h2><div class="cal-toolbar"><button class="navbtn" onclick="changeMonth(-1)">&lt;</button>
+  <select id="calMonth" onchange="calendarMonth=parseInt(this.value);render();" style="flex:1">${MONTH_NAMES.map((m, i) => `<option value="${i}" ${i === calendarMonth ? 'selected' : ''}>${m}</option>`).join('')}</select>
+  <select id="calYear" onchange="calendarYear=parseInt(this.value);render();" style="width: 90px;">${[calendarYear - 2, calendarYear - 1, calendarYear, calendarYear + 1, calendarYear + 2].map(y => `<option value="${y}" ${y === calendarYear ? 'selected' : ''}>${y}</option>`).join('')}</select>
+  <button class="navbtn" onclick="changeMonth(1)">&gt;</button></div><div class="cal-weekdays"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div><div class="cal-grid">`;
+  for (let i = 0; i < firstDay; i++) html += `<div class="cal-cell empty"></div>`;
+  const today = todayStr();
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const count = getCapacityForDate(dateStr, null); const isFull = count >= CAPACITY_PER_DAY;
+    html += `<button class="cal-cell ${isFull ? 'full' : ''} ${dateStr === selectedDay ? 'selected' : ''}" onclick="selectDay('${dateStr}')"><div class="num ${dateStr === today ? 'today' : ''}">${d}</div><div class="cnt ${isFull ? 'full' : 'ok'}">${count}/${CAPACITY_PER_DAY}</div></button>`;
+  }
+  html += `</div>`;
+  if (selectedDay) {
+    const dayJobs = state.jobs.filter(j => rangeDates(j.startDate, j.deliveryDate).includes(selectedDay));
+    html += `<h3 style="margin-top:20px; font-size:0.9rem; color:var(--yellow)">Jobs on ${formatDate(selectedDay)}</h3>`;
+    if (dayJobs.length === 0) html += `<div class="empty" style="padding:16px">No jobs.</div>`;
+    else dayJobs.forEach((j, index) => { 
+      // NEW: Added serial number to calendar day details
+      html += `<div class="day-detail"><div style="display:flex; align-items:center; gap:10px;">
+        <span style="background:var(--yellow); color:#000; font-weight:800; padding:4px 10px; border-radius:4px; min-width:30px; text-align:center;">${index + 1}</span>
+        <div>
+          <div style="font-family:monospace;color:var(--yellow)">${j.jobCardNo}</div>
+          <div><strong>${j.vehicleMaker || ''}</strong> &middot; <strong>${j.vehicleNo}</strong> &middot; ${j.customerName}</div>
+          ${renderWorkTags(j)}
+        </div>
+      </div><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div>`; 
+    });
+  }
+  return html;
+}
+function changeMonth(delta) { calendarMonth += delta; if (calendarMonth < 0) { calendarMonth = 11; calendarYear--; } if (calendarMonth > 11) { calendarMonth = 0; calendarYear++; } render(); }
+function selectDay(dateStr) { selectedDay = selectedDay === dateStr ? null : dateStr; render(); }
+
+function renderReport() {
+  const now = new Date(); const monthJobs = state.jobs.filter(j=>{ const d = new Date(j.startDate); return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); });
+  return `<h2>Monthly Report</h2><div class="stats-grid"><div class="stat"><div class="val">${monthJobs.length}</div><div class="lbl">Total Jobs</div></div><div class="stat"><div class="val" style="color:#4ade80">${monthJobs.filter(j=>j.status==="Delivered").length}</div><div class="lbl">Delivered</div></div></div>`;
+}
+
+function renderAlerts() {
+  const today = todayStr(); const dueToday = state.jobs.filter(j=>j.deliveryDate===today && j.status!=="Delivered");
+  let html = `<h2>Delivery Alerts &mdash; Due Today</h2>`;
+  if(dueToday.length===0) return html + `<div class="empty">No vehicles due today.</div>`;
+  // NEW: Added serial number to alerts
+  dueToday.forEach((j, index)=>{ 
+    html += `<div class="alert-row"><div style="display:flex; align-items:center; gap:10px;">
+      <span style="background:var(--yellow); color:#000; font-weight:800; padding:4px 10px; border-radius:4px; min-width:30px; text-align:center;">${index + 1}</span>
+      <div>
+        <div class="jobno">${j.jobCardNo}</div>
+        <div><strong>${j.vehicleMaker || ''}</strong> &middot; <strong>${j.vehicleNo}</strong> &middot; ${j.customerName}</div>
+        <div style="font-size:0.75rem;color:#d1d5db">${j.jobType} job &middot; ${j.team} &middot; Phone: ${j.phone||"-"}</div>
+        ${renderWorkTags(j)}
+      </div>
+    </div><div><select class="status-select ${statusClass(j.status)}" onchange="updateStatus('${j.id}',this.value)"><option value="In Progress" ${j.status==="In Progress"?"selected":""}>In Progress</option><option value="Ready" ${j.status==="Ready"?"selected":""}>Ready</option><option value="Delivered" ${j.status==="Delivered"?"selected":""}>Delivered</option></select> <button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div></div>`; 
+  });
+  return html;
+}
+
+function renderWorkItemsForPrint(job) {
+  const items = normalizeWorkItems(job.workItems);
+  if (items.length === 0) return '';
+  const lines = items.map(item => {
+    const check = item.done ? '✅ ' : '☐ ';
+    return `${check}${item.name}`;
+  });
+  return `<div class="row"><span>Work Checklist</span><span style="text-align:right">${lines.join('<br>')}</span></div>`;
+}
+
+function renderModal() {
+  const area = document.getElementById("modalArea");
+  if(!printJob){ area.innerHTML=""; return; }
+  const j = printJob;
+  area.innerHTML = `<div class="modal-bg"><div class="modal"><button class="close" onclick="closePrint()">✕</button><h2>2K CAR CARE</h2>
+  <div class="row bold"><span>Job Card No.</span><span>${j.jobCardNo}</span></div>
+  <div class="row"><span>Vehicle Maker</span><span>${j.vehicleMaker || "-"}</span></div>
+  <div class="row"><span>Vehicle No.</span><span>${j.vehicleNo}</span></div>
+  <div class="row"><span>Customer</span><span>${j.customerName}</span></div>
+  <div class="row"><span>Phone</span><span>${j.phone||"-"}</span></div>
+  <div class="row"><span>Type</span><span>${j.jobType}</span></div>
+  <div class="row"><span>Team</span><span>${j.team}</span></div>
+  <div class="row"><span>Start</span><span>${formatDate(j.startDate)}</span></div>
+  <div class="row"><span>Delivery</span><span>${formatDate(j.deliveryDate)}</span></div>
+  <div class="row bold"><span>Status</span><span style="color:var(--red); font-weight:800;">${j.status}</span></div>
+  ${renderWorkItemsForPrint(j)}
+  <div class="row"><span>Notes</span><span>${j.notes||"-"}</span></div>
+  <button class="print-btn" onclick="window.print()">🖨️ Print Job Card</button>
+  <button class="whatsapp-btn" onclick="shareWhatsApp('${j.id}')">💬 Share via WhatsApp</button></div></div>`;
+}
+
+function shareWhatsApp(jobId) {
+  const job = state.jobs.find(j => j.id === jobId); if (!job) return;
+  const items = normalizeWorkItems(job.workItems);
+  
+  let workText = '';
+  if (items.length > 0) {
+    const lines = items.map(item => {
+      const check = item.done ? '✅' : '☐';
+      return `${check} ${item.name}`;
+    });
+    workText = `*Work Checklist:*\n${lines.join('\n')}\n`;
+  }
+  
+  const message = 
+    `*2K CAR CARE - Job Card*\n\n` +
+    `*Job Card No:* ${job.jobCardNo}\n` +
+    `*Vehicle Maker:* ${job.vehicleMaker || '-'}\n` +
+    `*Vehicle No:* ${job.vehicleNo}\n` +
+    `*Customer:* ${job.customerName}\n` +
+    `*Phone:* ${job.phone || '-'}\n` +
+    `*Type:* ${job.jobType}\n` +
+    `*Team:* ${job.team}\n` +
+    `*Start:* ${formatDate(job.startDate)}\n` +
+    `*Delivery:* ${formatDate(job.deliveryDate)}\n` +
+    `*Status:* ${job.status}\n` +
+    `${workText}` +
+    `${job.notes ? `*Notes:* ${job.notes}\n` : ''}`;
+    
+  let phone = (job.phone || '').replace(/\D/g, '');
+  const encodedMessage = encodeURIComponent(message);
+  window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
+}
+
+function updateStatus(id, status) { 
+  if (db && !useLocalBackupOnly) {
+    db.collection("jobs").doc(id).update({ status: status }).catch(e => toast("Update failed"));
+  } else {
+    const job = state.jobs.find(j => j.id === id);
+    if (job) { job.status = status; saveBackup(); render(); }
+  }
+}
+
+function requestDelete(id) {
+  jobToDelete = id;
+  document.getElementById('deletePasswordInput').value = '';
+  document.getElementById('deleteModal').style.display = 'flex';
+  setTimeout(() => document.getElementById('deletePasswordInput').focus(), 100);
+}
+function closeDeleteModal() { document.getElementById('deleteModal').style.display = 'none'; jobToDelete = null; }
+
+function executeDelete() {
+  const pwd = document.getElementById('deletePasswordInput').value;
+  if (pwd === DEFAULT_PASS) {
+    if (db && !useLocalBackupOnly) {
+      db.collection("jobs").doc(jobToDelete).delete().then(() => { toast("✅ Job deleted"); closeDeleteModal(); }).catch(e => toast("❌ Delete failed: " + e.message));
+    } else {
+      state.jobs = state.jobs.filter(j => j.id !== jobToDelete);
+      saveBackup(); toast("✅ Job deleted"); closeDeleteModal(); render();
+    }
+  } else {
+    toast("❌ Invalid password");
+    document.getElementById('deletePasswordInput').value = '';
+    document.getElementById('deletePasswordInput').focus();
+  }
+}
+
+function openPrint(id) { printJob = state.jobs.find(j=>j.id===id); renderModal(); }
+function closePrint() { printJob = null; renderModal(); }
+
+function submitJob() {
+  const vehicleMaker = document.getElementById("f_maker").value;
+  const vehicleNo = document.getElementById("f_vehicle").value.trim(); 
+  const customerName = document.getElementById("f_customer").value.trim();
+  const countryCode = document.getElementById("f_countryCode").value;
+  const phoneInput = document.getElementById("f_phone").value.trim(); 
+  const jobType = document.getElementById("f_type").value;
+  const majorDays = parseInt(document.getElementById("f_majorDays").value, 10) || 5; 
+  let assignedTeam = document.getElementById("f_team").value;
+  const startDate = document.getElementById("f_start").value; 
+  const notes = document.getElementById("f_notes").value.trim();
+
+  if(!vehicleMaker || vehicleMaker === "") { alert("⚠️ Please select a Vehicle Maker"); return; }
+  if(!vehicleNo || !customerName){ alert("⚠️ Vehicle Number and Customer Name required"); return; }
+  
+  const vehicleClean = vehicleNo.toUpperCase().replace(/\s+/g, "");
+  if (!/^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$/.test(vehicleClean) && !/^[A-Z]{2}[0-9]{4}$/.test(vehicleClean)) { 
+      alert("⚠️ Invalid Vehicle Number format"); return; 
+  }
+  
+  const cleanPhone = phoneInput ? phoneInput.replace(/[^0-9]/g, '') : '';
+  if (phoneInput) {
+    if (countryCode === "+91") {
+      if (cleanPhone.length !== 10) { alert("⚠️ Indian phone must be 10 digits"); return; }
+    } else {
+      if (cleanPhone.length < 7 || cleanPhone.length > 15) { alert("⚠️ Phone must be 7-15 digits"); return; }
+    }
+  }
+  
+  if(jobType === "Major" && (majorDays < 5 || majorDays > 15)){ alert("⚠️ Major job: 5-15 days only"); return; }
+
+  if (assignedTeam === "Auto") {
+    const workload = getTeamWorkload();
+    let minTeam = TEAMS[0], minCount = workload[minTeam];
+    for (const t of TEAMS) { if (workload[t] < minCount) { minCount = workload[t]; minTeam = t; } }
+    assignedTeam = minTeam;
+    toast(`✨ Auto-assigned to ${assignedTeam}`);
+  }
+
+  const deliveryDate = getDeliveryDate(jobType, startDate, majorDays);
+  const jobCardNo = `2K-${new Date(startDate).getFullYear()}-${String(state.counter).padStart(4,"0")}`;
+  const fullPhone = phoneInput ? countryCode + cleanPhone : "";
+  const workItems = notes ? notes.split(',').map(item => ({ name: item.trim(), done: false })).filter(item => item.name !== "") : [];
+
+  const newJob = { 
+    vehicleMaker, jobCardNo, vehicleNo: vehicleClean, customerName, phone: fullPhone, jobType, 
+    durationDays: jobType === "Major" ? majorDays : (jobType === "Minor" ? 3 : 1),
+    team: assignedTeam, startDate, deliveryDate, status: "In Progress", notes, workItems,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  db.collection("jobs").add(newJob)
+    .then(() => { 
+      toast(`✅ Job added successfully! (Card No: ${jobCardNo})`); 
+      view = "dashboard"; 
+    })
+    .catch(e => alert("❌ Failed to save: " + e.message));
+  
+  db.collection("settings").doc("app").set({ counter: firebase.firestore.FieldValue.increment(1) }, { merge: true });
+}
+
+function attachHandlers() {
+  const startInput = document.getElementById("f_start"); 
+  const typeSelect = document.getElementById("f_type");
+  const majorDaysInput = document.getElementById("f_majorDays"); 
+  const majorDaysField = document.getElementById("majorDaysField");
+  
+  if(startInput && typeSelect){
+    const updatePreview = ()=>{
+      const dp = document.getElementById("deliveryPreview"); 
+      if(!dp) return;
+      const md = majorDaysInput ? (parseInt(majorDaysInput.value, 10) || 5) : 5;
+      dp.innerHTML = `📅 Expected delivery: <strong>${formatDate(getDeliveryDate(typeSelect.value, startInput.value, md))}</strong>`;
+      if(majorDaysField) majorDaysField.style.display = typeSelect.value === "Major" ? "block" : "none";
+    };
+    startInput.addEventListener("change", updatePreview); 
+    typeSelect.addEventListener("change", updatePreview);
+    if(majorDaysInput) {
+      majorDaysInput.addEventListener("input", function(e) {
+        let val = e.target.value.replace(/\D/g, '');
+        if (val === '') { e.target.value = ''; updatePreview(); return; }
+        let num = parseInt(val, 10);
+        if (num > 15) { e.target.value = 15; } 
+        else if (val.length === 1 && num < 5 && num !== 1) { e.target.value = 5; } 
+        else if (val.length >= 2 && num < 5) { e.target.value = 5; } 
+        else { e.target.value = val; }
+        updatePreview();
+      });
+      majorDaysInput.addEventListener("change", function(e) {
+        let val = e.target.value.replace(/\D/g, '');
+        let num = parseInt(val, 10);
+        if (isNaN(num) || num < 5) { e.target.value = 5; } 
+        else if (num > 15) { e.target.value = 15; } 
+        else { e.target.value = num; }
+        updatePreview();
+      });
+    }
+    updatePreview();
+  }
+  
+  const searchInput = document.getElementById("searchInput");
+  if(searchInput) searchInput.addEventListener("input", (e)=>{ searchTerm = e.target.value; updateSearchResults(); });
+  
+  const vehicleInput = document.getElementById("f_vehicle");
+  if(vehicleInput) vehicleInput.addEventListener("input", (e)=>{ e.target.value = e.target.value.toUpperCase().slice(0,10); });
+  
+  const countryCodeEl = document.getElementById("f_countryCode");
+  const phoneInputEl = document.getElementById("f_phone");
+  function updatePhoneLimit() {
+    if (countryCodeEl && phoneInputEl) {
+      const isIndia = countryCodeEl.value === "+91";
+      const maxLen = isIndia ? 10 : 15;
+      phoneInputEl.maxLength = maxLen;
+      phoneInputEl.placeholder = isIndia ? "10 digit mobile number" : "Mobile number (7-15 digits)";
+      const currentVal = phoneInputEl.value.replace(/\D/g, '');
+      if (currentVal.length > maxLen) phoneInputEl.value = currentVal.slice(0, maxLen);
+    }
+  }
+  if (countryCodeEl) countryCodeEl.addEventListener("change", updatePhoneLimit);
+  if (phoneInputEl) {
+    phoneInputEl.addEventListener("input", (e) => {
+      let val = e.target.value.replace(/\D/g, '');
+      const isIndia = countryCodeEl && countryCodeEl.value === "+91";
+      const maxLen = isIndia ? 10 : 15;
+      if (val.length > maxLen) val = val.slice(0, maxLen);
+      if (e.target.value !== val) e.target.value = val;
+    });
+    updatePhoneLimit();
+  }
+}
+
+// 🚀 START THE APP
+startRealtimeSync();
+checkAuth();
+</script>
+</body>
+</html>
