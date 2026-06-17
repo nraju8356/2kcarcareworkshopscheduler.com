@@ -208,12 +208,12 @@
           <label class="field"><span>Phone Number</span>
             <div style="display: flex; gap: 8px;">
               <select id="edit_countryCode" style="width: 110px;">
-                <option value="+91">🇮🇳 +91</option>
-                <option value="+971">🇦 +971</option>
+                <option value="+91">🇮 +91</option>
+                <option value="+971">🇦🇪 +971</option>
                 <option value="+968">🇴🇲 +968</option>
                 <option value="+966">🇸🇦 +966</option>
                 <option value="+974">🇶🇦 +974</option>
-                <option value="+1">🇺 +1</option>
+                <option value="+1">🇺🇸 +1</option>
                 <option value="+44">🇬 +44</option>
                 <option value="+92">🇵🇰 +92</option>
                 <option value="+880">🇧🇩 +880</option>
@@ -223,9 +223,9 @@
           </label>
           <label class="field"><span>Job Type</span>
             <select id="edit_type">
-              <option value="Emergency">Emergency</option>
-              <option value="Minor">Minor Job</option>
-              <option value="Major">Major Job</option>
+              <option value="Emergency">Emergency (1 day)</option>
+              <option value="Minor">Minor Job (3 days)</option>
+              <option value="Major">Major Job (5-15 days)</option>
             </select>
           </label>
           <label class="field" id="edit_majorDaysField"><span>Major Job Duration (5-15 days)</span><input type="number" id="edit_majorDays" min="5" max="15"></label>
@@ -565,13 +565,14 @@ function renderAddForm() {
       <label class="field"><span>Vehicle Maker *</span><select id="f_maker" required><option value="">Select Maker</option>${VEHICLE_MAKERS.map(m=>`<option value="${m}">${m}</option>`).join("")}</select></label>
       <label class="field"><span>Vehicle Number *</span><input id="f_vehicle" placeholder="e.g. AP16AB1234" maxlength="10"></label>
       <label class="field"><span>Customer Name *</span><input id="f_customer" placeholder="e.g. Ramesh Kumar"></label>
-      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 8px;"><select id="f_countryCode" style="width: 110px;"><option value="+91">🇮 +91</option><option value="+971">🇦 +971</option><option value="+968">🇴 +968</option><option value="+966">🇸 +966</option><option value="+974">🇶 +974</option><option value="+1">🇺🇸 +1</option><option value="+44">🇬🇧 +44</option><option value="+92">🇵🇰 +92</option><option value="+880">🇧🇩 +880</option></select><input id="f_phone" placeholder="10 digit number" maxlength="10" inputmode="numeric" style="flex:1;"></div></label>
-      <label class="field"><span>Job Type</span><select id="f_type"><option value="Emergency">Emergency</option><option value="Minor">Minor Job</option><option value="Major" selected>Major Job</option></select></label>
+      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 8px;"><select id="f_countryCode" style="width: 110px;"><option value="+91">🇮 +91</option><option value="+971">🇦 +971</option><option value="+968">🇴 +968</option><option value="+966">🇸 +966</option><option value="+974">🇶 +974</option><option value="+1">🇺🇸 +1</option><option value="+44">🇬🇧 +44</option><option value="+92">🇵🇰 +92</option><option value="+880">🇧 +880</option></select><input id="f_phone" placeholder="10 digit number" maxlength="10" inputmode="numeric" style="flex:1;"></div></label>
+      <label class="field"><span>Job Type</span><select id="f_type"><option value="Emergency">Emergency (1 day)</option><option value="Minor">Minor Job (3 days)</option><option value="Major" selected>Major Job (5-15 days)</option></select></label>
       <label class="field" id="majorDaysField"><span>Major Job Duration (5-15 days)</span><input type="number" id="f_majorDays" min="5" max="15" value="5" inputmode="numeric"></label>
       <label class="field"><span>Assigned Team</span><select id="f_team">${teamOptions}</select></label>
       <label class="field"><span>Start Date</span>${renderDateSelect("f_start", todayStr())}</label>
     </div>
     <label class="field"><span>Notes (Separate tasks with commas) <span class="required-star">*</span></span><textarea id="f_notes" rows="2" placeholder="e.g., denting, painting"></textarea></label>
+    <div class="info-box" id="deliveryPreview" style="background: rgba(59, 130, 246, 0.1); border-color: #60a5fa; color: #60a5fa;">📅 Expected Delivery: <strong>${formatDate(getDeliveryDate("Major", todayStr(), 5))}</strong></div>
     <button class="submit-btn" onclick="submitJob()">✓ Add Job</button></div>`;
 }
 
@@ -739,6 +740,12 @@ function openEdit(id) {
     document.getElementById('edit_delivery').value = job.deliveryDate;
     document.getElementById('edit_notes').value = job.notes || '';
     
+    // Show/hide major days field based on job type
+    const majorDaysField = document.getElementById('edit_majorDaysField');
+    if(majorDaysField) {
+      majorDaysField.style.display = job.jobType === "Major" ? "block" : "none";
+    }
+    
     document.getElementById('editModal').style.display = 'flex';
 }
 
@@ -865,12 +872,13 @@ function attachHandlers() {
   const typeSelect = document.getElementById("f_type");
   const majorDaysInput = document.getElementById("f_majorDays"); 
   const majorDaysField = document.getElementById("majorDaysField");
-  if(startInput && typeSelect){
+  const deliveryPreview = document.getElementById("deliveryPreview");
+  
+  if(startInput && typeSelect && deliveryPreview){
     const updatePreview = ()=>{
-      const dp = document.getElementById("deliveryPreview"); 
-      if(!dp) return;
       const md = majorDaysInput ? (parseInt(majorDaysInput.value, 10) || 5) : 5;
-      dp.innerHTML = `📅 Expected delivery: <strong>${formatDate(getDeliveryDate(typeSelect.value, startInput.value, md))}</strong>`;
+      const deliveryDate = getDeliveryDate(typeSelect.value, startInput.value || todayStr(), md);
+      deliveryPreview.innerHTML = `📅 Expected Delivery: <strong>${formatDate(deliveryDate)}</strong>`;
       if(majorDaysField) majorDaysField.style.display = typeSelect.value === "Major" ? "block" : "none";
     };
     startInput.addEventListener("change", updatePreview); 
