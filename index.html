@@ -120,7 +120,6 @@
   .edit-modal-content { background: var(--gray-900); padding: 20px; border-radius: 8px; color: #fff; }
   .edit-modal-content h3 { color: var(--yellow); margin-top: 0; }
 
-  /* Required field star mark */
   .required-star { color: var(--red); font-weight: bold; margin-left: 2px; }
 
   @media print {
@@ -214,12 +213,12 @@
                 <option value="+968">🇴🇲 +968</option>
                 <option value="+966">🇸🇦 +966</option>
                 <option value="+974">🇶🇦 +974</option>
-                <option value="+1">🇺🇸 +1</option>
-                <option value="+44">🇬🇧 +44</option>
-                <option value="+92">🇵 +92</option>
+                <option value="+1">🇺 +1</option>
+                <option value="+44">🇬 +44</option>
+                <option value="+92">🇵🇰 +92</option>
                 <option value="+880">🇧🇩 +880</option>
               </select>
-              <input id="edit_phone" maxlength="15" inputmode="numeric">
+              <input id="edit_phone" maxlength="10" inputmode="numeric">
             </div>
           </label>
           <label class="field"><span>Job Type</span>
@@ -566,7 +565,7 @@ function renderAddForm() {
       <label class="field"><span>Vehicle Maker *</span><select id="f_maker" required><option value="">Select Maker</option>${VEHICLE_MAKERS.map(m=>`<option value="${m}">${m}</option>`).join("")}</select></label>
       <label class="field"><span>Vehicle Number *</span><input id="f_vehicle" placeholder="e.g. AP16AB1234" maxlength="10"></label>
       <label class="field"><span>Customer Name *</span><input id="f_customer" placeholder="e.g. Ramesh Kumar"></label>
-      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 8px;"><select id="f_countryCode" style="width: 110px;"><option value="+91">🇮 +91</option><option value="+971">🇦 +971</option><option value="+968">🇴 +968</option><option value="+966">🇸 +966</option><option value="+974">🇶 +974</option><option value="+1">🇺🇸 +1</option><option value="+44">🇬🇧 +44</option><option value="+92">🇵🇰 +92</option><option value="+880">🇧 +880</option></select><input id="f_phone" placeholder="10 digit number" maxlength="15" inputmode="numeric" style="flex:1;"></div></label>
+      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 8px;"><select id="f_countryCode" style="width: 110px;"><option value="+91">🇮 +91</option><option value="+971">🇦 +971</option><option value="+968">🇴 +968</option><option value="+966">🇸 +966</option><option value="+974">🇶 +974</option><option value="+1">🇺🇸 +1</option><option value="+44">🇬🇧 +44</option><option value="+92">🇵🇰 +92</option><option value="+880">🇧🇩 +880</option></select><input id="f_phone" placeholder="10 digit number" maxlength="10" inputmode="numeric" style="flex:1;"></div></label>
       <label class="field"><span>Job Type</span><select id="f_type"><option value="Emergency">Emergency</option><option value="Minor">Minor Job</option><option value="Major" selected>Major Job</option></select></label>
       <label class="field" id="majorDaysField"><span>Major Job Duration (5-15 days)</span><input type="number" id="f_majorDays" min="5" max="15" value="5" inputmode="numeric"></label>
       <label class="field"><span>Assigned Team</span><select id="f_team">${teamOptions}</select></label>
@@ -817,7 +816,6 @@ function submitJob() {
   if(!vehicleMaker || vehicleMaker === "") { alert("⚠️ Please select a Vehicle Maker"); return; }
   if(!vehicleNo || !customerName){ alert("⚠️ Vehicle Number and Customer Name required"); return; }
   
-  // NEW: Check if Notes are filled
   if(!notes || notes.trim() === "") { 
       alert("⚠️ Notes are required! Please add work details (e.g., denting, painting)."); 
       return; 
@@ -895,6 +893,31 @@ function attachHandlers() {
   if(searchInput) searchInput.addEventListener("input", (e)=>{ searchTerm = e.target.value; updateSearchResults(); });
   const vehicleInput = document.getElementById("f_vehicle");
   if(vehicleInput) vehicleInput.addEventListener("input", (e)=>{ e.target.value = e.target.value.toUpperCase().slice(0,10); });
+  
+  // Phone number maxlength handler
+  const countryCodeEl = document.getElementById("f_countryCode");
+  const phoneInputEl = document.getElementById("f_phone");
+  function updatePhoneLimit() {
+    if (countryCodeEl && phoneInputEl) {
+      const isIndia = countryCodeEl.value === "+91";
+      const maxLen = isIndia ? 10 : 15;
+      phoneInputEl.maxLength = maxLen;
+      phoneInputEl.placeholder = isIndia ? "10 digit mobile number" : "Mobile number (7-15 digits)";
+      const currentVal = phoneInputEl.value.replace(/\D/g, '');
+      if (currentVal.length > maxLen) phoneInputEl.value = currentVal.slice(0, maxLen);
+    }
+  }
+  if (countryCodeEl) countryCodeEl.addEventListener("change", updatePhoneLimit);
+  if (phoneInputEl) {
+    phoneInputEl.addEventListener("input", (e) => {
+      let val = e.target.value.replace(/\D/g, '');
+      const isIndia = countryCodeEl && countryCodeEl.value === "+91";
+      const maxLen = isIndia ? 10 : 15;
+      if (val.length > maxLen) val = val.slice(0, maxLen);
+      if (e.target.value !== val) e.target.value = val;
+    });
+    updatePhoneLimit();
+  }
 }
 
 startRealtimeSync();
