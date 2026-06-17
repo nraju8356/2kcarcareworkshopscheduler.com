@@ -117,9 +117,11 @@
   .print-btn { margin-top: 16px; width: 100%; background: var(--red); color: #fff; font-weight: 700; padding: 14px; border-radius: 8px; border: none; cursor: pointer; margin-bottom: 8px; font-size: 1rem; }
   .whatsapp-btn { width: 100%; background: var(--whatsapp); color: #fff; font-weight: 700; padding: 14px; border-radius: 8px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1rem; }
 
-  /* Edit Modal Specific Styles */
   .edit-modal-content { background: var(--gray-900); padding: 20px; border-radius: 8px; color: #fff; }
   .edit-modal-content h3 { color: var(--yellow); margin-top: 0; }
+
+  /* Required field star mark */
+  .required-star { color: var(--red); font-weight: bold; margin-left: 2px; }
 
   @media print {
     .no-print, header, .toolbar, footer, #toastArea, main, #deleteModal, #editModal { display: none !important; }
@@ -190,7 +192,6 @@
     </div>
   </div>
 
-  <!-- NEW: EDIT MODAL -->
   <div id="editModal" class="modal-bg" style="display:none;">
     <div class="modal" style="max-width: 600px;">
       <button class="close" onclick="closeEditModal()">✕</button>
@@ -201,7 +202,6 @@
           <label class="field"><span>Vehicle Maker *</span>
             <select id="edit_maker" required>
               <option value="">Select Maker</option>
-              <!-- Options populated by JS -->
             </select>
           </label>
           <label class="field"><span>Vehicle Number *</span><input id="edit_vehicle" maxlength="10"></label>
@@ -210,8 +210,8 @@
             <div style="display: flex; gap: 8px;">
               <select id="edit_countryCode" style="width: 110px;">
                 <option value="+91">🇮🇳 +91</option>
-                <option value="+971">🇦🇪 +971</option>
-                <option value="+968">🇴 +968</option>
+                <option value="+971">🇦 +971</option>
+                <option value="+968">🇴🇲 +968</option>
                 <option value="+966">🇸🇦 +966</option>
                 <option value="+974">🇶🇦 +974</option>
                 <option value="+1">🇺🇸 +1</option>
@@ -242,7 +242,7 @@
           <label class="field"><span>Start Date</span><input type="date" id="edit_start"></label>
           <label class="field"><span>Delivery Date</span><input type="date" id="edit_delivery"></label>
         </div>
-        <label class="field"><span>Notes (Separate tasks with commas)</span><textarea id="edit_notes" rows="2"></textarea></label>
+        <label class="field"><span>Notes (Separate tasks with commas) <span class="required-star">*</span></span><textarea id="edit_notes" rows="2" placeholder="e.g., denting, painting"></textarea></label>
         
         <button class="submit-btn" onclick="saveEdit()">💾 Save Changes</button>
         <button class="cancel-btn" onclick="closeEditModal()">Cancel</button>
@@ -254,9 +254,6 @@
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════
-// 🔥 FIREBASE CONFIGURATION
-// ═══════════════════════════════════════════════════════════════
 const firebaseConfig = {
   apiKey: "AIzaSyA7wQjSY7hZUL71Z66FkOENqWUIrGfYOzo",
   authDomain: "k-car-care.firebaseapp.com",
@@ -294,7 +291,6 @@ let selectedDay = null; let capacityCheckDate = todayStr();
 let jobToDelete = null;
 const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
-// Populate Edit Modal Maker Dropdown
 const editMakerSelect = document.getElementById('edit_maker');
 VEHICLE_MAKERS.forEach(m => {
     const opt = document.createElement('option');
@@ -570,13 +566,13 @@ function renderAddForm() {
       <label class="field"><span>Vehicle Maker *</span><select id="f_maker" required><option value="">Select Maker</option>${VEHICLE_MAKERS.map(m=>`<option value="${m}">${m}</option>`).join("")}</select></label>
       <label class="field"><span>Vehicle Number *</span><input id="f_vehicle" placeholder="e.g. AP16AB1234" maxlength="10"></label>
       <label class="field"><span>Customer Name *</span><input id="f_customer" placeholder="e.g. Ramesh Kumar"></label>
-      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 8px;"><select id="f_countryCode" style="width: 110px;"><option value="+91">🇮🇳 +91</option><option value="+971">🇦 +971</option><option value="+968">🇴 +968</option><option value="+966">🇸 +966</option><option value="+974">🇶 +974</option><option value="+1">🇺🇸 +1</option><option value="+44">🇬🇧 +44</option><option value="+92">🇵🇰 +92</option><option value="+880">🇧 +880</option></select><input id="f_phone" placeholder="10 digit number" maxlength="15" inputmode="numeric" style="flex:1;"></div></label>
+      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 8px;"><select id="f_countryCode" style="width: 110px;"><option value="+91">🇮 +91</option><option value="+971">🇦 +971</option><option value="+968">🇴 +968</option><option value="+966">🇸 +966</option><option value="+974">🇶 +974</option><option value="+1">🇺🇸 +1</option><option value="+44">🇬🇧 +44</option><option value="+92">🇵🇰 +92</option><option value="+880">🇧 +880</option></select><input id="f_phone" placeholder="10 digit number" maxlength="15" inputmode="numeric" style="flex:1;"></div></label>
       <label class="field"><span>Job Type</span><select id="f_type"><option value="Emergency">Emergency</option><option value="Minor">Minor Job</option><option value="Major" selected>Major Job</option></select></label>
       <label class="field" id="majorDaysField"><span>Major Job Duration (5-15 days)</span><input type="number" id="f_majorDays" min="5" max="15" value="5" inputmode="numeric"></label>
       <label class="field"><span>Assigned Team</span><select id="f_team">${teamOptions}</select></label>
       <label class="field"><span>Start Date</span>${renderDateSelect("f_start", todayStr())}</label>
     </div>
-    <label class="field"><span>Notes (Separate tasks with commas)</span><textarea id="f_notes" rows="2" placeholder="e.g., denting, painting"></textarea></label>
+    <label class="field"><span>Notes (Separate tasks with commas) <span class="required-star">*</span></span><textarea id="f_notes" rows="2" placeholder="e.g., denting, painting"></textarea></label>
     <button class="submit-btn" onclick="submitJob()">✓ Add Job</button></div>`;
 }
 
@@ -712,9 +708,6 @@ function executeDelete() {
   } else { toast("❌ Invalid password"); document.getElementById('deletePasswordInput').value = ''; document.getElementById('deletePasswordInput').focus(); }
 }
 
-// ═══════════════════════════════════════════════════════════════
-// ✏️ EDIT FUNCTIONS
-// ═══════════════════════════════════════════════════════════════
 function openEdit(id) {
     const job = state.jobs.find(j => j.id === id);
     if (!job) return;
@@ -724,7 +717,6 @@ function openEdit(id) {
     document.getElementById('edit_vehicle').value = job.vehicleNo;
     document.getElementById('edit_customer').value = job.customerName;
     
-    // Handle Phone splitting
     const fullPhone = job.phone || '';
     let code = '+91';
     let number = fullPhone;
@@ -772,6 +764,7 @@ function saveEdit() {
     if(!vehicleMaker || vehicleMaker === "") { alert("⚠️ Please select a Vehicle Maker"); return; }
     if(!vehicleNo || !customerName){ alert("⚠️ Vehicle Number and Customer Name required"); return; }
     if(!startDate || !deliveryDate) { alert("⚠️ Start and Delivery dates are required"); return; }
+    if(!notes || notes.trim() === "") { alert("⚠️ Notes are required! Please add work details."); return; }
     
     const vehicleClean = vehicleNo.toUpperCase().replace(/\s+/g, "");
     if (!/^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$/.test(vehicleClean) && !/^[A-Z]{2}[0-9]{4}$/.test(vehicleClean)) { 
@@ -823,6 +816,13 @@ function submitJob() {
 
   if(!vehicleMaker || vehicleMaker === "") { alert("⚠️ Please select a Vehicle Maker"); return; }
   if(!vehicleNo || !customerName){ alert("⚠️ Vehicle Number and Customer Name required"); return; }
+  
+  // NEW: Check if Notes are filled
+  if(!notes || notes.trim() === "") { 
+      alert("⚠️ Notes are required! Please add work details (e.g., denting, painting)."); 
+      return; 
+  }
+  
   const vehicleClean = vehicleNo.toUpperCase().replace(/\s+/g, "");
   if (!/^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$/.test(vehicleClean) && !/^[A-Z]{2}[0-9]{4}$/.test(vehicleClean)) { alert("⚠️ Invalid Vehicle Number format"); return; }
   const cleanPhone = phoneInput ? phoneInput.replace(/[^0-9]/g, '') : '';
