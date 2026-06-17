@@ -93,10 +93,19 @@
   .cal-cell .num { font-size:0.9rem; font-weight:700; } .cal-cell .num.today { color: var(--yellow); }
   .cal-cell .cnt { font-size:0.7rem; font-weight:700; margin-top:2px; } .cal-cell .cnt.ok { color:#4ade80; } .cal-cell .cnt.full { color:#ef4444; }
   .day-detail { background: var(--gray-900); border:1px solid var(--gray-800); border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
-  footer { text-align: center; font-size: 0.75rem; color: var(--gray-400); padding: 16px; border-top: 1px solid var(--gray-800); }
+  
+  .sync-status { 
+    text-align: center; font-size: 0.8rem; padding: 8px 16px; 
+    border-top: 1px solid var(--gray-800); font-weight: 600;
+  }
+  .sync-status.connected { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+  .sync-status.error { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+  .sync-status.loading { background: rgba(250, 204, 21, 0.2); color: #facc15; }
+  
   .toast { position: fixed; top: 16px; right: 16px; background: #22c55e; color: #fff; font-weight: 700; padding: 16px 24px; border-radius: 8px; max-width: 350px; font-size: 1rem; z-index: 10000; border: 2px solid #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.6); animation: slideIn 0.3s ease-out; }
   @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
   .toast button { background: none; border: none; float: right; margin-left: 12px; cursor: pointer; font-weight: 700; font-size: 1.2rem; color: #fff; }
+  .toast.error { background: #ef4444; }
 
   .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
   .modal { background: #fff; color: #000; border-radius: 8px; max-width: 420px; width: 100%; padding: 24px; position: relative; max-height: 90vh; overflow-y: auto; }
@@ -177,12 +186,12 @@
     </div>
   </div>
 
-  <footer class="no-print" id="footerStatus">🔄 Hybrid Sync: Cloud + Local Backup (Data will NOT disappear)</footer>
+  <div id="syncStatus" class="sync-status loading">⏳ Connecting to cloud database...</div>
 </div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-// 🔥 FIREBASE CONFIGURATION - YOUR EXACT CREDENTIALS
+// 🔥 FIREBASE CONFIGURATION
 // ═══════════════════════════════════════════════════════════════
 const firebaseConfig = {
   apiKey: "AIzaSyA7wQjSY7hZUL71Z66FkOENqWUIrGfYOzo",
@@ -193,17 +202,16 @@ const firebaseConfig = {
   appId: "1:670021530342:web:4da5f3aac81931282bc127"
 };
 
-// Initialize Firebase
 let db = null;
-let useLocalBackupOnly = true;
+let firebaseConnected = false;
 
 try {
     firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
-    useLocalBackupOnly = false;
-    console.log("✅ Firebase connected successfully");
+    console.log("✅ Firebase initialized");
 } catch (e) { 
-    console.warn("Firebase failed, using local backup only", e); 
+    console.error("❌ Firebase init failed:", e);
+    updateSyncStatus("error", "❌ Firebase failed to initialize: " + e.message);
 }
 
 const DEFAULT_USER = "admin"; const DEFAULT_PASS = "2kcare"; 
@@ -222,33 +230,11 @@ let selectedDay = null; let capacityCheckDate = todayStr();
 let jobToDelete = null;
 const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
-// ═══════════════════════════════════════════════════════════════
-// 💾 HYBRID STORAGE: LOCAL BACKUP + CLOUD SYNC
-// ═══════════════════════════════════════════════════════════════
-const LOCAL_STORAGE_KEY = '2kcc_hybrid_data_v1';
-
-function saveLocalBackup() {
-    try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({
-            jobs: state.jobs,
-            counter: state.counter
-        }));
-    } catch(e) { console.error("Local save failed", e); }
-}
-
-function loadLocalBackup() {
-    try {
-        const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (raw) {
-            const parsed = JSON.parse(raw);
-            // Only load if we don't have cloud data yet
-            if (state.jobs.length === 0) {
-                state.jobs = parsed.jobs || [];
-                state.counter = parsed.counter || 1;
-                console.log("✅ Loaded from local backup:", state.jobs.length, "jobs");
-            }
-        }
-    } catch(e) { console.error("Local load failed", e); }
+function updateSyncStatus(type, message) {
+    const el = document.getElementById('syncStatus');
+    if (!el) return;
+    el.className = 'sync-status ' + type;
+    el.textContent = message;
 }
 
 function getTeamWorkload() {
@@ -260,32 +246,54 @@ function getTeamWorkload() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 🔄 REAL-TIME SYNC WITH FIREBASE
+// 🔄 REAL-TIME SYNC - FIXED DELETE SYNC ISSUE
 // ═══════════════════════════════════════════════════════════════
 function startRealtimeSync() {
-    // 1. Load local backup IMMEDIATELY so UI is never empty
-    loadLocalBackup();
-    render();
-
-    // 2. Connect to Cloud if available
-    if (db && !useLocalBackupOnly) {
-        db.collection("jobs").onSnapshot((snapshot) => {
-            const cloudJobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            // Update state with cloud data
-            state.jobs = cloudJobs;
-            // Save to local backup as well
-            saveLocalBackup();
-            if (view === "search") updateSearchResults(); else render();
-        }, (error) => {
-            console.error("Firestore error:", error);
-            toast("⚠️ Cloud sync error. Using local data.");
-        });
-
-        db.collection("settings").doc("app").onSnapshot((doc) => {
-            if (doc.exists) state.counter = doc.data().counter || 1; 
-            else { db.collection("settings").doc("app").set({ counter: 1 }); state.counter = 1; }
-        });
+    if (!db) {
+        updateSyncStatus("error", "❌ Firebase not initialized. Check console (F12).");
+        return;
     }
+
+    updateSyncStatus("loading", "⏳ Connecting to cloud database...");
+
+    db.collection("jobs").get()
+        .then((snapshot) => {
+            console.log("✅ Firebase connection successful! Found", snapshot.size, "jobs");
+            firebaseConnected = true;
+            updateSyncStatus("connected", "✅ Connected to cloud - Syncing with all users in real-time");
+        })
+        .catch((error) => {
+            console.error("❌ Firebase connection failed:", error);
+            updateSyncStatus("error", "❌ Connection failed: " + error.message + " | Check Firestore Rules!");
+            toast("❌ Firebase Error: " + error.message, true);
+        });
+
+    // Listen to jobs collection - THIS HANDLES ALL UPDATES INCLUDING DELETES
+    db.collection("jobs").onSnapshot((snapshot) => {
+        state.jobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        console.log("📥 Received", state.jobs.length, "jobs from cloud");
+        if (view === "search") updateSearchResults(); else render();
+        
+        if (firebaseConnected) {
+            updateSyncStatus("connected", `✅ Live Sync Active - ${state.jobs.length} jobs across all devices`);
+        }
+    }, (error) => {
+        console.error("❌ Firestore listener error:", error);
+        updateSyncStatus("error", "❌ Sync error: " + error.message);
+        toast("❌ Sync Error: " + error.message, true);
+    });
+
+    db.collection("settings").doc("app").onSnapshot((doc) => {
+        if (doc.exists) state.counter = doc.data().counter || 1; 
+        else { 
+            db.collection("settings").doc("app").set({ counter: 1 })
+                .then(() => console.log("✅ Created counter document"))
+                .catch(e => console.error("❌ Counter creation failed:", e));
+            state.counter = 1; 
+        }
+    }, (error) => {
+        console.error("❌ Counter listener error:", error);
+    });
 }
 
 function checkAuth() {
@@ -306,9 +314,9 @@ function handleLogin(e) {
 
 function logout() { if(confirm("Logout?")) { sessionStorage.removeItem('2kcc_auth'); checkAuth(); } }
 
-function toast(msg) { 
+function toast(msg, isError = false) { 
   const area = document.getElementById("toastArea");
-  area.innerHTML = `<div class="toast no-print">${msg}<button onclick="document.getElementById('toastArea').innerHTML=''">✕</button></div>`; 
+  area.innerHTML = `<div class="toast no-print ${isError ? 'error' : ''}">${msg}<button onclick="document.getElementById('toastArea').innerHTML=''">✕</button></div>`; 
   setTimeout(()=>{ area.innerHTML=""; }, 5000);
 }
 
@@ -330,30 +338,13 @@ function renderDateSelect(id, selectedDate) {
 }
 
 function changeView(newView) { view = newView; render(); }
-function setFilter(f) { 
-  filter = f; 
-  workTypeFilter = "all";
-  view = "dashboard"; 
-  render(); 
-}
-
-function setWorkTypeFilter(workType) {
-  workTypeFilter = workType;
-  filter = "all";
-  view = "dashboard";
-  render();
-}
-
+function setFilter(f) { filter = f; workTypeFilter = "all"; view = "dashboard"; render(); }
+function setWorkTypeFilter(workType) { workTypeFilter = workType; filter = "all"; view = "dashboard"; render(); }
 function clearFilters() { 
-  filter = "all"; 
-  workTypeFilter = "all";
-  searchTerm = ""; 
-  dateFilter = "all"; 
+  filter = "all"; workTypeFilter = "all"; searchTerm = ""; dateFilter = "all"; 
   document.getElementById("filterDate").value = "all"; 
-  view = "dashboard"; 
-  render(); 
+  view = "dashboard"; render(); 
 }
-
 function setDateFilter(val) { dateFilter = val; view = "dashboard"; render(); }
 
 function render() {
@@ -497,13 +488,10 @@ function toggleWorkItem(jobId, index) {
   items[index].done = !items[index].done;
   job.workItems = items;
   
-  // Save to Local Backup immediately
-  saveLocalBackup();
-
-  // Save to Firebase
-  if (db && !useLocalBackupOnly) {
+  if (db) {
       db.collection("jobs").doc(jobId).update({ workItems: items })
-        .catch(e => toast("❌ Cloud update failed"));
+        .then(() => toast("✅ Updated"))
+        .catch(e => toast("❌ Failed: " + e.message, true));
   }
   render();
 }
@@ -556,13 +544,13 @@ function renderAddForm() {
         <div style="display: flex; gap: 8px;">
           <select id="f_countryCode" style="width: 110px; background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 6px; padding: 10px; color: #fff; font-size: 0.9rem;">
             <option value="+91">🇮🇳 +91</option>
-            <option value="+971">🇦🇪 +971</option>
+            <option value="+971">🇦 +971</option>
             <option value="+968">🇴🇲 +968</option>
             <option value="+966">🇸🇦 +966</option>
             <option value="+974">🇶🇦 +974</option>
             <option value="+1">🇺🇸 +1</option>
             <option value="+44">🇬🇧 +44</option>
-            <option value="+92">🇵🇰 +92</option>
+            <option value="+92">🇵 +92</option>
             <option value="+880">🇧🇩 +880</option>
           </select>
           <input id="f_phone" placeholder="10 digit mobile number" maxlength="10" inputmode="numeric" pattern="[0-9]*" autocomplete="off" style="flex: 1;">
@@ -749,9 +737,10 @@ function updateStatus(id, status) {
   const job = state.jobs.find(j => j.id === id);
   if(job) {
       job.status = status;
-      saveLocalBackup(); // Save locally immediately
-      if (db && !useLocalBackupOnly) {
-          db.collection("jobs").doc(id).update({ status: status }).catch(e => toast("Cloud update failed"));
+      if (db) {
+          db.collection("jobs").doc(id).update({ status: status })
+            .then(() => toast("✅ Status updated"))
+            .catch(e => toast("❌ Update failed: " + e.message, true));
       }
       render();
   }
@@ -765,19 +754,22 @@ function requestDelete(id) {
 }
 function closeDeleteModal() { document.getElementById('deleteModal').style.display = 'none'; jobToDelete = null; }
 
+// ═══════════════════════════════════════════════════════════════
+// ✅ FIXED DELETE FUNCTION - LETS FIREBASE HANDLE EVERYTHING
+// ═══════════════════════════════════════════════════════════════
 function executeDelete() {
   const pwd = document.getElementById('deletePasswordInput').value;
   if (pwd === DEFAULT_PASS) {
-    // Remove from local state and backup immediately
-    state.jobs = state.jobs.filter(j => j.id !== jobToDelete);
-    saveLocalBackup();
-    render();
-    toast("✅ Job deleted");
-    closeDeleteModal();
-
-    // Remove from Cloud
-    if (db && !useLocalBackupOnly) {
-        db.collection("jobs").doc(jobToDelete).delete().catch(e => console.error(e));
+    if (db) {
+        // Just delete from Firebase - the onSnapshot listener will automatically update ALL users
+        db.collection("jobs").doc(jobToDelete).delete()
+          .then(() => { 
+              toast("✅ Job deleted - Syncing to all users..."); 
+              closeDeleteModal(); 
+              // DON'T manually update state.jobs or call render()
+              // The onSnapshot listener will handle it automatically
+          })
+          .catch(e => toast("❌ Delete failed: " + e.message, true));
     }
   } else {
     toast("❌ Invalid password");
@@ -790,6 +782,11 @@ function openPrint(id) { printJob = state.jobs.find(j=>j.id===id); renderModal()
 function closePrint() { printJob = null; renderModal(); }
 
 function submitJob() {
+  if (!db) {
+      alert("❌ Firebase not connected! Check Firestore Rules.");
+      return;
+  }
+
   const vehicleMaker = document.getElementById("f_maker").value;
   const vehicleNo = document.getElementById("f_vehicle").value.trim(); 
   const customerName = document.getElementById("f_customer").value.trim();
@@ -834,38 +831,22 @@ function submitJob() {
   const workItems = notes ? notes.split(',').map(item => ({ name: item.trim(), done: false })).filter(item => item.name !== "") : [];
 
   const newJob = { 
-    id: "local-" + Date.now(), // Temporary ID for local backup
     vehicleMaker, jobCardNo, vehicleNo: vehicleClean, customerName, phone: fullPhone, jobType, 
     durationDays: jobType === "Major" ? majorDays : (jobType === "Minor" ? 3 : 1),
     team: assignedTeam, startDate, deliveryDate, status: "In Progress", notes, workItems,
-    createdAt: new Date().toISOString()
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 
-  // 1. Add to Local State & Backup IMMEDIATELY (So it never disappears on refresh)
-  state.jobs.push(newJob);
-  state.counter++;
-  saveLocalBackup();
-  toast(`✅ Job added successfully! (Card No: ${jobCardNo})`); 
-  view = "dashboard";
-  render();
-
-  // 2. Sync to Cloud (Firebase)
-  if (db && !useLocalBackupOnly) {
-      // Remove temporary local ID for cloud
-      const cloudJob = {...newJob};
-      delete cloudJob.id; 
-      
-      db.collection("jobs").add(cloudJob)
-        .then((docRef) => {
-            // Update local job with real cloud ID
-            const localJob = state.jobs.find(j => j.id === newJob.id);
-            if(localJob) localJob.id = docRef.id;
-            saveLocalBackup();
-        })
-        .catch(e => console.error("Cloud sync failed", e));
-      
-      db.collection("settings").doc("app").set({ counter: firebase.firestore.FieldValue.increment(1) }, { merge: true });
-  }
+  db.collection("jobs").add(newJob)
+    .then((docRef) => { 
+        toast(`✅ Job added successfully! (Card No: ${jobCardNo})`); 
+        state.counter++;
+        db.collection("settings").doc("app").set({ counter: state.counter }, { merge: true });
+        view = "dashboard";
+    })
+    .catch(e => {
+        alert("❌ Failed to save job!\n\nError: " + e.message + "\n\nThis usually means Firestore Rules are blocking access.\nGo to Firebase Console → Firestore → Rules and set them to allow read/write.");
+    });
 }
 
 function attachHandlers() {
