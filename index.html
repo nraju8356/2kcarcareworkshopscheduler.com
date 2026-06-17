@@ -899,6 +899,7 @@ function attachHandlers() {
 if(!notes || notes.trim() === "") { 
     alert("⚠️ Notes are required! Please add work details (e.g., denting, painting)."); 
     return; 
+  if(!notes || notes.trim() === "") { alert("⚠️ Notes are required! Please add work details."); return; }
 }
 startRealtimeSync();
 checkAuth();
