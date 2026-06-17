@@ -896,7 +896,10 @@ function attachHandlers() {
   const vehicleInput = document.getElementById("f_vehicle");
   if(vehicleInput) vehicleInput.addEventListener("input", (e)=>{ e.target.value = e.target.value.toUpperCase().slice(0,10); });
 }
-
+if(!notes || notes.trim() === "") { 
+    alert("⚠️ Notes are required! Please add work details (e.g., denting, painting)."); 
+    return; 
+}
 startRealtimeSync();
 checkAuth();
 </script>
