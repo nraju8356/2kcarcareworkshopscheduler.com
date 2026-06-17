@@ -58,6 +58,7 @@
   .icon-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--gray-700); color: #d1d5db; cursor: pointer; padding: 8px 12px; border-radius: 6px; font-size: 1.1rem; display: inline-flex; align-items: center; justify-content: center; min-width: 40px; min-height: 40px; }
   .icon-btn:hover, .icon-btn:active { background: rgba(250, 204, 21, 0.15); color: var(--yellow); border-color: var(--yellow); }
   .icon-btn.danger:hover, .icon-btn.danger:active { background: rgba(239, 68, 68, 0.15); color: #ef4444; border-color: #ef4444; }
+  .icon-btn.edit:hover, .icon-btn.edit:active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border-color: #60a5fa; }
 
   .card { background: var(--gray-900); border: 1px solid var(--gray-800); border-radius: 8px; padding: 20px; max-width: 600px; }
   .field { margin-bottom: 14px; display: block; }
@@ -68,7 +69,9 @@
   @media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } .toolbar { padding: 10px 12px; } button.tool { padding: 10px 12px; font-size: 0.8rem; } }
   .info-box { background: rgba(0,0,0,0.4); border: 1px solid var(--gray-700); border-radius: 6px; padding: 10px 12px; font-size: 0.85rem; margin-bottom: 14px; }
   .info-box.yellow { border-color: rgba(250,204,21,0.4); }
-  .submit-btn { width: 100%; background: var(--red); color: #fff; font-weight: 700; padding: 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 1rem; }
+  .submit-btn { width: 100%; background: var(--red); color: #fff; font-weight: 700; padding: 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 1rem; margin-bottom: 8px; }
+  .cancel-btn { width: 100%; background: var(--gray-700); color: #fff; font-weight: 700; padding: 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 1rem; }
+  
   .search-box { position: relative; margin-bottom: 16px; }
   .search-box input { width: 100%; background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 8px; padding: 12px 14px 12px 40px; color: #fff; font-size: 0.95rem; }
   .search-box .icon { position: absolute; left: 12px; top: 13px; color: var(--gray-400); font-size: 1.1rem; }
@@ -94,10 +97,7 @@
   .cal-cell .cnt { font-size:0.7rem; font-weight:700; margin-top:2px; } .cal-cell .cnt.ok { color:#4ade80; } .cal-cell .cnt.full { color:#ef4444; }
   .day-detail { background: var(--gray-900); border:1px solid var(--gray-800); border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
   
-  .sync-status { 
-    text-align: center; font-size: 0.8rem; padding: 8px 16px; 
-    border-top: 1px solid var(--gray-800); font-weight: 600;
-  }
+  .sync-status { text-align: center; font-size: 0.8rem; padding: 8px 16px; border-top: 1px solid var(--gray-800); font-weight: 600; }
   .sync-status.connected { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
   .sync-status.error { background: rgba(239, 68, 68, 0.2); color: #f87171; }
   .sync-status.loading { background: rgba(250, 204, 21, 0.2); color: #facc15; }
@@ -110,15 +110,19 @@
   .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
   .modal { background: #fff; color: #000; border-radius: 8px; max-width: 420px; width: 100%; padding: 24px; position: relative; max-height: 90vh; overflow-y: auto; }
   .modal .close { position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 8px; }
-  .modal h2 { color: var(--red); margin: 0; }
+  .modal h2 { color: var(--red); margin: 0 0 16px 0; }
   .modal .row { display: flex; justify-content: space-between; border-bottom: 1px solid #e5e7eb; padding: 8px 0; font-size: 0.9rem; }
   .modal .row span:first-child { color: #6b7280; }
   .modal .row.bold span:last-child { font-weight: 700; }
   .print-btn { margin-top: 16px; width: 100%; background: var(--red); color: #fff; font-weight: 700; padding: 14px; border-radius: 8px; border: none; cursor: pointer; margin-bottom: 8px; font-size: 1rem; }
   .whatsapp-btn { width: 100%; background: var(--whatsapp); color: #fff; font-weight: 700; padding: 14px; border-radius: 8px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1rem; }
 
+  /* Edit Modal Specific Styles */
+  .edit-modal-content { background: var(--gray-900); padding: 20px; border-radius: 8px; color: #fff; }
+  .edit-modal-content h3 { color: var(--yellow); margin-top: 0; }
+
   @media print {
-    .no-print, header, .toolbar, footer, #toastArea, main, #deleteModal { display: none !important; }
+    .no-print, header, .toolbar, footer, #toastArea, main, #deleteModal, #editModal { display: none !important; }
     .modal-bg { position: static !important; background: #ffffff !important; display: block !important; inset: auto !important; padding: 0 !important; margin: 0 !important; }
     .modal { box-shadow: none !important; border: 1px solid #000 !important; max-width: 100% !important; width: 100% !important; color: #000 !important; background: #fff !important; padding: 20px !important; }
     .modal * { color: #000 !important; }
@@ -186,6 +190,66 @@
     </div>
   </div>
 
+  <!-- NEW: EDIT MODAL -->
+  <div id="editModal" class="modal-bg" style="display:none;">
+    <div class="modal" style="max-width: 600px;">
+      <button class="close" onclick="closeEditModal()">✕</button>
+      <h2>✏️ Edit Job Card</h2>
+      <div class="edit-modal-content">
+        <input type="hidden" id="edit_id">
+        <div class="grid2">
+          <label class="field"><span>Vehicle Maker *</span>
+            <select id="edit_maker" required>
+              <option value="">Select Maker</option>
+              <!-- Options populated by JS -->
+            </select>
+          </label>
+          <label class="field"><span>Vehicle Number *</span><input id="edit_vehicle" maxlength="10"></label>
+          <label class="field"><span>Customer Name *</span><input id="edit_customer"></label>
+          <label class="field"><span>Phone Number</span>
+            <div style="display: flex; gap: 8px;">
+              <select id="edit_countryCode" style="width: 110px;">
+                <option value="+91">🇮🇳 +91</option>
+                <option value="+971">🇦🇪 +971</option>
+                <option value="+968">🇴 +968</option>
+                <option value="+966">🇸🇦 +966</option>
+                <option value="+974">🇶🇦 +974</option>
+                <option value="+1">🇺🇸 +1</option>
+                <option value="+44">🇬🇧 +44</option>
+                <option value="+92">🇵 +92</option>
+                <option value="+880">🇧🇩 +880</option>
+              </select>
+              <input id="edit_phone" maxlength="15" inputmode="numeric">
+            </div>
+          </label>
+          <label class="field"><span>Job Type</span>
+            <select id="edit_type">
+              <option value="Emergency">Emergency</option>
+              <option value="Minor">Minor Job</option>
+              <option value="Major">Major Job</option>
+            </select>
+          </label>
+          <label class="field" id="edit_majorDaysField"><span>Major Job Duration (5-15 days)</span><input type="number" id="edit_majorDays" min="5" max="15"></label>
+          <label class="field"><span>Assigned Team</span>
+            <select id="edit_team">
+              <option value="Team 1">Team 1</option>
+              <option value="Team 2">Team 2</option>
+              <option value="Team 3">Team 3</option>
+              <option value="Team 4">Team 4</option>
+              <option value="Team 5">Team 5</option>
+            </select>
+          </label>
+          <label class="field"><span>Start Date</span><input type="date" id="edit_start"></label>
+          <label class="field"><span>Delivery Date</span><input type="date" id="edit_delivery"></label>
+        </div>
+        <label class="field"><span>Notes (Separate tasks with commas)</span><textarea id="edit_notes" rows="2"></textarea></label>
+        
+        <button class="submit-btn" onclick="saveEdit()">💾 Save Changes</button>
+        <button class="cancel-btn" onclick="closeEditModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <div id="syncStatus" class="sync-status loading">⏳ Connecting to cloud database...</div>
 </div>
 
@@ -230,6 +294,15 @@ let selectedDay = null; let capacityCheckDate = todayStr();
 let jobToDelete = null;
 const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
+// Populate Edit Modal Maker Dropdown
+const editMakerSelect = document.getElementById('edit_maker');
+VEHICLE_MAKERS.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = m;
+    editMakerSelect.appendChild(opt);
+});
+
 function updateSyncStatus(type, message) {
     const el = document.getElementById('syncStatus');
     if (!el) return;
@@ -245,54 +318,31 @@ function getTeamWorkload() {
   return workload;
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 🔄 REAL-TIME SYNC - FIXED DELETE SYNC ISSUE
-// ═══════════════════════════════════════════════════════════════
 function startRealtimeSync() {
     if (!db) {
-        updateSyncStatus("error", "❌ Firebase not initialized. Check console (F12).");
+        updateSyncStatus("error", "❌ Firebase not initialized.");
         return;
     }
-
     updateSyncStatus("loading", "⏳ Connecting to cloud database...");
 
-    db.collection("jobs").get()
-        .then((snapshot) => {
-            console.log("✅ Firebase connection successful! Found", snapshot.size, "jobs");
-            firebaseConnected = true;
-            updateSyncStatus("connected", "✅ Connected to cloud - Syncing with all users in real-time");
-        })
-        .catch((error) => {
-            console.error("❌ Firebase connection failed:", error);
-            updateSyncStatus("error", "❌ Connection failed: " + error.message + " | Check Firestore Rules!");
-            toast("❌ Firebase Error: " + error.message, true);
-        });
+    db.collection("jobs").get().then((snapshot) => {
+        firebaseConnected = true;
+        updateSyncStatus("connected", "✅ Connected to cloud - Syncing with all users");
+    }).catch((error) => {
+        updateSyncStatus("error", "❌ Connection failed: " + error.message);
+    });
 
-    // Listen to jobs collection - THIS HANDLES ALL UPDATES INCLUDING DELETES
     db.collection("jobs").onSnapshot((snapshot) => {
         state.jobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        console.log("📥 Received", state.jobs.length, "jobs from cloud");
         if (view === "search") updateSearchResults(); else render();
-        
-        if (firebaseConnected) {
-            updateSyncStatus("connected", `✅ Live Sync Active - ${state.jobs.length} jobs across all devices`);
-        }
+        if (firebaseConnected) updateSyncStatus("connected", `✅ Live Sync Active - ${state.jobs.length} jobs`);
     }, (error) => {
-        console.error("❌ Firestore listener error:", error);
         updateSyncStatus("error", "❌ Sync error: " + error.message);
-        toast("❌ Sync Error: " + error.message, true);
     });
 
     db.collection("settings").doc("app").onSnapshot((doc) => {
         if (doc.exists) state.counter = doc.data().counter || 1; 
-        else { 
-            db.collection("settings").doc("app").set({ counter: 1 })
-                .then(() => console.log("✅ Created counter document"))
-                .catch(e => console.error("❌ Counter creation failed:", e));
-            state.counter = 1; 
-        }
-    }, (error) => {
-        console.error("❌ Counter listener error:", error);
+        else { db.collection("settings").doc("app").set({ counter: 1 }); state.counter = 1; }
     });
 }
 
@@ -433,33 +483,22 @@ function normalizeWorkItems(wi) {
 
 function getVisibleJobs() {
   let jobs = [...state.jobs].sort((a,b)=> a.startDate<b.startDate?1:-1);
-  
   if(filter==="emergency") jobs = jobs.filter(j=>j.jobType==="Emergency");
   if(filter==="major") jobs = jobs.filter(j=>j.jobType==="Major");
   if(filter==="minor") jobs = jobs.filter(j=>j.jobType==="Minor");
-  
   if(workTypeFilter !== "all") {
     jobs = jobs.filter(j => {
       const items = normalizeWorkItems(j.workItems);
-      return items.some(item => 
-        item.name && item.name.toLowerCase().includes(workTypeFilter.toLowerCase())
-      );
+      return items.some(item => item.name && item.name.toLowerCase().includes(workTypeFilter.toLowerCase()));
     });
   }
-  
   const today = todayStr();
   if(dateFilter === "today") jobs = jobs.filter(j => j.deliveryDate === today && j.status !== "Delivered");
   else if(dateFilter === "week") { const endOfWeek = addDays(today, 7); jobs = jobs.filter(j => j.deliveryDate >= today && j.deliveryDate <= endOfWeek && j.status !== "Delivered"); }
   else if(dateFilter === "overdue") jobs = jobs.filter(j => j.deliveryDate < today && j.status !== "Delivered");
-  
   if(searchTerm.trim()){
     const t=searchTerm.trim().toLowerCase();
-    jobs = jobs.filter(j=> 
-      j.vehicleNo.toLowerCase().includes(t) || 
-      (j.vehicleMaker && j.vehicleMaker.toLowerCase().includes(t)) || 
-      j.customerName.toLowerCase().includes(t) || 
-      j.jobCardNo.toLowerCase().includes(t)
-    );
+    jobs = jobs.filter(j=> j.vehicleNo.toLowerCase().includes(t) || (j.vehicleMaker && j.vehicleMaker.toLowerCase().includes(t)) || j.customerName.toLowerCase().includes(t) || j.jobCardNo.toLowerCase().includes(t));
   }
   return jobs;
 }
@@ -475,7 +514,7 @@ function renderWorkTags(job) {
     const color = isDone ? '#4ade80' : 'var(--yellow)';
     const check = isDone ? '✅ ' : ''; 
     const strike = isDone ? 'text-decoration: line-through; opacity: 0.8;' : '';
-    return `<span onclick="toggleWorkItem('${job.id}', ${idx})" style="background:${bg}; border:1px solid ${border}; color:${color}; padding:4px 8px; border-radius:4px; font-size:0.7rem; white-space:nowrap; cursor:pointer; user-select:none; ${strike}" title="Click to mark ${isDone ? 'incomplete' : 'complete'}">${check}${item.name}</span>`;
+    return `<span onclick="toggleWorkItem('${job.id}', ${idx})" style="background:${bg}; border:1px solid ${border}; color:${color}; padding:4px 8px; border-radius:4px; font-size:0.7rem; white-space:nowrap; cursor:pointer; user-select:none; ${strike}">${check}${item.name}</span>`;
   }).join(' ');
   return `<div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">${tags}</div>`;
 }
@@ -487,12 +526,7 @@ function toggleWorkItem(jobId, index) {
   if (index < 0 || index >= items.length) return;
   items[index].done = !items[index].done;
   job.workItems = items;
-  
-  if (db) {
-      db.collection("jobs").doc(jobId).update({ workItems: items })
-        .then(() => toast("✅ Updated"))
-        .catch(e => toast("❌ Failed: " + e.message, true));
-  }
+  if (db) db.collection("jobs").doc(jobId).update({ workItems: items }).catch(e => toast("❌ Failed: " + e.message, true));
   render();
 }
 
@@ -500,7 +534,6 @@ function renderDashboard() {
   const jobs = getVisibleJobs(); const today = todayStr();
   let html = `<h2>Dashboard</h2>`;
   if(jobs.length===0){ return html + `<div class="empty">No job cards found. Click '+ Add Job' to create one.</div>`; }
-  
   html += `<div style="overflow-x:auto"><table><thead><tr><th>S.No</th><th>Job Card</th><th>Maker</th><th>Vehicle</th><th>Customer</th><th>Type</th><th>Team</th><th>Start</th><th>Delivery</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
   jobs.forEach((j, index)=>{
     html += `<tr class="${j.deliveryDate===today && j.status!=="Delivered" ? "due-today" : ""}">
@@ -518,7 +551,11 @@ function renderDashboard() {
         </select>
         ${renderWorkTags(j)}
       </td>
-      <td style="text-align:center;"><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></td></tr>`;
+      <td style="text-align:center; white-space:nowrap;">
+        <button class="icon-btn edit" onclick="openEdit('${j.id}')" title="Edit">✏️</button>
+        <button class="icon-btn" onclick="openPrint('${j.id}')" title="Print">🖨️</button> 
+        <button class="icon-btn danger" onclick="requestDelete('${j.id}')" title="Delete">🗑️</button>
+      </td></tr>`;
   });
   return html + `</tbody></table></div>`;
 }
@@ -526,51 +563,24 @@ function renderDashboard() {
 function renderAddForm() {
   const year = new Date().getFullYear();
   const workload = getTeamWorkload();
-  const teamOptions = `<option value="Auto">✨ Auto-Assign (Least Workload)</option>` + 
-    TEAMS.map(t => `<option value="${t}">${t} (${workload[t]} active jobs)</option>`).join("");
-
+  const teamOptions = `<option value="Auto">✨ Auto-Assign (Least Workload)</option>` + TEAMS.map(t => `<option value="${t}">${t} (${workload[t]} active)</option>`).join("");
   return `<h2>Add New Job</h2><div class="card">
     <div class="info-box yellow">Job Card No. (auto): <span style="font-family:monospace;color:var(--yellow);font-weight:700">2K-${year}-${String(state.counter).padStart(4,"0")}</span></div>
     <div class="grid2">
-      <label class="field"><span>Vehicle Maker *</span>
-        <select id="f_maker" required>
-          <option value="">Select Maker</option>
-          ${VEHICLE_MAKERS.map(m=>`<option value="${m}">${m}</option>`).join("")}
-        </select>
-      </label>
+      <label class="field"><span>Vehicle Maker *</span><select id="f_maker" required><option value="">Select Maker</option>${VEHICLE_MAKERS.map(m=>`<option value="${m}">${m}</option>`).join("")}</select></label>
       <label class="field"><span>Vehicle Number *</span><input id="f_vehicle" placeholder="e.g. AP16AB1234" maxlength="10"></label>
       <label class="field"><span>Customer Name *</span><input id="f_customer" placeholder="e.g. Ramesh Kumar"></label>
-      <label class="field"><span>Phone Number</span>
-        <div style="display: flex; gap: 8px;">
-          <select id="f_countryCode" style="width: 110px; background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 6px; padding: 10px; color: #fff; font-size: 0.9rem;">
-            <option value="+91">🇮🇳 +91</option>
-            <option value="+971">🇦 +971</option>
-            <option value="+968">🇴🇲 +968</option>
-            <option value="+966">🇸🇦 +966</option>
-            <option value="+974">🇶🇦 +974</option>
-            <option value="+1">🇺🇸 +1</option>
-            <option value="+44">🇬🇧 +44</option>
-            <option value="+92">🇵 +92</option>
-            <option value="+880">🇧🇩 +880</option>
-          </select>
-          <input id="f_phone" placeholder="10 digit mobile number" maxlength="10" inputmode="numeric" pattern="[0-9]*" autocomplete="off" style="flex: 1;">
-        </div>
-      </label>
-      <label class="field"><span>Job Type</span><select id="f_type"><option value="Emergency">Emergency (1 day)</option><option value="Minor">Minor Job (3 days)</option><option value="Major" selected>Major Job (5-15 days)</option></select></label>
+      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 8px;"><select id="f_countryCode" style="width: 110px;"><option value="+91">🇮🇳 +91</option><option value="+971">🇦 +971</option><option value="+968">🇴 +968</option><option value="+966">🇸 +966</option><option value="+974">🇶 +974</option><option value="+1">🇺🇸 +1</option><option value="+44">🇬🇧 +44</option><option value="+92">🇵🇰 +92</option><option value="+880">🇧 +880</option></select><input id="f_phone" placeholder="10 digit number" maxlength="15" inputmode="numeric" style="flex:1;"></div></label>
+      <label class="field"><span>Job Type</span><select id="f_type"><option value="Emergency">Emergency</option><option value="Minor">Minor Job</option><option value="Major" selected>Major Job</option></select></label>
       <label class="field" id="majorDaysField"><span>Major Job Duration (5-15 days)</span><input type="number" id="f_majorDays" min="5" max="15" value="5" inputmode="numeric"></label>
       <label class="field"><span>Assigned Team</span><select id="f_team">${teamOptions}</select></label>
       <label class="field"><span>Start Date</span>${renderDateSelect("f_start", todayStr())}</label>
     </div>
-    <label class="field"><span>Notes (Separate tasks with commas)</span><textarea id="f_notes" rows="2" placeholder="e.g., denting, painting, front bumper repair"></textarea></label>
-    <div class="info-box" id="deliveryPreview"></div>
+    <label class="field"><span>Notes (Separate tasks with commas)</span><textarea id="f_notes" rows="2" placeholder="e.g., denting, painting"></textarea></label>
     <button class="submit-btn" onclick="submitJob()">✓ Add Job</button></div>`;
 }
 
-function renderSearch() {
-  return `<h2>Search Vehicle</h2>
-  <div class="search-box"><span class="icon">🔍</span><input id="searchInput" placeholder="Search by maker, vehicle, customer, or job card..."></div>
-  <div id="searchResults"></div>`;
-}
+function renderSearch() { return `<h2>Search Vehicle</h2><div class="search-box"><span class="icon">🔍</span><input id="searchInput" placeholder="Search..."></div><div id="searchResults"></div>`; }
 
 function updateSearchResults() {
   const resultsContainer = document.getElementById("searchResults");
@@ -581,17 +591,7 @@ function updateSearchResults() {
   else if(jobs.length===0){ html += `<div class="empty">No matching job cards found.</div>`; } 
   else {
     jobs.forEach((j, index)=>{
-      html += `<div class="search-result"><div>
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span style="background:var(--yellow); color:#000; font-weight:800; padding:4px 10px; border-radius:4px; min-width:30px; text-align:center;">${index + 1}</span>
-          <div>
-            <div class="jobno">${j.jobCardNo}</div>
-            <div><strong>${j.vehicleMaker || ''}</strong> &middot; <strong>${j.vehicleNo}</strong> &middot; ${j.customerName}</div>
-            <div style="font-size:0.75rem;color:#9ca3af">${j.jobType} &middot; ${j.team} &middot; Delivery: ${formatDate(j.deliveryDate)}</div>
-          </div>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px"><span class="badge ${statusClass(j.status)}" style="background:none;border:1px solid currentColor">${j.status}</span><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button></div></div>`;
+      html += `<div class="search-result"><div style="display:flex; align-items:center; gap:10px;"><span style="background:var(--yellow); color:#000; font-weight:800; padding:4px 10px; border-radius:4px;">${index + 1}</span><div><div class="jobno">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div></div></div><div style="display:flex;align-items:center;gap:10px"><span class="badge ${statusClass(j.status)}" style="background:none;border:1px solid currentColor">${j.status}</span><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button></div></div>`;
     });
   }
   resultsContainer.innerHTML = html;
@@ -602,22 +602,14 @@ function renderCapacity() {
   let dateOptions = '';
   for (let i = 0; i < 30; i++) { const d = addDays(todayStr(), i); dateOptions += `<option value="${d}" ${d === capacityCheckDate ? 'selected' : ''}>${formatDate(d)} (${getCapacityForDate(d, null)}/${CAPACITY_PER_DAY})</option>`; }
   const workload = getTeamWorkload();
-  let teamStats = '';
-  TEAMS.forEach(t => { teamStats += `<div class="stat"><div class="val" style="color:var(--yellow)">${workload[t]}</div><div class="lbl">${t}</div></div>`; });
-  return `<h2>Capacity & Team Workload</h2><div class="card">
-  <h3 style="font-size:0.85rem; color:#9ca3af; margin-bottom:12px">Current Active Jobs per Team</h3>
-  <div class="stats-grid">${teamStats}</div>
-  <label class="field" style="margin-top:20px"><span>Check daily capacity for date</span><select id="capacityDate" style="width: 100%; background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 6px; padding: 10px; color: #fff;" onchange="updateCapacityDate(this.value)">${dateOptions}</select></label>
-  <div class="stats-grid" style="margin-top:16px"><div class="stat"><div class="val">${count}</div><div class="lbl">Scheduled</div></div><div class="stat"><div class="val" style="color:var(--yellow)">${CAPACITY_PER_DAY}</div><div class="lbl">Capacity</div></div><div class="stat"><div class="val" style="color:${remaining>0?'#4ade80':'#ef4444'}">${remaining}</div><div class="lbl">Remaining</div></div></div></div>`;
+  let teamStats = ''; TEAMS.forEach(t => { teamStats += `<div class="stat"><div class="val" style="color:var(--yellow)">${workload[t]}</div><div class="lbl">${t}</div></div>`; });
+  return `<h2>Capacity & Team Workload</h2><div class="card"><h3 style="font-size:0.85rem; color:#9ca3af; margin-bottom:12px">Current Active Jobs per Team</h3><div class="stats-grid">${teamStats}</div><label class="field" style="margin-top:20px"><span>Check daily capacity for date</span><select id="capacityDate" style="width: 100%; background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 6px; padding: 10px; color: #fff;" onchange="updateCapacityDate(this.value)">${dateOptions}</select></label><div class="stats-grid" style="margin-top:16px"><div class="stat"><div class="val">${count}</div><div class="lbl">Scheduled</div></div><div class="stat"><div class="val" style="color:var(--yellow)">${CAPACITY_PER_DAY}</div><div class="lbl">Capacity</div></div><div class="stat"><div class="val" style="color:${remaining>0?'#4ade80':'#ef4444'}">${remaining}</div><div class="lbl">Remaining</div></div></div></div>`;
 }
 function updateCapacityDate(val) { capacityCheckDate = val; render(); }
 
 function renderCalendar() {
   const firstDay = new Date(calendarYear, calendarMonth, 1).getDay(); const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
-  let html = `<h2>Calendar View</h2><div class="cal-toolbar"><button class="navbtn" onclick="changeMonth(-1)">&lt;</button>
-  <select id="calMonth" onchange="calendarMonth=parseInt(this.value);render();" style="flex:1">${MONTH_NAMES.map((m, i) => `<option value="${i}" ${i === calendarMonth ? 'selected' : ''}>${m}</option>`).join('')}</select>
-  <select id="calYear" onchange="calendarYear=parseInt(this.value);render();" style="width: 90px;">${[calendarYear - 2, calendarYear - 1, calendarYear, calendarYear + 1, calendarYear + 2].map(y => `<option value="${y}" ${y === calendarYear ? 'selected' : ''}>${y}</option>`).join('')}</select>
-  <button class="navbtn" onclick="changeMonth(1)">&gt;</button></div><div class="cal-weekdays"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div><div class="cal-grid">`;
+  let html = `<h2>Calendar View</h2><div class="cal-toolbar"><button class="navbtn" onclick="changeMonth(-1)">&lt;</button><select id="calMonth" onchange="calendarMonth=parseInt(this.value);render();" style="flex:1">${MONTH_NAMES.map((m, i) => `<option value="${i}" ${i === calendarMonth ? 'selected' : ''}>${m}</option>`).join('')}</select><select id="calYear" onchange="calendarYear=parseInt(this.value);render();" style="width: 90px;">${[calendarYear - 2, calendarYear - 1, calendarYear, calendarYear + 1, calendarYear + 2].map(y => `<option value="${y}" ${y === calendarYear ? 'selected' : ''}>${y}</option>`).join('')}</select><button class="navbtn" onclick="changeMonth(1)">&gt;</button></div><div class="cal-weekdays"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div><div class="cal-grid">`;
   for (let i = 0; i < firstDay; i++) html += `<div class="cal-cell empty"></div>`;
   const today = todayStr();
   for (let d = 1; d <= daysInMonth; d++) {
@@ -631,14 +623,7 @@ function renderCalendar() {
     html += `<h3 style="margin-top:20px; font-size:0.9rem; color:var(--yellow)">Jobs on ${formatDate(selectedDay)}</h3>`;
     if (dayJobs.length === 0) html += `<div class="empty" style="padding:16px">No jobs.</div>`;
     else dayJobs.forEach((j, index) => { 
-      html += `<div class="day-detail"><div style="display:flex; align-items:center; gap:10px;">
-        <span style="background:var(--yellow); color:#000; font-weight:800; padding:4px 10px; border-radius:4px; min-width:30px; text-align:center;">${index + 1}</span>
-        <div>
-          <div style="font-family:monospace;color:var(--yellow)">${j.jobCardNo}</div>
-          <div><strong>${j.vehicleMaker || ''}</strong> &middot; <strong>${j.vehicleNo}</strong> &middot; ${j.customerName}</div>
-          ${renderWorkTags(j)}
-        </div>
-      </div><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div>`; 
+      html += `<div class="day-detail"><div style="display:flex; align-items:center; gap:10px;"><span style="background:var(--yellow); color:#000; font-weight:800; padding:4px 10px; border-radius:4px;">${index + 1}</span><div><div style="font-family:monospace;color:var(--yellow)">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div>${renderWorkTags(j)}</div></div><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div>`; 
     });
   }
   return html;
@@ -656,15 +641,7 @@ function renderAlerts() {
   let html = `<h2>Delivery Alerts &mdash; Due Today</h2>`;
   if(dueToday.length===0) return html + `<div class="empty">No vehicles due today.</div>`;
   dueToday.forEach((j, index)=>{ 
-    html += `<div class="alert-row"><div style="display:flex; align-items:center; gap:10px;">
-      <span style="background:var(--yellow); color:#000; font-weight:800; padding:4px 10px; border-radius:4px; min-width:30px; text-align:center;">${index + 1}</span>
-      <div>
-        <div class="jobno">${j.jobCardNo}</div>
-        <div><strong>${j.vehicleMaker || ''}</strong> &middot; <strong>${j.vehicleNo}</strong> &middot; ${j.customerName}</div>
-        <div style="font-size:0.75rem;color:#d1d5db">${j.jobType} job &middot; ${j.team} &middot; Phone: ${j.phone||"-"}</div>
-        ${renderWorkTags(j)}
-      </div>
-    </div><div><select class="status-select ${statusClass(j.status)}" onchange="updateStatus('${j.id}',this.value)"><option value="In Progress" ${j.status==="In Progress"?"selected":""}>In Progress</option><option value="Ready" ${j.status==="Ready"?"selected":""}>Ready</option><option value="Delivered" ${j.status==="Delivered"?"selected":""}>Delivered</option></select> <button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div></div>`; 
+    html += `<div class="alert-row"><div style="display:flex; align-items:center; gap:10px;"><span style="background:var(--yellow); color:#000; font-weight:800; padding:4px 10px; border-radius:4px;">${index + 1}</span><div><div class="jobno">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div><div style="font-size:0.75rem;color:#d1d5db">${j.jobType} job · ${j.team} · Phone: ${j.phone||"-"}</div>${renderWorkTags(j)}</div></div><div><select class="status-select ${statusClass(j.status)}" onchange="updateStatus('${j.id}',this.value)"><option value="In Progress" ${j.status==="In Progress"?"selected":""}>In Progress</option><option value="Ready" ${j.status==="Ready"?"selected":""}>Ready</option><option value="Delivered" ${j.status==="Delivered"?"selected":""}>Delivered</option></select> <button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div></div>`; 
   });
   return html;
 }
@@ -672,10 +649,7 @@ function renderAlerts() {
 function renderWorkItemsForPrint(job) {
   const items = normalizeWorkItems(job.workItems);
   if (items.length === 0) return '';
-  const lines = items.map(item => {
-    const check = item.done ? '✅ ' : '☐ ';
-    return `${check}${item.name}`;
-  });
+  const lines = items.map(item => { const check = item.done ? '✅ ' : '☐ '; return `${check}${item.name}`; });
   return `<div class="row"><span>Work Checklist</span><span style="text-align:right">${lines.join('<br>')}</span></div>`;
 }
 
@@ -703,45 +677,18 @@ function renderModal() {
 function shareWhatsApp(jobId) {
   const job = state.jobs.find(j => j.id === jobId); if (!job) return;
   const items = normalizeWorkItems(job.workItems);
-  
   let workText = '';
-  if (items.length > 0) {
-    const lines = items.map(item => {
-      const check = item.done ? '✅' : '☐';
-      return `${check} ${item.name}`;
-    });
-    workText = `*Work Checklist:*\n${lines.join('\n')}\n`;
-  }
-  
-  const message = 
-    `*2K CAR CARE - Job Card*\n\n` +
-    `*Job Card No:* ${job.jobCardNo}\n` +
-    `*Vehicle Maker:* ${job.vehicleMaker || '-'}\n` +
-    `*Vehicle No:* ${job.vehicleNo}\n` +
-    `*Customer:* ${job.customerName}\n` +
-    `*Phone:* ${job.phone || '-'}\n` +
-    `*Type:* ${job.jobType}\n` +
-    `*Team:* ${job.team}\n` +
-    `*Start:* ${formatDate(job.startDate)}\n` +
-    `*Delivery:* ${formatDate(job.deliveryDate)}\n` +
-    `*Status:* ${job.status}\n` +
-    `${workText}` +
-    `${job.notes ? `*Notes:* ${job.notes}\n` : ''}`;
-    
+  if (items.length > 0) { const lines = items.map(item => { const check = item.done ? '✅' : '☐'; return `${check} ${item.name}`; }); workText = `*Work Checklist:*\n${lines.join('\n')}\n`; }
+  const message = `*2K CAR CARE - Job Card*\n\n*Job Card No:* ${job.jobCardNo}\n*Vehicle Maker:* ${job.vehicleMaker || '-'}\n*Vehicle No:* ${job.vehicleNo}\n*Customer:* ${job.customerName}\n*Phone:* ${job.phone || '-'}\n*Type:* ${job.jobType}\n*Team:* ${job.team}\n*Start:* ${formatDate(job.startDate)}\n*Delivery:* ${formatDate(job.deliveryDate)}\n*Status:* ${job.status}\n${workText}${job.notes ? `*Notes:* ${job.notes}\n` : ''}`;
   let phone = (job.phone || '').replace(/\D/g, '');
-  const encodedMessage = encodeURIComponent(message);
-  window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
 }
 
 function updateStatus(id, status) { 
   const job = state.jobs.find(j => j.id === id);
   if(job) {
       job.status = status;
-      if (db) {
-          db.collection("jobs").doc(id).update({ status: status })
-            .then(() => toast("✅ Status updated"))
-            .catch(e => toast("❌ Update failed: " + e.message, true));
-      }
+      if (db) db.collection("jobs").doc(id).update({ status: status }).catch(e => toast("❌ Update failed: " + e.message, true));
       render();
   }
 }
@@ -754,39 +701,115 @@ function requestDelete(id) {
 }
 function closeDeleteModal() { document.getElementById('deleteModal').style.display = 'none'; jobToDelete = null; }
 
-// ═══════════════════════════════════════════════════════════════
-// ✅ FIXED DELETE FUNCTION - LETS FIREBASE HANDLE EVERYTHING
-// ═══════════════════════════════════════════════════════════════
 function executeDelete() {
   const pwd = document.getElementById('deletePasswordInput').value;
   if (pwd === DEFAULT_PASS) {
     if (db) {
-        // Just delete from Firebase - the onSnapshot listener will automatically update ALL users
         db.collection("jobs").doc(jobToDelete).delete()
-          .then(() => { 
-              toast("✅ Job deleted - Syncing to all users..."); 
-              closeDeleteModal(); 
-              // DON'T manually update state.jobs or call render()
-              // The onSnapshot listener will handle it automatically
-          })
+          .then(() => { toast("✅ Job deleted - Syncing..."); closeDeleteModal(); })
           .catch(e => toast("❌ Delete failed: " + e.message, true));
     }
-  } else {
-    toast("❌ Invalid password");
-    document.getElementById('deletePasswordInput').value = '';
-    document.getElementById('deletePasswordInput').focus();
-  }
+  } else { toast("❌ Invalid password"); document.getElementById('deletePasswordInput').value = ''; document.getElementById('deletePasswordInput').focus(); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ✏️ EDIT FUNCTIONS
+// ═══════════════════════════════════════════════════════════════
+function openEdit(id) {
+    const job = state.jobs.find(j => j.id === id);
+    if (!job) return;
+    
+    document.getElementById('edit_id').value = job.id;
+    document.getElementById('edit_maker').value = job.vehicleMaker || '';
+    document.getElementById('edit_vehicle').value = job.vehicleNo;
+    document.getElementById('edit_customer').value = job.customerName;
+    
+    // Handle Phone splitting
+    const fullPhone = job.phone || '';
+    let code = '+91';
+    let number = fullPhone;
+    if (fullPhone.startsWith('+971')) { code = '+971'; number = fullPhone.substring(4); }
+    else if (fullPhone.startsWith('+968')) { code = '+968'; number = fullPhone.substring(4); }
+    else if (fullPhone.startsWith('+966')) { code = '+966'; number = fullPhone.substring(4); }
+    else if (fullPhone.startsWith('+974')) { code = '+974'; number = fullPhone.substring(4); }
+    else if (fullPhone.startsWith('+1')) { code = '+1'; number = fullPhone.substring(2); }
+    else if (fullPhone.startsWith('+44')) { code = '+44'; number = fullPhone.substring(3); }
+    else if (fullPhone.startsWith('+92')) { code = '+92'; number = fullPhone.substring(3); }
+    else if (fullPhone.startsWith('+880')) { code = '+880'; number = fullPhone.substring(4); }
+    else if (fullPhone.startsWith('+91')) { code = '+91'; number = fullPhone.substring(3); }
+    
+    document.getElementById('edit_countryCode').value = code;
+    document.getElementById('edit_phone').value = number;
+    
+    document.getElementById('edit_type').value = job.jobType;
+    document.getElementById('edit_majorDays').value = job.durationDays || 5;
+    document.getElementById('edit_team').value = job.team;
+    document.getElementById('edit_start').value = job.startDate;
+    document.getElementById('edit_delivery').value = job.deliveryDate;
+    document.getElementById('edit_notes').value = job.notes || '';
+    
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+function saveEdit() {
+    const id = document.getElementById('edit_id').value;
+    const vehicleMaker = document.getElementById('edit_maker').value;
+    const vehicleNo = document.getElementById('edit_vehicle').value.trim(); 
+    const customerName = document.getElementById('edit_customer').value.trim();
+    const countryCode = document.getElementById('edit_countryCode').value;
+    const phoneInput = document.getElementById('edit_phone').value.trim(); 
+    const jobType = document.getElementById('edit_type').value;
+    const majorDays = parseInt(document.getElementById('edit_majorDays').value, 10) || 5; 
+    const assignedTeam = document.getElementById('edit_team').value;
+    const startDate = document.getElementById('edit_start').value; 
+    const deliveryDate = document.getElementById('edit_delivery').value;
+    const notes = document.getElementById('edit_notes').value.trim();
+
+    if(!vehicleMaker || vehicleMaker === "") { alert("⚠️ Please select a Vehicle Maker"); return; }
+    if(!vehicleNo || !customerName){ alert("⚠️ Vehicle Number and Customer Name required"); return; }
+    if(!startDate || !deliveryDate) { alert("⚠️ Start and Delivery dates are required"); return; }
+    
+    const vehicleClean = vehicleNo.toUpperCase().replace(/\s+/g, "");
+    if (!/^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$/.test(vehicleClean) && !/^[A-Z]{2}[0-9]{4}$/.test(vehicleClean)) { 
+        alert("⚠️ Invalid Vehicle Number format"); return; 
+    }
+    
+    const cleanPhone = phoneInput.replace(/[^0-9]/g, '');
+    if (phoneInput) {
+        if (countryCode === "+91" && cleanPhone.length !== 10) { alert("⚠️ Indian phone must be 10 digits"); return; }
+        if (countryCode !== "+91" && (cleanPhone.length < 7 || cleanPhone.length > 15)) { alert("⚠️ Phone must be 7-15 digits"); return; }
+    }
+    
+    if(jobType === "Major" && (majorDays < 5 || majorDays > 15)){ alert("⚠️ Major job: 5-15 days only"); return; }
+
+    const fullPhone = phoneInput ? countryCode + cleanPhone : "";
+    const workItems = notes ? notes.split(',').map(item => ({ name: item.trim(), done: false })).filter(item => item.name !== "") : [];
+
+    const updateData = { 
+        vehicleMaker, vehicleNo: vehicleClean, customerName, phone: fullPhone, jobType, 
+        durationDays: jobType === "Major" ? majorDays : (jobType === "Minor" ? 3 : 1),
+        team: assignedTeam, startDate, deliveryDate, notes, workItems
+    };
+
+    if (db) {
+        db.collection("jobs").doc(id).update(updateData)
+            .then(() => { 
+                toast("✅ Job updated successfully!"); 
+                closeEditModal(); 
+            })
+            .catch(e => toast("❌ Update failed: " + e.message, true));
+    }
 }
 
 function openPrint(id) { printJob = state.jobs.find(j=>j.id===id); renderModal(); }
 function closePrint() { printJob = null; renderModal(); }
 
 function submitJob() {
-  if (!db) {
-      alert("❌ Firebase not connected! Check Firestore Rules.");
-      return;
-  }
-
+  if (!db) { alert("❌ Firebase not connected!"); return; }
   const vehicleMaker = document.getElementById("f_maker").value;
   const vehicleNo = document.getElementById("f_vehicle").value.trim(); 
   const customerName = document.getElementById("f_customer").value.trim();
@@ -800,21 +823,13 @@ function submitJob() {
 
   if(!vehicleMaker || vehicleMaker === "") { alert("⚠️ Please select a Vehicle Maker"); return; }
   if(!vehicleNo || !customerName){ alert("⚠️ Vehicle Number and Customer Name required"); return; }
-  
   const vehicleClean = vehicleNo.toUpperCase().replace(/\s+/g, "");
-  if (!/^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$/.test(vehicleClean) && !/^[A-Z]{2}[0-9]{4}$/.test(vehicleClean)) { 
-      alert("⚠️ Invalid Vehicle Number format"); return; 
-  }
-  
+  if (!/^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$/.test(vehicleClean) && !/^[A-Z]{2}[0-9]{4}$/.test(vehicleClean)) { alert("⚠️ Invalid Vehicle Number format"); return; }
   const cleanPhone = phoneInput ? phoneInput.replace(/[^0-9]/g, '') : '';
   if (phoneInput) {
-    if (countryCode === "+91") {
-      if (cleanPhone.length !== 10) { alert("⚠️ Indian phone must be 10 digits"); return; }
-    } else {
-      if (cleanPhone.length < 7 || cleanPhone.length > 15) { alert("⚠️ Phone must be 7-15 digits"); return; }
-    }
+    if (countryCode === "+91" && cleanPhone.length !== 10) { alert("⚠️ Indian phone must be 10 digits"); return; }
+    if (countryCode !== "+91" && (cleanPhone.length < 7 || cleanPhone.length > 15)) { alert("⚠️ Phone must be 7-15 digits"); return; }
   }
-  
   if(jobType === "Major" && (majorDays < 5 || majorDays > 15)){ alert("⚠️ Major job: 5-15 days only"); return; }
 
   if (assignedTeam === "Auto") {
@@ -838,15 +853,13 @@ function submitJob() {
   };
 
   db.collection("jobs").add(newJob)
-    .then((docRef) => { 
+    .then(() => { 
         toast(`✅ Job added successfully! (Card No: ${jobCardNo})`); 
         state.counter++;
         db.collection("settings").doc("app").set({ counter: state.counter }, { merge: true });
         view = "dashboard";
     })
-    .catch(e => {
-        alert("❌ Failed to save job!\n\nError: " + e.message + "\n\nThis usually means Firestore Rules are blocking access.\nGo to Firebase Console → Firestore → Rules and set them to allow read/write.");
-    });
+    .catch(e => alert("❌ Failed to save job!\n\nError: " + e.message));
 }
 
 function attachHandlers() {
@@ -854,7 +867,6 @@ function attachHandlers() {
   const typeSelect = document.getElementById("f_type");
   const majorDaysInput = document.getElementById("f_majorDays"); 
   const majorDaysField = document.getElementById("majorDaysField");
-  
   if(startInput && typeSelect){
     const updatePreview = ()=>{
       const dp = document.getElementById("deliveryPreview"); 
@@ -876,50 +888,15 @@ function attachHandlers() {
         else { e.target.value = val; }
         updatePreview();
       });
-      majorDaysInput.addEventListener("change", function(e) {
-        let val = e.target.value.replace(/\D/g, '');
-        let num = parseInt(val, 10);
-        if (isNaN(num) || num < 5) { e.target.value = 5; } 
-        else if (num > 15) { e.target.value = 15; } 
-        else { e.target.value = num; }
-        updatePreview();
-      });
     }
     updatePreview();
   }
-  
   const searchInput = document.getElementById("searchInput");
   if(searchInput) searchInput.addEventListener("input", (e)=>{ searchTerm = e.target.value; updateSearchResults(); });
-  
   const vehicleInput = document.getElementById("f_vehicle");
   if(vehicleInput) vehicleInput.addEventListener("input", (e)=>{ e.target.value = e.target.value.toUpperCase().slice(0,10); });
-  
-  const countryCodeEl = document.getElementById("f_countryCode");
-  const phoneInputEl = document.getElementById("f_phone");
-  function updatePhoneLimit() {
-    if (countryCodeEl && phoneInputEl) {
-      const isIndia = countryCodeEl.value === "+91";
-      const maxLen = isIndia ? 10 : 15;
-      phoneInputEl.maxLength = maxLen;
-      phoneInputEl.placeholder = isIndia ? "10 digit mobile number" : "Mobile number (7-15 digits)";
-      const currentVal = phoneInputEl.value.replace(/\D/g, '');
-      if (currentVal.length > maxLen) phoneInputEl.value = currentVal.slice(0, maxLen);
-    }
-  }
-  if (countryCodeEl) countryCodeEl.addEventListener("change", updatePhoneLimit);
-  if (phoneInputEl) {
-    phoneInputEl.addEventListener("input", (e) => {
-      let val = e.target.value.replace(/\D/g, '');
-      const isIndia = countryCodeEl && countryCodeEl.value === "+91";
-      const maxLen = isIndia ? 10 : 15;
-      if (val.length > maxLen) val = val.slice(0, maxLen);
-      if (e.target.value !== val) e.target.value = val;
-    });
-    updatePhoneLimit();
-  }
 }
 
-// 🚀 START THE APP
 startRealtimeSync();
 checkAuth();
 </script>
