@@ -310,7 +310,7 @@ function updateSyncStatus(type, message) {
 function getTeamWorkload() {
   const workload = { "Team 1": 0, "Team 2": 0, "Team 3": 0, "Team 4": 0, "Team 5": 0 };
   state.jobs.forEach(j => {
-    if (j.status !== "Delivered" && workload[j.team] !== undefined) workload[j.team]++;
+    if (j.status !== "Delivered" && j.status !== "Deleted" && workload[j.team] !== undefined) workload[j.team]++;
   });
   return workload;
 }
@@ -372,7 +372,7 @@ function addDays(dateStr, days) { const d = new Date(dateStr); d.setDate(d.getDa
 function formatDate(dateStr) { if(!dateStr) return ""; const d = new Date(dateStr+"T00:00:00"); return d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}); }
 function rangeDates(start,end) { const dates=[]; let cur=new Date(start); const last=new Date(end); while(cur<=last){ dates.push(cur.toISOString().split("T")[0]); cur.setDate(cur.getDate()+1); } return dates; }
 function getDeliveryDate(jobType,startDate,majorDays) { if (jobType === "Emergency") return addDays(startDate, 1); if (jobType === "Minor") return addDays(startDate, 3); return addDays(startDate, majorDays || 5); }
-function getCapacityForDate(date, excludeId) { return state.jobs.filter(j=>{ if(j.id===excludeId) return false; if(j.status==="Delivered") return false; return rangeDates(j.startDate,j.deliveryDate).includes(date); }).length; }
+function getCapacityForDate(date, excludeId) { return state.jobs.filter(j=>{ if(j.id===excludeId) return false; if(j.status==="Delivered" || j.status==="Deleted") return false; return rangeDates(j.startDate,j.deliveryDate).includes(date); }).length; }
 
 function renderDateSelect(id, selectedDate) {
   let html = `<select id="${id}" style="width: 100%; background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 6px; padding: 10px 12px; color: #fff; font-size: 0.9rem;">`;
@@ -412,7 +412,7 @@ function render() {
 
   const alertBtn = document.getElementById("alertBtn");
   const today = todayStr();
-  const dueToday = state.jobs.filter(j=>j.deliveryDate===today && j.status!=="Delivered");
+  const dueToday = state.jobs.filter(j=>j.deliveryDate===today && j.status!=="Delivered" && j.status!=="Deleted");
   alertBtn.textContent = "🔔" + (dueToday.length?` (${dueToday.length})`:"");
   alertBtn.className = "tool no-print " + (dueToday.length ? "alert" : "gray");
   if(view==="alerts") alertBtn.classList.add("active");
@@ -479,7 +479,7 @@ function normalizeWorkItems(wi) {
 }
 
 function getVisibleJobs() {
-  let jobs = [...state.jobs].sort((a,b)=> a.startDate<b.startDate?1:-1);
+  let jobs = [...state.jobs].filter(j => j.status !== "Deleted").sort((a,b)=> a.startDate<b.startDate?1:-1);
   if(filter==="emergency") jobs = jobs.filter(j=>j.jobType==="Emergency");
   if(filter==="major") jobs = jobs.filter(j=>j.jobType==="Major");
   if(filter==="minor") jobs = jobs.filter(j=>j.jobType==="Minor");
@@ -617,7 +617,7 @@ function renderCalendar() {
   }
   html += `</div>`;
   if (selectedDay) {
-    const dayJobs = state.jobs.filter(j => rangeDates(j.startDate, j.deliveryDate).includes(selectedDay));
+    const dayJobs = state.jobs.filter(j => rangeDates(j.startDate, j.deliveryDate).includes(selectedDay) && j.status !== "Deleted");
     html += `<h3 style="margin-top:20px; font-size:0.9rem; color:var(--yellow)">Jobs on ${formatDate(selectedDay)}</h3>`;
     if (dayJobs.length === 0) html += `<div class="empty" style="padding:16px">No jobs.</div>`;
     else dayJobs.forEach((j, index) => { 
@@ -630,12 +630,24 @@ function changeMonth(delta) { calendarMonth += delta; if (calendarMonth < 0) { c
 function selectDay(dateStr) { selectedDay = selectedDay === dateStr ? null : dateStr; render(); }
 
 function renderReport() {
-  const now = new Date(); const monthJobs = state.jobs.filter(j=>{ const d = new Date(j.startDate); return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); });
-  return `<h2>Monthly Report</h2><div class="stats-grid"><div class="stat"><div class="val">${monthJobs.length}</div><div class="lbl">Total Jobs</div></div><div class="stat"><div class="val" style="color:#4ade80">${monthJobs.filter(j=>j.status==="Delivered").length}</div><div class="lbl">Delivered</div></div></div>`;
+  const now = new Date(); 
+  const monthJobs = state.jobs.filter(j=>{ const d = new Date(j.startDate); return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); });
+  
+  const deletedJobs = monthJobs.filter(j => j.status === "Deleted");
+  const activeJobs = monthJobs.filter(j => j.status !== "Deleted");
+  const deliveredJobs = activeJobs.filter(j => j.status === "Delivered");
+
+  return `<h2>Monthly Report</h2>
+  <div class="stats-grid">
+    <div class="stat"><div class="val">${monthJobs.length}</div><div class="lbl">Total Jobs (Month)</div></div>
+    <div class="stat"><div class="val" style="color:#4ade80">${deliveredJobs.length}</div><div class="lbl">Delivered</div></div>
+    <div class="stat"><div class="val" style="color:var(--yellow)">${activeJobs.length}</div><div class="lbl">Active Jobs</div></div>
+    <div class="stat"><div class="val" style="color:#ef4444">${deletedJobs.length}</div><div class="lbl">Deleted / Archived</div></div>
+  </div>`;
 }
 
 function renderAlerts() {
-  const today = todayStr(); const dueToday = state.jobs.filter(j=>j.deliveryDate===today && j.status!=="Delivered");
+  const today = todayStr(); const dueToday = state.jobs.filter(j=>j.deliveryDate===today && j.status!=="Delivered" && j.status!=="Deleted");
   let html = `<h2>Delivery Alerts &mdash; Due Today</h2>`;
   if(dueToday.length===0) return html + `<div class="empty">No vehicles due today.</div>`;
   dueToday.forEach((j, index)=>{ 
@@ -703,8 +715,11 @@ function executeDelete() {
   const pwd = document.getElementById('deletePasswordInput').value;
   if (pwd === DEFAULT_PASS) {
     if (db) {
-        db.collection("jobs").doc(jobToDelete).delete()
-          .then(() => { toast("✅ Job deleted - Syncing..."); closeDeleteModal(); })
+        db.collection("jobs").doc(jobToDelete).update({ 
+            status: "Deleted", 
+            deletedAt: firebase.firestore.FieldValue.serverTimestamp() 
+        })
+          .then(() => { toast("✅ Job archived for reports - Syncing..."); closeDeleteModal(); })
           .catch(e => toast("❌ Delete failed: " + e.message, true));
     }
   } else { toast("❌ Invalid password"); document.getElementById('deletePasswordInput').value = ''; document.getElementById('deletePasswordInput').focus(); }
@@ -929,29 +944,9 @@ function attachHandlers() {
     updatePhoneLimit();
   }
 }
-function renderReport() {
-  const now = new Date(); 
-  // Include ALL jobs (even deleted ones) for the monthly report
-  const monthJobs = state.jobs.filter(j=>{ 
-    const d = new Date(j.startDate); 
-    return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); 
-  });
-  
-  const deletedJobs = monthJobs.filter(j => j.status === "Deleted");
-  const activeJobs = monthJobs.filter(j => j.status !== "Deleted");
-  const deliveredJobs = activeJobs.filter(j => j.status === "Delivered");
 
-  return `<h2>Monthly Report</h2>
-  <div class="stats-grid">
-    <div class="stat"><div class="val">${monthJobs.length}</div><div class="lbl">Total Jobs (Month)</div></div>
-    <div class="stat"><div class="val" style="color:#4ade80">${deliveredJobs.length}</div><div class="lbl">Delivered</div></div>
-    <div class="stat"><div class="val" style="color:var(--yellow)">${activeJobs.length}</div><div class="lbl">Active Jobs</div></div>
-    <div class="stat"><div class="val" style="color:#ef4444">${deletedJobs.length}</div><div class="lbl">Deleted / Archived</div></div>
-  </div>`;
-}
 startRealtimeSync();
 checkAuth();
 </script>
 </body>
 </html>
-
