@@ -332,7 +332,7 @@ function startRealtimeSync() {
     db.collection("jobs").onSnapshot((snapshot) => {
         state.jobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         if (view === "search") updateSearchResults(); else render();
-        if (firebaseConnected) updateSyncStatus("connected", `✅ Live Sync Active - ${state.jobs.length} jobs`);
+        if (firebaseConnected) updateSyncStatus("connected", `✅ Live Sync Active `);
     }, (error) => {
         updateSyncStatus("error", "❌ Sync error: " + error.message);
     });
@@ -637,13 +637,34 @@ function renderReport() {
   const activeJobs = monthJobs.filter(j => j.status !== "Deleted");
   const deliveredJobs = activeJobs.filter(j => j.status === "Delivered");
 
-  return `<h2>Monthly Report</h2>
+  let html = `<h2>Monthly Report</h2>
   <div class="stats-grid">
     <div class="stat"><div class="val">${monthJobs.length}</div><div class="lbl">Total Jobs (Month)</div></div>
     <div class="stat"><div class="val" style="color:#4ade80">${deliveredJobs.length}</div><div class="lbl">Delivered</div></div>
     <div class="stat"><div class="val" style="color:var(--yellow)">${activeJobs.length}</div><div class="lbl">Active Jobs</div></div>
     <div class="stat"><div class="val" style="color:#ef4444">${deletedJobs.length}</div><div class="lbl">Deleted / Archived</div></div>
   </div>`;
+
+  if (deletedJobs.length > 0) {
+    html += `<h3 style="color:var(--yellow); margin-top: 24px; margin-bottom: 12px;">🗑️ Deleted / Archived Jobs This Month</h3>`;
+    html += `<div style="overflow-x:auto"><table><thead><tr><th>S.No</th><th>Job Card</th><th>Maker</th><th>Vehicle</th><th>Customer</th><th>Type</th><th>Team</th><th>Start</th><th>Delivery</th></tr></thead><tbody>`;
+    deletedJobs.forEach((j, index) => {
+      html += `<tr>
+        <td style="font-weight:700; color:var(--yellow); text-align:center;">${index + 1}</td>
+        <td style="font-family:monospace;color:var(--yellow)">${j.jobCardNo}</td>
+        <td>${j.vehicleMaker || '-'}</td>
+        <td><strong>${j.vehicleNo}</strong></td>
+        <td>${j.customerName}</td>
+        <td><span class="badge ${j.jobType==="Major"?"badge-major":j.jobType==="Minor"?"badge-minor":"badge-emergency"}">${j.jobType}</span></td>
+        <td>${j.team}</td>
+        <td>${formatDate(j.startDate)}</td>
+        <td>${formatDate(j.deliveryDate)}</td>
+      </tr>`;
+    });
+    html += `</tbody></table></div>`;
+  }
+
+  return html;
 }
 
 function renderAlerts() {
