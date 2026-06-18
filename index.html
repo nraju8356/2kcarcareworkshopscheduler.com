@@ -929,12 +929,6 @@ function attachHandlers() {
     updatePhoneLimit();
   }
 }
-
-startRealtimeSync();
-checkAuth();
-</script>
-</body>
-</html>
 function renderReport() {
   const now = new Date(); 
   // Include ALL jobs (even deleted ones) for the monthly report
@@ -955,3 +949,9 @@ function renderReport() {
     <div class="stat"><div class="val" style="color:#ef4444">${deletedJobs.length}</div><div class="lbl">Deleted / Archived</div></div>
   </div>`;
 }
+startRealtimeSync();
+checkAuth();
+</script>
+</body>
+</html>
+
