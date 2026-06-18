@@ -935,3 +935,23 @@ checkAuth();
 </script>
 </body>
 </html>
+function renderReport() {
+  const now = new Date(); 
+  // Include ALL jobs (even deleted ones) for the monthly report
+  const monthJobs = state.jobs.filter(j=>{ 
+    const d = new Date(j.startDate); 
+    return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); 
+  });
+  
+  const deletedJobs = monthJobs.filter(j => j.status === "Deleted");
+  const activeJobs = monthJobs.filter(j => j.status !== "Deleted");
+  const deliveredJobs = activeJobs.filter(j => j.status === "Delivered");
+
+  return `<h2>Monthly Report</h2>
+  <div class="stats-grid">
+    <div class="stat"><div class="val">${monthJobs.length}</div><div class="lbl">Total Jobs (Month)</div></div>
+    <div class="stat"><div class="val" style="color:#4ade80">${deliveredJobs.length}</div><div class="lbl">Delivered</div></div>
+    <div class="stat"><div class="val" style="color:var(--yellow)">${activeJobs.length}</div><div class="lbl">Active Jobs</div></div>
+    <div class="stat"><div class="val" style="color:#ef4444">${deletedJobs.length}</div><div class="lbl">Deleted / Archived</div></div>
+  </div>`;
+}
