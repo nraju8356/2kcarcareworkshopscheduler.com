@@ -63,7 +63,6 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Animated background gradient */
   body::before {
     content: '';
     position: fixed;
@@ -84,7 +83,6 @@
 
   #appContainer, .login-screen { position: relative; z-index: 1; }
   
-  /* ===== LIQUID GLASS CARD BASE ===== */
   .glass-card {
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
@@ -104,7 +102,6 @@
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
   }
 
-  /* ===== LOGIN SCREEN ===== */
   .login-screen { 
     position: fixed; inset: 0; 
     display: flex; align-items: center; justify-content: center; 
@@ -221,16 +218,15 @@
     font-weight: 500;
   }
 
-  /* ===== HEADER ===== */
   #appContainer { display: none; }
   
   header { 
-    padding: 24px 32px; 
+    padding: 20px 24px; 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
     flex-wrap: wrap; 
-    gap: 16px;
+    gap: 12px;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -243,7 +239,7 @@
   header h1 { 
     margin: 0; 
     font-family: 'Poppins', sans-serif;
-    font-size: 2rem; 
+    font-size: 1.6rem; 
     letter-spacing: -0.5px;
     font-weight: 800;
     background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.9) 100%);
@@ -253,10 +249,16 @@
   }
   
   header p { 
-    margin: 6px 0 0; 
+    margin: 4px 0 0; 
     color: var(--text-secondary); 
-    font-size: 0.9rem; 
+    font-size: 0.85rem; 
     font-weight: 400;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
   .logout-btn { 
@@ -264,10 +266,10 @@
     backdrop-filter: blur(10px);
     border: 1px solid var(--glass-border); 
     color: var(--text-primary); 
-    padding: 10px 20px; 
+    padding: 10px 16px; 
     border-radius: var(--radius-md); 
     cursor: pointer; 
-    font-size: 0.9rem; 
+    font-size: 0.85rem; 
     font-weight: 600;
     transition: var(--transition);
   }
@@ -278,15 +280,218 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   }
 
-  /* ===== TOOLBAR ===== */
+  /* Hamburger Menu Button */
+  .hamburger-btn {
+    display: none;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    transition: var(--transition);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .hamburger-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.05);
+  }
+
+  .hamburger-btn.active {
+    background: rgba(230, 57, 70, 0.2);
+    border-color: var(--primary);
+  }
+
+  .hamburger-icon {
+    width: 24px;
+    height: 2px;
+    background: var(--text-primary);
+    position: relative;
+    transition: var(--transition);
+  }
+
+  .hamburger-icon::before,
+  .hamburger-icon::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 2px;
+    background: var(--text-primary);
+    transition: var(--transition);
+  }
+
+  .hamburger-icon::before {
+    top: -7px;
+  }
+
+  .hamburger-icon::after {
+    top: 7px;
+  }
+
+  .hamburger-btn.active .hamburger-icon {
+    background: transparent;
+  }
+
+  .hamburger-btn.active .hamburger-icon::before {
+    transform: rotate(45deg);
+    top: 0;
+  }
+
+  .hamburger-btn.active .hamburger-icon::after {
+    transform: rotate(-45deg);
+    top: 0;
+  }
+
+  /* Mobile Menu Overlay */
+  .mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 998;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .mobile-menu-overlay.active {
+    display: block;
+    opacity: 1;
+  }
+
+  /* Mobile Menu */
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 85%;
+    max-width: 320px;
+    height: 100vh;
+    background: rgba(26, 26, 46, 0.98);
+    backdrop-filter: blur(30px);
+    border-left: 1px solid var(--glass-border);
+    z-index: 999;
+    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    padding: 100px 24px 24px;
+  }
+
+  .mobile-menu.active {
+    right: 0;
+  }
+
+  .mobile-menu-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .mobile-menu-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .mobile-menu-section {
+    margin-bottom: 32px;
+  }
+
+  .mobile-menu-section-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+
+  .mobile-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+    min-height: 56px;
+  }
+
+  .mobile-menu-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(4px);
+    border-color: rgba(255, 183, 3, 0.3);
+  }
+
+  .mobile-menu-item:active {
+    transform: scale(0.98);
+  }
+
+  .mobile-menu-item.active {
+    background: linear-gradient(135deg, rgba(230, 57, 70, 0.2) 0%, rgba(239, 71, 111, 0.1) 100%);
+    border-color: var(--primary);
+  }
+
+  .mobile-menu-icon {
+    font-size: 1.4rem;
+    width: 28px;
+    text-align: center;
+  }
+
+  .mobile-menu-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+  }
+
+  .mobile-menu-badge {
+    background: var(--gradient-accent);
+    color: #000;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  .mobile-menu-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .mobile-menu-filter .mobile-menu-item {
+    flex: 1;
+    min-width: calc(50% - 4px);
+    margin-bottom: 8px;
+    padding: 14px;
+  }
+
   .toolbar { 
-    padding: 16px 32px; 
+    padding: 12px 16px; 
     display: flex; 
-    gap: 10px; 
+    gap: 8px; 
     flex-wrap: wrap; 
     align-items: center;
     position: sticky;
-    top: 100px;
+    top: 80px;
     z-index: 99;
     background: rgba(26, 26, 46, 0.4);
     backdrop-filter: blur(20px);
@@ -298,19 +503,20 @@
     background: rgba(255, 255, 255, 0.06); 
     color: var(--text-secondary); 
     border: 1px solid var(--glass-border);
-    padding: 12px 20px; 
+    padding: 12px 16px; 
     border-radius: var(--radius-md); 
-    font-size: 0.9rem; 
+    font-size: 0.85rem; 
     font-weight: 600; 
     cursor: pointer; 
     display: flex; 
     align-items: center; 
-    gap: 8px;
+    gap: 6px;
     transition: var(--transition);
     position: relative;
     overflow: hidden;
     backdrop-filter: blur(10px);
     white-space: nowrap;
+    min-height: 44px;
   }
 
   button.tool::before {
@@ -329,6 +535,10 @@
     transform: translateY(-2px);
     background: rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  button.tool:active {
+    transform: scale(0.95);
   }
 
   button.tool.red { 
@@ -381,19 +591,18 @@
     }
   }
 
-  /* ===== MAIN CONTENT ===== */
   main { 
     max-width: 1400px; 
     margin: 0 auto; 
-    padding: 40px 32px;
+    padding: 24px 16px;
     position: relative;
   }
   
   h2 { 
     font-family: 'Poppins', sans-serif;
-    font-size: 2rem;
+    font-size: 1.6rem;
     font-weight: 800;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -406,23 +615,30 @@
     color: var(--text-muted); 
     border: 2px dashed var(--glass-border); 
     border-radius: var(--radius-lg); 
-    padding: 80px 32px;
+    padding: 60px 24px;
     background: rgba(255, 255, 255, 0.02);
     backdrop-filter: blur(10px);
   }
 
-  /* ===== TABLE ===== */
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow);
+  }
+
   table { 
     width: 100%; 
     border-collapse: separate;
     border-spacing: 0;
-    font-size: 0.92rem;
+    font-size: 0.88rem;
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(20px);
     border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--glass-shadow);
     border: 1px solid var(--glass-border);
+    min-width: 900px;
   }
   
   thead { 
@@ -431,9 +647,9 @@
   
   th { 
     text-align: left; 
-    padding: 18px 20px; 
+    padding: 16px 18px; 
     text-transform: uppercase; 
-    font-size: 0.75rem; 
+    font-size: 0.72rem; 
     letter-spacing: 1px;
     color: var(--text-secondary);
     font-weight: 700;
@@ -441,7 +657,7 @@
   }
   
   td { 
-    padding: 18px 20px; 
+    padding: 16px 18px; 
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     vertical-align: middle;
     transition: var(--transition-fast);
@@ -460,11 +676,10 @@
     border-left: 3px solid var(--primary);
   }
 
-  /* ===== BADGES ===== */
   .badge { 
-    padding: 6px 14px; 
+    padding: 6px 12px; 
     border-radius: 20px; 
-    font-size: 0.75rem; 
+    font-size: 0.72rem; 
     font-weight: 700; 
     display: inline-block;
     letter-spacing: 0.3px;
@@ -486,14 +701,13 @@
     color: #000; 
   }
 
-  /* ===== STATUS SELECT ===== */
   .status-select { 
-    font-size: 0.82rem; 
+    font-size: 0.8rem; 
     font-weight: 700; 
     border-radius: 20px; 
-    padding: 10px 18px; 
+    padding: 10px 16px; 
     border: none; 
-    min-width: 130px;
+    min-width: 120px;
     cursor: pointer;
     transition: var(--transition);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -518,13 +732,12 @@
     color: #fff; 
   }
 
-  /* ===== ICON BUTTONS ===== */
   .icon-btn { 
     background: rgba(255, 255, 255, 0.06); 
     border: 1px solid var(--glass-border); 
     color: var(--text-secondary); 
     cursor: pointer; 
-    padding: 12px 16px; 
+    padding: 12px; 
     border-radius: var(--radius-md); 
     font-size: 1.2rem; 
     display: inline-flex; 
@@ -544,6 +757,10 @@
     box-shadow: 0 8px 24px rgba(255, 183, 3, 0.3);
   }
   
+  .icon-btn:active {
+    transform: scale(0.9);
+  }
+  
   .icon-btn.danger:hover { 
     background: rgba(239, 71, 111, 0.15); 
     color: var(--danger); 
@@ -558,9 +775,8 @@
     box-shadow: 0 8px 24px rgba(79, 172, 254, 0.3);
   }
 
-  /* ===== CARDS ===== */
   .card { 
-    padding: 40px; 
+    padding: 32px 24px; 
     max-width: 700px;
     position: relative;
     overflow: hidden;
@@ -574,7 +790,7 @@
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
   }
 
-  .field { margin-bottom: 24px; display: block; }
+  .field { margin-bottom: 20px; display: block; }
   
   .field span { 
     display: block; 
@@ -590,12 +806,13 @@
     background: rgba(255, 255, 255, 0.05); 
     border: 1px solid var(--glass-border); 
     border-radius: var(--radius-md); 
-    padding: 14px 20px; 
+    padding: 14px 18px; 
     color: var(--text-primary); 
     font-size: 1rem;
     font-family: 'Inter', sans-serif;
     transition: var(--transition);
     backdrop-filter: blur(10px);
+    min-height: 48px;
   }
 
   .field select {
@@ -603,8 +820,8 @@
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 20px center;
-    padding-right: 48px;
+    background-position: right 18px center;
+    padding-right: 44px;
   }
 
   .field select option {
@@ -620,45 +837,60 @@
     transform: translateY(-2px);
   }
   
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   
   @media (max-width: 768px) { 
     .grid2 { grid-template-columns: 1fr; } 
-    .toolbar { padding: 12px 16px; } 
-    button.tool { padding: 10px 16px; font-size: 0.85rem; }
-    header { padding: 16px 20px; }
-    main { padding: 24px 16px; }
-    .card { padding: 28px 24px; }
-    h2 { font-size: 1.6rem; }
+    header { padding: 16px; }
+    header h1 { font-size: 1.3rem; }
+    main { padding: 16px 12px; }
+    .card { padding: 24px 20px; }
+    h2 { font-size: 1.4rem; }
+    
+    /* Show hamburger menu on mobile */
+    .hamburger-btn {
+      display: flex;
+    }
+    
+    .mobile-menu {
+      display: block;
+    }
+    
+    .mobile-menu-overlay {
+      display: block;
+    }
+    
+    /* Hide desktop toolbar on mobile */
+    .toolbar {
+      display: none;
+    }
   }
 
   @media (max-width: 480px) {
-    .toolbar { 
-      flex-direction: column; 
-      align-items: stretch;
+    .login-card {
+      padding: 36px 24px;
     }
-    button.tool {
-      justify-content: center;
-    }
-    #filterDate {
-      width: 100%;
-      margin-top: 8px;
+    .login-card h2 {
+      font-size: 1.8rem;
     }
     header h1 {
-      font-size: 1.5rem;
+      font-size: 1.2rem;
     }
-    .login-card {
-      padding: 36px 28px;
+    .logout-btn {
+      padding: 8px 12px;
+      font-size: 0.8rem;
+    }
+    .mobile-menu {
+      width: 90%;
     }
   }
 
-  /* ===== INFO BOXES ===== */
   .info-box { 
     background: rgba(255, 255, 255, 0.05); 
     border: 1px solid var(--glass-border); 
     border-radius: var(--radius-md); 
-    padding: 18px 24px; 
-    font-size: 0.92rem; 
+    padding: 16px 20px; 
+    font-size: 0.9rem; 
     margin-bottom: 20px;
     backdrop-filter: blur(10px);
   }
@@ -669,7 +901,6 @@
     box-shadow: 0 8px 24px rgba(255, 183, 3, 0.15);
   }
 
-  /* ===== BUTTONS ===== */
   .submit-btn { 
     width: 100%; 
     background: var(--gradient-primary);
@@ -686,6 +917,7 @@
     letter-spacing: 0.3px;
     position: relative;
     overflow: hidden;
+    min-height: 56px;
   }
 
   .submit-btn::before {
@@ -722,6 +954,7 @@
     font-size: 1rem;
     transition: var(--transition);
     backdrop-filter: blur(10px);
+    min-height: 56px;
   }
 
   .cancel-btn:hover {
@@ -730,7 +963,6 @@
     transform: translateY(-2px);
   }
 
-  /* ===== SEARCH ===== */
   .search-box { position: relative; margin-bottom: 24px; }
   
   .search-box input { 
@@ -739,10 +971,11 @@
     backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border); 
     border-radius: var(--radius-lg); 
-    padding: 18px 24px 18px 56px; 
+    padding: 16px 20px 16px 52px; 
     color: var(--text-primary); 
     font-size: 1rem;
     transition: var(--transition);
+    min-height: 56px;
   }
 
   .search-box input:focus {
@@ -753,8 +986,8 @@
   
   .search-box .icon { 
     position: absolute; 
-    left: 20px; 
-    top: 20px; 
+    left: 18px; 
+    top: 18px; 
     color: var(--text-muted); 
     font-size: 1.3rem; 
   }
@@ -764,7 +997,7 @@
     backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border); 
     border-radius: var(--radius-lg); 
-    padding: 24px; 
+    padding: 20px; 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
@@ -783,16 +1016,15 @@
   .search-result .jobno { 
     color: var(--accent); 
     font-family: 'Poppins', monospace; 
-    font-size: 0.92rem;
+    font-size: 0.9rem;
     font-weight: 700;
   }
 
-  /* ===== STATS ===== */
   .stats-grid { 
     display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
-    gap: 16px; 
-    margin-bottom: 32px; 
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+    gap: 12px; 
+    margin-bottom: 24px; 
   }
   
   .stat { 
@@ -800,7 +1032,7 @@
     backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg); 
-    padding: 28px 20px; 
+    padding: 24px 16px; 
     text-align: center;
     transition: var(--transition);
   }
@@ -812,7 +1044,7 @@
   }
   
   .stat .val { 
-    font-size: 2rem; 
+    font-size: 1.8rem; 
     font-weight: 800;
     font-family: 'Poppins', sans-serif;
     background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
@@ -822,7 +1054,7 @@
   } 
   
   .stat .lbl { 
-    font-size: 0.8rem; 
+    font-size: 0.75rem; 
     color: var(--text-muted); 
     margin-top: 8px;
     text-transform: uppercase;
@@ -830,12 +1062,11 @@
     font-weight: 600;
   }
 
-  /* ===== ALERT ROW ===== */
   .alert-row { 
     background: linear-gradient(135deg, rgba(230, 57, 70, 0.1) 0%, rgba(239, 71, 111, 0.05) 100%);
     border: 1px solid rgba(230, 57, 70, 0.3); 
     border-radius: var(--radius-lg); 
-    padding: 24px; 
+    padding: 20px; 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
@@ -850,11 +1081,10 @@
     box-shadow: 0 8px 32px rgba(230, 57, 70, 0.2);
   }
 
-  /* ===== CALENDAR ===== */
   .cal-toolbar { 
     display: flex; 
     align-items: center; 
-    gap: 12px; 
+    gap: 10px; 
     margin-bottom: 20px; 
     flex-wrap: wrap; 
   }
@@ -865,10 +1095,11 @@
     border: 1px solid var(--glass-border); 
     border-radius: var(--radius-md); 
     color: var(--text-primary); 
-    font-size: 0.92rem; 
-    padding: 12px 18px; 
+    font-size: 0.9rem; 
+    padding: 12px 16px; 
     cursor: pointer;
     transition: var(--transition);
+    min-height: 48px;
   }
 
   .cal-toolbar button.navbtn:hover {
@@ -879,9 +1110,9 @@
   .cal-weekdays { 
     display: grid; 
     grid-template-columns: repeat(7, 1fr); 
-    gap: 8px; 
+    gap: 6px; 
     text-align: center; 
-    font-size: 0.75rem; 
+    font-size: 0.7rem; 
     color: var(--text-muted);
     text-transform: uppercase; 
     font-weight: 700; 
@@ -892,11 +1123,11 @@
   .cal-grid { 
     display: grid; 
     grid-template-columns: repeat(7, 1fr); 
-    gap: 8px; 
+    gap: 6px; 
   }
   
   .cal-cell { 
-    min-height: 80px; 
+    min-height: 70px; 
     border-radius: var(--radius-md); 
     border: 1px solid var(--glass-border); 
     background: rgba(255, 255, 255, 0.04);
@@ -938,7 +1169,7 @@
   }
   
   .cal-cell .num { 
-    font-size: 1rem; 
+    font-size: 0.95rem; 
     font-weight: 700; 
   } 
   
@@ -948,9 +1179,9 @@
   }
   
   .cal-cell .cnt { 
-    font-size: 0.75rem; 
+    font-size: 0.7rem; 
     font-weight: 700; 
-    margin-top: 6px; 
+    margin-top: 4px; 
   } 
   
   .cal-cell .cnt.ok { color: var(--success); } 
@@ -961,7 +1192,7 @@
     backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border); 
     border-radius: var(--radius-lg); 
-    padding: 20px; 
+    padding: 18px; 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
@@ -976,11 +1207,10 @@
     transform: translateX(4px);
   }
 
-  /* ===== SYNC STATUS ===== */
   .sync-status { 
     text-align: center; 
-    font-size: 0.85rem; 
-    padding: 12px 24px; 
+    font-size: 0.82rem; 
+    padding: 12px 20px; 
     border-top: 1px solid var(--glass-border); 
     font-weight: 600;
     letter-spacing: 0.3px;
@@ -1002,18 +1232,17 @@
     color: var(--accent); 
   }
 
-  /* ===== TOAST ===== */
   .toast { 
     position: fixed; 
-    top: 24px; 
-    right: 24px; 
+    top: 20px; 
+    right: 20px; 
+    left: 20px;
     background: linear-gradient(135deg, #06d6a0 0%, #059669 100%);
     color: #fff; 
     font-weight: 700; 
-    padding: 20px 32px; 
+    padding: 18px 24px; 
     border-radius: var(--radius-lg); 
-    max-width: 400px; 
-    font-size: 1rem; 
+    font-size: 0.95rem; 
     z-index: 10000; 
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 12px 40px rgba(6, 214, 160, 0.4);
@@ -1047,7 +1276,6 @@
     box-shadow: 0 12px 40px rgba(239, 71, 111, 0.4);
   }
 
-  /* ===== MODAL ===== */
   .modal-bg { 
     position: fixed; 
     inset: 0; 
@@ -1057,7 +1285,7 @@
     align-items: center; 
     justify-content: center; 
     z-index: 200; 
-    padding: 24px;
+    padding: 20px;
     animation: fadeIn 0.3s ease;
   }
 
@@ -1073,7 +1301,7 @@
     border-radius: var(--radius-xl); 
     max-width: 480px; 
     width: 100%; 
-    padding: 40px; 
+    padding: 32px 24px; 
     position: relative; 
     max-height: 90vh; 
     overflow-y: auto;
@@ -1089,8 +1317,8 @@
   
   .modal .close { 
     position: absolute; 
-    top: 20px; 
-    right: 20px; 
+    top: 16px; 
+    right: 16px; 
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid var(--glass-border);
     border-radius: 50%;
@@ -1114,9 +1342,9 @@
   
   .modal h2 { 
     font-family: 'Poppins', sans-serif;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 800;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
     background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.9) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1127,8 +1355,8 @@
     display: flex; 
     justify-content: space-between; 
     border-bottom: 1px solid var(--glass-border); 
-    padding: 16px 0; 
-    font-size: 0.95rem;
+    padding: 14px 0; 
+    font-size: 0.92rem;
     transition: var(--transition-fast);
   }
 
@@ -1148,7 +1376,7 @@
   }
 
   .print-btn { 
-    margin-top: 24px; 
+    margin-top: 20px; 
     width: 100%; 
     background: var(--gradient-primary);
     color: #fff; 
@@ -1161,6 +1389,7 @@
     font-size: 1.05rem;
     transition: var(--transition);
     box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+    min-height: 56px;
   }
 
   .print-btn:hover {
@@ -1184,6 +1413,7 @@
     font-size: 1.05rem;
     transition: var(--transition);
     box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
+    min-height: 56px;
   }
 
   .whatsapp-btn:hover {
@@ -1193,7 +1423,7 @@
 
   .edit-modal-content { 
     background: rgba(255, 255, 255, 0.03);
-    padding: 32px; 
+    padding: 24px 20px; 
     border-radius: var(--radius-lg); 
     border: 1px solid var(--glass-border);
   }
@@ -1216,22 +1446,20 @@
     50% { opacity: 0.5; }
   }
 
-  /* ===== FOOTER ===== */
   footer { 
     text-align: center; 
-    font-size: 0.82rem; 
+    font-size: 0.8rem; 
     color: var(--text-muted); 
-    padding: 24px; 
+    padding: 20px; 
     border-top: 1px solid var(--glass-border);
     font-weight: 500;
     letter-spacing: 0.3px;
     backdrop-filter: blur(10px);
   }
 
-  /* ===== SCROLLBAR ===== */
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
   }
 
   ::-webkit-scrollbar-track {
@@ -1240,29 +1468,26 @@
 
   ::-webkit-scrollbar-thumb {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 5px;
+    border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
   }
 
-  /* ===== PRINT ===== */
   @media print {
-    .no-print, header, .toolbar, footer, #toastArea, main, #deleteModal, #editModal { display: none !important; }
+    .no-print, header, .toolbar, footer, #toastArea, main, #deleteModal, #editModal, .mobile-menu, .mobile-menu-overlay, .hamburger-btn { display: none !important; }
     .modal-bg { position: static !important; background: #ffffff !important; display: block !important; inset: auto !important; padding: 0 !important; margin: 0 !important; }
-    .modal { box-shadow: none !important; border: 1px solid #000 !important; max-width: 100% !important; width: 100% !important; color: #000 !important; background: #fff !important; padding: 32px !important; }
+    .modal { box-shadow: none !important; border: 1px solid #000 !important; max-width: 100% !important; width: 100% !important; color: #000 !important; background: #fff !important; padding: 24px !important; }
     .modal * { color: #000 !important; }
     .modal .close, .modal .print-btn, .modal .whatsapp-btn { display: none !important; }
   }
 
-  /* ===== SELECTION ===== */
   ::selection {
     background: rgba(255, 183, 3, 0.3);
     color: var(--text-primary);
   }
 
-  /* ===== TOUCH DEVICES ===== */
   @media (hover: none) {
     button.tool:hover {
       transform: none;
@@ -1275,23 +1500,21 @@
     }
   }
 
-  /* ===== TABLET OPTIMIZATION ===== */
   @media (min-width: 769px) and (max-width: 1024px) {
     main {
-      padding: 32px 28px;
+      padding: 24px 20px;
     }
     .card {
-      padding: 32px 28px;
+      padding: 28px 24px;
     }
     table {
-      font-size: 0.88rem;
+      font-size: 0.85rem;
     }
     th, td {
       padding: 14px 16px;
     }
   }
 
-  /* ===== LARGE SCREENS ===== */
   @media (min-width: 1400px) {
     main {
       max-width: 1600px;
@@ -1317,12 +1540,100 @@
 <div id="appContainer">
   <header class="no-print">
     <div><h1>2K CAR CARE</h1><p>Workshop Scheduler & Job Card System</p></div>
-    <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
-      <div><p>Today: <strong id="todayLabel"></strong></p><p id="saveStatus" style="color:rgba(255,183,3,0.8);font-size:0.75rem;"></p></div>
-      <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    <div class="header-right">
+      <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+        <div><p>Today: <strong id="todayLabel"></strong></p><p id="saveStatus" style="color:rgba(255,183,3,0.8);font-size:0.75rem;"></p></div>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+      </div>
+      <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMobileMenu()">
+        <span class="hamburger-icon"></span>
+      </button>
     </div>
   </header>
 
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header">
+      <div style="font-size: 2rem;">🚗</div>
+      <div class="mobile-menu-title">Menu</div>
+    </div>
+
+    <div class="mobile-menu-section">
+      <div class="mobile-menu-section-title">Quick Actions</div>
+      <div class="mobile-menu-item" onclick="changeView('add'); toggleMobileMenu();">
+        <span class="mobile-menu-icon">➕</span>
+        <span class="mobile-menu-label">Add Job</span>
+      </div>
+      <div class="mobile-menu-item" onclick="changeView('search'); toggleMobileMenu();">
+        <span class="mobile-menu-icon">🔍</span>
+        <span class="mobile-menu-label">Search</span>
+      </div>
+      <div class="mobile-menu-item" onclick="changeView('dashboard'); toggleMobileMenu();">
+        <span class="mobile-menu-icon">↻</span>
+        <span class="mobile-menu-label">Refresh</span>
+      </div>
+    </div>
+
+    <div class="mobile-menu-section">
+      <div class="mobile-menu-section-title">Views</div>
+      <div class="mobile-menu-item" onclick="changeView('capacity'); toggleMobileMenu();">
+        <span class="mobile-menu-icon">📊</span>
+        <span class="mobile-menu-label">Capacity</span>
+      </div>
+      <div class="mobile-menu-item" onclick="changeView('calendar'); toggleMobileMenu();">
+        <span class="mobile-menu-icon">📅</span>
+        <span class="mobile-menu-label">Calendar</span>
+      </div>
+      <div class="mobile-menu-item" onclick="changeView('report'); toggleMobileMenu();">
+        <span class="mobile-menu-icon">📄</span>
+        <span class="mobile-menu-label">Report</span>
+      </div>
+      <div class="mobile-menu-item" onclick="changeView('alerts'); toggleMobileMenu();">
+        <span class="mobile-menu-icon">🔔</span>
+        <span class="mobile-menu-label">Alerts</span>
+        <span class="mobile-menu-badge" id="mobileAlertBadge" style="display:none">0</span>
+      </div>
+    </div>
+
+    <div class="mobile-menu-section">
+      <div class="mobile-menu-section-title">Filters</div>
+      <div class="mobile-menu-filter">
+        <div class="mobile-menu-item" onclick="setFilter('emergency'); toggleMobileMenu();">
+          <span class="mobile-menu-icon">🚨</span>
+          <span class="mobile-menu-label">Emergency</span>
+        </div>
+        <div class="mobile-menu-item" onclick="setFilter('major'); toggleMobileMenu();">
+          <span class="mobile-menu-icon">🔧</span>
+          <span class="mobile-menu-label">Major</span>
+        </div>
+        <div class="mobile-menu-item" onclick="setFilter('minor'); toggleMobileMenu();">
+          <span class="mobile-menu-icon">🔩</span>
+          <span class="mobile-menu-label">Minor</span>
+        </div>
+        <div class="mobile-menu-item" onclick="setWorkTypeFilter('denting'); toggleMobileMenu();">
+          <span class="mobile-menu-icon">🔨</span>
+          <span class="mobile-menu-label">Denting</span>
+        </div>
+        <div class="mobile-menu-item" onclick="setWorkTypeFilter('painting'); toggleMobileMenu();">
+          <span class="mobile-menu-icon">🎨</span>
+          <span class="mobile-menu-label">Painting</span>
+        </div>
+        <div class="mobile-menu-item" onclick="setWorkTypeFilter('polishing'); toggleMobileMenu();">
+          <span class="mobile-menu-icon">✨</span>
+          <span class="mobile-menu-label">Polishing</span>
+        </div>
+      </div>
+      <div class="mobile-menu-item" onclick="clearFilters(); toggleMobileMenu();" style="margin-top: 8px;">
+        <span class="mobile-menu-icon">❌</span>
+        <span class="mobile-menu-label">Clear Filters</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Desktop Toolbar -->
   <div class="toolbar no-print">
     <button class="tool red" onclick="changeView('add')">+ Add Job</button>
     <button class="tool red" onclick="changeView('search')">🔍 Search</button>
@@ -1336,7 +1647,7 @@
     <button class="tool gray" onclick="setWorkTypeFilter('painting')">🎨 Painting</button>
     <button class="tool gray" onclick="setWorkTypeFilter('polishing')">✨ Polishing</button>
     <button class="tool gray" onclick="clearFilters()">Clear</button>
-    <select id="filterDate" style="background: rgba(255,255,255,0.06); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 12px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 140px; backdrop-filter: blur(10px);" onchange="setDateFilter(this.value)">
+    <select id="filterDate" style="background: rgba(255,255,255,0.06); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 12px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 130px;" onchange="setDateFilter(this.value)">
       <option value="all" style="color:#000;background:#fff">All Dates</option>
       <option value="today" style="color:#000;background:#fff">Due Today</option>
       <option value="week" style="color:#000;background:#fff">Due This Week</option>
@@ -1354,9 +1665,9 @@
     <div class="modal">
       <button class="close" onclick="closeDeleteModal()">✕</button>
       <h2>⚠️ Confirm Deletion</h2>
-      <p style="color:var(--text-secondary); margin-bottom:24px;">Enter admin password to permanently delete this job card.</p>
+      <p style="color:var(--text-secondary); margin-bottom:20px;">Enter admin password to permanently delete this job card.</p>
       <div class="field">
-        <input type="password" id="deletePasswordInput" placeholder="Enter Admin Password" style="width:100%; padding:16px; margin-bottom:24px; border-radius:12px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:#fff; font-size:1rem;">
+        <input type="password" id="deletePasswordInput" placeholder="Enter Admin Password" style="width:100%; padding:14px; margin-bottom:20px; border-radius:12px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:#fff; font-size:1rem;">
       </div>
       <button class="submit-btn" onclick="executeDelete()" style="background: linear-gradient(135deg, #ef476f 0%, #c9184a 100%);">🗑️ Delete Job</button>
     </div>
@@ -1379,15 +1690,15 @@
           <label class="field"><span>Phone Number</span>
             <div style="display: flex; gap: 10px;">
               <select id="edit_countryCode" style="width: 120px;">
-                <option value="+91" style="color:#000;background:#fff">🇮🇳 +91</option>
+                <option value="+91" style="color:#000;background:#fff">🇮 +91</option>
                 <option value="+971" style="color:#000;background:#fff">🇦🇪 +971</option>
-                <option value="+968" style="color:#000;background:#fff">🇴 +968</option>
+                <option value="+968" style="color:#000;background:#fff">🇴🇲 +968</option>
                 <option value="+966" style="color:#000;background:#fff">🇸🇦 +966</option>
                 <option value="+974" style="color:#000;background:#fff">🇶 +974</option>
                 <option value="+1" style="color:#000;background:#fff">🇺 +1</option>
                 <option value="+44" style="color:#000;background:#fff">🇬🇧 +44</option>
-                <option value="+92" style="color:#000;background:#fff">🇵 +92</option>
-                <option value="+880" style="color:#000;background:#fff">🇧🇩 +880</option>
+                <option value="+92" style="color:#000;background:#fff">🇵🇰 +92</option>
+                <option value="+880" style="color:#000;background:#fff">🇧 +880</option>
               </select>
               <input id="edit_phone" maxlength="10" inputmode="numeric">
             </div>
@@ -1546,7 +1857,7 @@ function getDeliveryDate(jobType,startDate,majorDays) { if (jobType === "Emergen
 function getCapacityForDate(date, excludeId) { return state.jobs.filter(j=>{ if(j.id===excludeId) return false; if(j.status==="Delivered") return false; return rangeDates(j.startDate,j.deliveryDate).includes(date); }).length; }
 
 function renderDateSelect(id, selectedDate) {
-  let html = `<select id="${id}" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; padding: 14px 20px; color: #fff; font-size: 1rem;">`;
+  let html = `<select id="${id}" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; padding: 14px 18px; color: #fff; font-size: 1rem; min-height: 48px;">`;
   for (let i = 0; i < 30; i++) {
     const d = addDays(todayStr(), i); const count = getCapacityForDate(d, null); const remaining = CAPACITY_PER_DAY - count;
     let statusText = remaining > 0 ? `(${remaining} slots avail)` : '(FULL)';
@@ -1564,6 +1875,24 @@ function clearFilters() {
   view = "dashboard"; render(); 
 }
 function setDateFilter(val) { dateFilter = val; view = "dashboard"; render(); }
+
+// Mobile Menu Toggle
+function toggleMobileMenu() {
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+  
+  hamburgerBtn.classList.toggle('active');
+  mobileMenu.classList.toggle('active');
+  mobileMenuOverlay.classList.toggle('active');
+  
+  // Prevent body scroll when menu is open
+  if (mobileMenu.classList.contains('active')) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = '';
+  }
+}
 
 function render() {
   document.getElementById("todayLabel").textContent = formatDate(todayStr());
@@ -1587,6 +1916,15 @@ function render() {
   alertBtn.textContent = "🔔" + (dueToday.length?` (${dueToday.length})`:"");
   alertBtn.className = "tool no-print " + (dueToday.length ? "alert" : "gray");
   if(view==="alerts") alertBtn.classList.add("active");
+
+  // Update mobile alert badge
+  const mobileAlertBadge = document.getElementById('mobileAlertBadge');
+  if (dueToday.length > 0) {
+    mobileAlertBadge.textContent = dueToday.length;
+    mobileAlertBadge.style.display = 'inline-block';
+  } else {
+    mobileAlertBadge.style.display = 'none';
+  }
 
   const activeEl = document.activeElement;
   let inputStates = {};
@@ -1682,7 +2020,7 @@ function renderWorkTags(job) {
     const color = isDone ? 'var(--success)' : 'var(--accent)';
     const check = isDone ? '✅ ' : ''; 
     const strike = isDone ? 'text-decoration: line-through; opacity: 0.8;' : '';
-    return `<span onclick="toggleWorkItem('${job.id}', ${idx})" style="background:${bg}; border:1px solid ${border}; color:${color}; padding:6px 12px; border-radius:20px; font-size:0.78rem; white-space:nowrap; cursor:pointer; user-select:none; ${strike}; transition: all 0.3s ease; font-weight:600;">${check}${item.name}</span>`;
+    return `<span onclick="toggleWorkItem('${job.id}', ${idx})" style="background:${bg}; border:1px solid ${border}; color:${color}; padding:6px 12px; border-radius:20px; font-size:0.75rem; white-space:nowrap; cursor:pointer; user-select:none; ${strike}; transition: all 0.3s ease; font-weight:600;">${check}${item.name}</span>`;
   }).join(' ');
   return `<div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;">${tags}</div>`;
 }
@@ -1702,7 +2040,7 @@ function renderDashboard() {
   const jobs = getVisibleJobs(); const today = todayStr();
   let html = `<h2>Dashboard</h2>`;
   if(jobs.length===0){ return html + `<div class="empty">No job cards found. Click '+ Add Job' to create one.</div>`; }
-  html += `<div style="overflow-x:auto"><table><thead><tr><th>S.No</th><th>Job Card</th><th>Maker</th><th>Vehicle</th><th>Customer</th><th>Type</th><th>Team</th><th>Start</th><th>Delivery</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+  html += `<div class="table-wrapper"><table><thead><tr><th>S.No</th><th>Job Card</th><th>Maker</th><th>Vehicle</th><th>Customer</th><th>Type</th><th>Team</th><th>Start</th><th>Delivery</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
   jobs.forEach((j, index)=>{
     html += `<tr class="${j.deliveryDate===today && j.status!=="Delivered" ? "due-today" : ""}">
       <td style="font-weight:800; color:var(--accent); text-align:center; font-family:'Poppins',sans-serif;">${index + 1}</td>
@@ -1738,7 +2076,7 @@ function renderAddForm() {
       <label class="field"><span>Vehicle Maker *</span><select id="f_maker" required><option value="">Select Maker</option>${VEHICLE_MAKERS.map(m=>`<option value="${m}" style="color:#000;background:#fff">${m}</option>`).join("")}</select></label>
       <label class="field"><span>Vehicle Number *</span><input id="f_vehicle" placeholder="e.g. AP16AB1234" maxlength="10"></label>
       <label class="field"><span>Customer Name *</span><input id="f_customer" placeholder="e.g. Ramesh Kumar"></label>
-      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 10px;"><select id="f_countryCode" style="width: 120px;"><option value="+91" style="color:#000;background:#fff">🇮 +91</option><option value="+971" style="color:#000;background:#fff">🇦🇪 +971</option><option value="+968" style="color:#000;background:#fff">🇴🇲 +968</option><option value="+966" style="color:#000;background:#fff">🇸🇦 +966</option><option value="+974" style="color:#000;background:#fff">🇶🇦 +974</option><option value="+1" style="color:#000;background:#fff">🇺🇸 +1</option><option value="+44" style="color:#000;background:#fff">🇬🇧 +44</option><option value="+92" style="color:#000;background:#fff">🇵 +92</option><option value="+880" style="color:#000;background:#fff">🇧🇩 +880</option></select><input id="f_phone" placeholder="10 digit number" maxlength="10" inputmode="numeric" style="flex:1;"></div></label>
+      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 10px;"><select id="f_countryCode" style="width: 120px;"><option value="+91" style="color:#000;background:#fff">🇮🇳 +91</option><option value="+971" style="color:#000;background:#fff">🇦🇪 +971</option><option value="+968" style="color:#000;background:#fff">🇴🇲 +968</option><option value="+966" style="color:#000;background:#fff">🇸 +966</option><option value="+974" style="color:#000;background:#fff">🇶🇦 +974</option><option value="+1" style="color:#000;background:#fff">🇺🇸 +1</option><option value="+44" style="color:#000;background:#fff">🇬🇧 +44</option><option value="+92" style="color:#000;background:#fff">🇵🇰 +92</option><option value="+880" style="color:#000;background:#fff">🇧🇩 +880</option></select><input id="f_phone" placeholder="10 digit number" maxlength="10" inputmode="numeric" style="flex:1;"></div></label>
       <label class="field"><span>Job Type</span><select id="f_type"><option value="Emergency" style="color:#000;background:#fff">Emergency (1 day)</option><option value="Minor" style="color:#000;background:#fff">Minor Job (3 days)</option><option value="Major" style="color:#000;background:#fff">Major Job (5-15 days)</option></select></label>
       <label class="field" id="majorDaysField"><span>Major Job Duration (5-15 days)</span><input type="number" id="f_majorDays" min="5" max="15" value="5" inputmode="numeric"></label>
       <label class="field"><span>Assigned Team</span><select id="f_team">${teamOptions}</select></label>
@@ -1772,7 +2110,7 @@ function renderCapacity() {
   for (let i = 0; i < 30; i++) { const d = addDays(todayStr(), i); dateOptions += `<option value="${d}" ${d === capacityCheckDate ? 'selected' : ''} style="color:#000;background:#fff">${formatDate(d)} (${getCapacityForDate(d, null)}/${CAPACITY_PER_DAY})</option>`; }
   const workload = getTeamWorkload();
   let teamStats = ''; TEAMS.forEach(t => { teamStats += `<div class="stat"><div class="val">${workload[t]}</div><div class="lbl">${t}</div></div>`; });
-  return `<h2>Capacity & Team Workload</h2><div class="card glass-card"><h3 style="font-size:0.95rem; color:var(--text-muted); margin-bottom:20px; font-family:'Poppins',sans-serif;">Current Active Jobs per Team</h3><div class="stats-grid">${teamStats}</div><label class="field" style="margin-top:28px"><span>Check daily capacity for date</span><select id="capacityDate" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; padding: 14px; color: #fff;" onchange="updateCapacityDate(this.value)">${dateOptions}</select></label><div class="stats-grid" style="margin-top:24px"><div class="stat"><div class="val">${count}</div><div class="lbl">Scheduled</div></div><div class="stat"><div class="val">${CAPACITY_PER_DAY}</div><div class="lbl">Capacity</div></div><div class="stat"><div class="val" style="color:${remaining>0?'var(--success)':'var(--danger)'}">${remaining}</div><div class="lbl">Remaining</div></div></div></div>`;
+  return `<h2>Capacity & Team Workload</h2><div class="card glass-card"><h3 style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px; font-family:'Poppins',sans-serif;">Current Active Jobs per Team</h3><div class="stats-grid">${teamStats}</div><label class="field" style="margin-top:24px"><span>Check daily capacity for date</span><select id="capacityDate" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; padding: 14px; color: #fff;" onchange="updateCapacityDate(this.value)">${dateOptions}</select></label><div class="stats-grid" style="margin-top:20px"><div class="stat"><div class="val">${count}</div><div class="lbl">Scheduled</div></div><div class="stat"><div class="val">${CAPACITY_PER_DAY}</div><div class="lbl">Capacity</div></div><div class="stat"><div class="val" style="color:${remaining>0?'var(--success)':'var(--danger)'}">${remaining}</div><div class="lbl">Remaining</div></div></div></div>`;
 }
 function updateCapacityDate(val) { capacityCheckDate = val; render(); }
 
@@ -1789,8 +2127,8 @@ function renderCalendar() {
   html += `</div>`;
   if (selectedDay) {
     const dayJobs = state.jobs.filter(j => rangeDates(j.startDate, j.deliveryDate).includes(selectedDay));
-    html += `<h3 style="margin-top:32px; font-size:1.1rem; color:var(--accent); font-family:'Poppins',sans-serif;">Jobs on ${formatDate(selectedDay)}</h3>`;
-    if (dayJobs.length === 0) html += `<div class="empty" style="padding:24px">No jobs.</div>`;
+    html += `<h3 style="margin-top:28px; font-size:1rem; color:var(--accent); font-family:'Poppins',sans-serif;">Jobs on ${formatDate(selectedDay)}</h3>`;
+    if (dayJobs.length === 0) html += `<div class="empty" style="padding:20px">No jobs.</div>`;
     else dayJobs.forEach((j, index) => { 
       html += `<div class="day-detail"><div style="display:flex; align-items:center; gap:14px;"><span style="background:var(--gradient-accent); color:#000; font-weight:800; padding:8px 16px; border-radius:20px; font-family:'Poppins',sans-serif;">${index + 1}</span><div><div style="font-family:'Poppins',monospace;color:var(--accent); font-weight:700;">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div>${renderWorkTags(j)}</div></div><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div>`; 
     });
@@ -1810,7 +2148,7 @@ function renderAlerts() {
   let html = `<h2>Delivery Alerts — Due Today</h2>`;
   if(dueToday.length===0) return html + `<div class="empty">No vehicles due today.</div>`;
   dueToday.forEach((j, index)=>{ 
-    html += `<div class="alert-row"><div style="display:flex; align-items:center; gap:14px;"><span style="background:var(--gradient-accent); color:#000; font-weight:800; padding:8px 16px; border-radius:20px; font-family:'Poppins',sans-serif;">${index + 1}</span><div><div class="jobno">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div><div style="font-size:0.82rem;color:var(--text-secondary)">${j.jobType} job · ${j.team} · Phone: ${j.phone||"-"}</div>${renderWorkTags(j)}</div></div><div><select class="status-select ${statusClass(j.status)}" onchange="updateStatus('${j.id}',this.value)"><option value="In Progress" ${j.status==="In Progress"?"selected":""}>In Progress</option><option value="Ready" ${j.status==="Ready"?"selected":""}>Ready</option><option value="Delivered" ${j.status==="Delivered"?"selected":""}>Delivered</option></select> <button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div></div>`; 
+    html += `<div class="alert-row"><div style="display:flex; align-items:center; gap:14px;"><span style="background:var(--gradient-accent); color:#000; font-weight:800; padding:8px 16px; border-radius:20px; font-family:'Poppins',sans-serif;">${index + 1}</span><div><div class="jobno">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div><div style="font-size:0.8rem;color:var(--text-secondary)">${j.jobType} job · ${j.team} · Phone: ${j.phone||"-"}</div>${renderWorkTags(j)}</div></div><div><select class="status-select ${statusClass(j.status)}" onchange="updateStatus('${j.id}',this.value)"><option value="In Progress" ${j.status==="In Progress"?"selected":""}>In Progress</option><option value="Ready" ${j.status==="Ready"?"selected":""}>Ready</option><option value="Delivered" ${j.status==="Delivered"?"selected":""}>Delivered</option></select> <button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div></div>`; 
   });
   return html;
 }
