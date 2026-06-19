@@ -98,7 +98,7 @@
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 1px;
+    height: 2px;
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
   }
 
@@ -293,7 +293,8 @@
     transition: var(--transition);
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 1001;
+    flex-shrink: 0;
   }
 
   .hamburger-btn:hover {
@@ -596,6 +597,7 @@
     margin: 0 auto; 
     padding: 24px 16px;
     position: relative;
+    z-index: 10;
   }
   
   h2 { 
@@ -1690,7 +1692,7 @@
           <label class="field"><span>Phone Number</span>
             <div style="display: flex; gap: 10px;">
               <select id="edit_countryCode" style="width: 120px;">
-                <option value="+91" style="color:#000;background:#fff">🇮 +91</option>
+                <option value="+91" style="color:#000;background:#fff">🇮🇳 +91</option>
                 <option value="+971" style="color:#000;background:#fff">🇦🇪 +971</option>
                 <option value="+968" style="color:#000;background:#fff">🇴🇲 +968</option>
                 <option value="+966" style="color:#000;background:#fff">🇸🇦 +966</option>
@@ -1866,15 +1868,56 @@ function renderDateSelect(id, selectedDate) {
   return html + `</select>`;
 }
 
-function changeView(newView) { view = newView; render(); }
-function setFilter(f) { filter = f; workTypeFilter = "all"; view = "dashboard"; render(); }
-function setWorkTypeFilter(workType) { workTypeFilter = workType; filter = "all"; view = "dashboard"; render(); }
-function clearFilters() { 
-  filter = "all"; workTypeFilter = "all"; searchTerm = ""; dateFilter = "all"; 
-  document.getElementById("filterDate").value = "all"; 
-  view = "dashboard"; render(); 
+function changeView(newView) { 
+  view = newView; 
+  // Close mobile menu when changing views
+  if (document.getElementById('mobileMenu').classList.contains('active')) {
+    toggleMobileMenu();
+  }
+  render(); 
 }
-function setDateFilter(val) { dateFilter = val; view = "dashboard"; render(); }
+
+function setFilter(f) { 
+  filter = f; 
+  workTypeFilter = "all"; 
+  view = "dashboard"; 
+  // Close mobile menu
+  if (document.getElementById('mobileMenu').classList.contains('active')) {
+    toggleMobileMenu();
+  }
+  render(); 
+}
+
+function setWorkTypeFilter(workType) { 
+  workTypeFilter = workType; 
+  filter = "all"; 
+  view = "dashboard"; 
+  // Close mobile menu
+  if (document.getElementById('mobileMenu').classList.contains('active')) {
+    toggleMobileMenu();
+  }
+  render(); 
+}
+
+function clearFilters() { 
+  filter = "all"; 
+  workTypeFilter = "all"; 
+  searchTerm = ""; 
+  dateFilter = "all"; 
+  document.getElementById("filterDate").value = "all"; 
+  view = "dashboard"; 
+  // Close mobile menu
+  if (document.getElementById('mobileMenu').classList.contains('active')) {
+    toggleMobileMenu();
+  }
+  render(); 
+}
+
+function setDateFilter(val) { 
+  dateFilter = val; 
+  view = "dashboard"; 
+  render(); 
+}
 
 // Mobile Menu Toggle
 function toggleMobileMenu() {
@@ -2076,7 +2119,7 @@ function renderAddForm() {
       <label class="field"><span>Vehicle Maker *</span><select id="f_maker" required><option value="">Select Maker</option>${VEHICLE_MAKERS.map(m=>`<option value="${m}" style="color:#000;background:#fff">${m}</option>`).join("")}</select></label>
       <label class="field"><span>Vehicle Number *</span><input id="f_vehicle" placeholder="e.g. AP16AB1234" maxlength="10"></label>
       <label class="field"><span>Customer Name *</span><input id="f_customer" placeholder="e.g. Ramesh Kumar"></label>
-      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 10px;"><select id="f_countryCode" style="width: 120px;"><option value="+91" style="color:#000;background:#fff">🇮🇳 +91</option><option value="+971" style="color:#000;background:#fff">🇦🇪 +971</option><option value="+968" style="color:#000;background:#fff">🇴🇲 +968</option><option value="+966" style="color:#000;background:#fff">🇸 +966</option><option value="+974" style="color:#000;background:#fff">🇶🇦 +974</option><option value="+1" style="color:#000;background:#fff">🇺🇸 +1</option><option value="+44" style="color:#000;background:#fff">🇬🇧 +44</option><option value="+92" style="color:#000;background:#fff">🇵🇰 +92</option><option value="+880" style="color:#000;background:#fff">🇧🇩 +880</option></select><input id="f_phone" placeholder="10 digit number" maxlength="10" inputmode="numeric" style="flex:1;"></div></label>
+      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 10px;"><select id="f_countryCode" style="width: 120px;"><option value="+91" style="color:#000;background:#fff">🇮🇳 +91</option><option value="+971" style="color:#000;background:#fff">🇦🇪 +971</option><option value="+968" style="color:#000;background:#fff">🇴 +968</option><option value="+966" style="color:#000;background:#fff">🇸🇦 +966</option><option value="+974" style="color:#000;background:#fff">🇶🇦 +974</option><option value="+1" style="color:#000;background:#fff">🇺🇸 +1</option><option value="+44" style="color:#000;background:#fff">🇬🇧 +44</option><option value="+92" style="color:#000;background:#fff">🇵🇰 +92</option><option value="+880" style="color:#000;background:#fff">🇧🇩 +880</option></select><input id="f_phone" placeholder="10 digit number" maxlength="10" inputmode="numeric" style="flex:1;"></div></label>
       <label class="field"><span>Job Type</span><select id="f_type"><option value="Emergency" style="color:#000;background:#fff">Emergency (1 day)</option><option value="Minor" style="color:#000;background:#fff">Minor Job (3 days)</option><option value="Major" style="color:#000;background:#fff">Major Job (5-15 days)</option></select></label>
       <label class="field" id="majorDaysField"><span>Major Job Duration (5-15 days)</span><input type="number" id="f_majorDays" min="5" max="15" value="5" inputmode="numeric"></label>
       <label class="field"><span>Assigned Team</span><select id="f_team">${teamOptions}</select></label>
