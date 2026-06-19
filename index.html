@@ -15,52 +15,47 @@
 
 <style>
   :root {
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    --glass-blur: blur(20px);
     --primary: #e63946;
-    --primary-dark: #9d0208;
     --primary-light: #ff4d6d;
     --accent: #ffb703;
     --accent-light: #ffd60a;
-    --accent-dark: #fb8500;
-    --bg-dark: #0b0c10;
-    --bg-card: rgba(255, 255, 255, 0.03);
-    --bg-card-hover: rgba(255, 255, 255, 0.06);
-    --glass: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --text-primary: #ffffff;
-    --text-secondary: #a8b2d1;
-    --text-muted: #6c7a99;
     --success: #06d6a0;
-    --success-dark: #059669;
     --info: #4cc9f0;
-    --info-dark: #0096c7;
     --warning: #f77f00;
     --danger: #ef476f;
-    --gradient-primary: linear-gradient(135deg, #e63946 0%, #ff4d6d 50%, #ff758f 100%);
-    --gradient-accent: linear-gradient(135deg, #ffb703 0%, #ffd60a 100%);
-    --gradient-dark: linear-gradient(180deg, #0b0c10 0%, #1a1b2e 50%, #0b0c10 100%);
-    --gradient-card: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
-    --shadow-glow: 0 0 30px rgba(230, 57, 70, 0.3);
-    --shadow-accent-glow: 0 0 20px rgba(255, 183, 3, 0.2);
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-muted: rgba(255, 255, 255, 0.5);
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --gradient-warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  * { 
+    box-sizing: border-box; 
+    -webkit-tap-highlight-color: transparent;
+    margin: 0;
+    padding: 0;
+  }
   
   html { scroll-behavior: smooth; }
   
   body { 
-    margin: 0; 
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
-    background: var(--bg-dark); 
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    background-attachment: fixed;
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
@@ -68,118 +63,114 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Animated background gradient */
   body::before {
     content: '';
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: 
-      radial-gradient(ellipse at 20% 20%, rgba(230, 57, 70, 0.08) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 80%, rgba(255, 183, 3, 0.06) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 50%, rgba(76, 201, 240, 0.04) 0%, transparent 70%);
+      radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(240, 147, 251, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 80%, rgba(79, 172, 254, 0.08) 0%, transparent 50%);
     pointer-events: none;
     z-index: 0;
+    animation: bgShift 20s ease-in-out infinite;
+  }
+
+  @keyframes bgShift {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
   }
 
   #appContainer, .login-screen { position: relative; z-index: 1; }
   
+  /* ===== LIQUID GLASS CARD BASE ===== */
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  }
+
   /* ===== LOGIN SCREEN ===== */
   .login-screen { 
     position: fixed; inset: 0; 
     display: flex; align-items: center; justify-content: center; 
     z-index: 9999; padding: 20px;
-    background: var(--bg-dark);
-  }
-
-  .login-screen::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: 
-      radial-gradient(circle at 30% 40%, rgba(230, 57, 70, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 70% 60%, rgba(255, 183, 3, 0.1) 0%, transparent 50%);
-    animation: bgPulse 8s ease-in-out infinite;
-  }
-
-  @keyframes bgPulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
   }
 
   .login-card { 
-    position: relative;
-    background: var(--gradient-card);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-xl); 
-    padding: 40px 32px; 
-    width: 100%; max-width: 400px; 
-    text-align: center; 
-    box-shadow: var(--shadow-lg);
+    padding: 48px 36px; 
+    width: 100%; max-width: 420px; 
+    text-align: center;
     animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   @keyframes slideUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .login-card::before {
-    content: '';
-    position: absolute;
-    top: -1px; left: -1px; right: -1px;
-    height: 3px;
-    background: var(--gradient-primary);
-    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   .login-card h2 { 
     font-family: 'Poppins', sans-serif;
-    background: var(--gradient-accent);
+    font-size: 2.2rem; 
+    font-weight: 800;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin: 0 0 8px 0; 
-    font-size: 2rem; 
-    font-weight: 800;
-    letter-spacing: -0.5px;
   }
   
   .login-card p { 
     color: var(--text-secondary); 
-    font-size: 0.9rem; 
-    margin: 0 0 32px 0; 
+    font-size: 0.95rem; 
+    margin-bottom: 36px; 
     font-weight: 400;
   }
   
-  .login-field { margin-bottom: 20px; text-align: left; }
+  .login-field { margin-bottom: 24px; text-align: left; }
   
   .login-field label { 
     display: block; 
-    font-size: 0.8rem; 
+    font-size: 0.85rem; 
     color: var(--text-secondary); 
     font-weight: 600; 
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     letter-spacing: 0.3px;
   }
   
   .login-field input { 
     width: 100%; 
-    background: rgba(255, 255, 255, 0.04); 
+    background: rgba(255, 255, 255, 0.05); 
     border: 1px solid var(--glass-border); 
     border-radius: var(--radius-md); 
-    padding: 14px 16px; 
+    padding: 16px 20px; 
     color: var(--text-primary); 
     font-size: 1rem;
     font-family: 'Inter', sans-serif;
     transition: var(--transition);
+    backdrop-filter: blur(10px);
   }
   
   .login-field input:focus { 
     outline: none;
-    border-color: var(--primary);
-    background: rgba(255, 255, 255, 0.06);
-    box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
   }
   
   .login-btn { 
@@ -187,30 +178,45 @@
     background: var(--gradient-primary);
     color: #fff; 
     font-weight: 700; 
-    padding: 16px; 
+    padding: 18px; 
     border-radius: var(--radius-md); 
     border: none; 
     cursor: pointer; 
-    font-size: 1rem; 
-    margin-top: 12px;
+    font-size: 1.05rem; 
+    margin-top: 16px;
     transition: var(--transition);
-    box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
     letter-spacing: 0.3px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .login-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: var(--transition);
+  }
+
+  .login-btn:hover::before {
+    left: 100%;
   }
   
   .login-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(230, 57, 70, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
   }
   
   .login-btn:active {
-    transform: translateY(0);
+    transform: translateY(-1px);
   }
 
   .login-error { 
     color: var(--danger); 
-    font-size: 0.85rem; 
-    margin-top: 16px; 
+    font-size: 0.9rem; 
+    margin-top: 20px; 
     display: none;
     font-weight: 500;
   }
@@ -219,97 +225,100 @@
   #appContainer { display: none; }
   
   header { 
-    background: linear-gradient(135deg, rgba(230, 57, 70, 0.9) 0%, rgba(157, 2, 8, 0.95) 50%, rgba(11, 12, 16, 0.98) 100%);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255, 183, 3, 0.3); 
-    padding: 20px 28px; 
+    padding: 24px 32px; 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
     flex-wrap: wrap; 
-    gap: 12px;
+    gap: 16px;
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    background: rgba(26, 26, 46, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
   }
   
   header h1 { 
     margin: 0; 
     font-family: 'Poppins', sans-serif;
-    background: var(--gradient-accent);
+    font-size: 2rem; 
+    letter-spacing: -0.5px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.9) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    font-size: 1.8rem; 
-    letter-spacing: -0.5px;
-    font-weight: 800;
   }
   
   header p { 
-    margin: 4px 0 0; 
-    color: rgba(255, 255, 255, 0.8); 
-    font-size: 0.85rem; 
+    margin: 6px 0 0; 
+    color: var(--text-secondary); 
+    font-size: 0.9rem; 
     font-weight: 400;
   }
 
   .logout-btn { 
     background: rgba(255, 255, 255, 0.08); 
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.15); 
-    color: #fff; 
-    padding: 8px 16px; 
-    border-radius: var(--radius-sm); 
+    border: 1px solid var(--glass-border); 
+    color: var(--text-primary); 
+    padding: 10px 20px; 
+    border-radius: var(--radius-md); 
     cursor: pointer; 
-    font-size: 0.85rem; 
+    font-size: 0.9rem; 
     font-weight: 600;
     transition: var(--transition);
   }
 
   .logout-btn:hover {
     background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   }
 
   /* ===== TOOLBAR ===== */
   .toolbar { 
-    background: rgba(11, 12, 16, 0.95);
-    backdrop-filter: blur(20px);
-    padding: 12px 28px; 
+    padding: 16px 32px; 
     display: flex; 
-    gap: 8px; 
+    gap: 10px; 
     flex-wrap: wrap; 
-    border-bottom: 1px solid var(--glass-border); 
     align-items: center;
     position: sticky;
-    top: 80px;
+    top: 100px;
     z-index: 99;
+    background: rgba(26, 26, 46, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
   }
   
   button.tool { 
-    background: rgba(255, 255, 255, 0.04); 
+    background: rgba(255, 255, 255, 0.06); 
     color: var(--text-secondary); 
-    border: 1px solid transparent;
-    padding: 10px 16px; 
-    border-radius: var(--radius-sm); 
-    font-size: 0.85rem; 
+    border: 1px solid var(--glass-border);
+    padding: 12px 20px; 
+    border-radius: var(--radius-md); 
+    font-size: 0.9rem; 
     font-weight: 600; 
     cursor: pointer; 
     display: flex; 
     align-items: center; 
-    gap: 6px;
+    gap: 8px;
     transition: var(--transition);
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(10px);
     white-space: nowrap;
   }
 
   button.tool::before {
     content: '';
     position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
     opacity: 0;
     transition: var(--transition);
   }
@@ -317,34 +326,45 @@
   button.tool:hover::before { opacity: 1; }
   
   button.tool:hover {
-    transform: translateY(-1px);
-    border-color: var(--glass-border);
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   }
 
-  button.tool.red { color: var(--primary-light); } 
-  button.tool.red.active { 
-    background: var(--gradient-primary); 
-    color: #fff; 
-    border-color: transparent;
-    box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+  button.tool.red { 
+    background: linear-gradient(135deg, rgba(230, 57, 70, 0.2) 0%, rgba(239, 71, 111, 0.1) 100%);
+    border-color: rgba(230, 57, 70, 0.3);
+    color: #ff6b8a; 
   }
   
-  button.tool.yellow { color: var(--accent); } 
-  button.tool.yellow.active { 
-    background: var(--gradient-accent); 
-    color: #000; 
+  button.tool.red.active { 
+    background: linear-gradient(135deg, #e63946 0%, #ff4d6d 100%);
+    color: #fff;
     border-color: transparent;
-    box-shadow: 0 4px 15px rgba(255, 183, 3, 0.3);
+    box-shadow: 0 8px 24px rgba(230, 57, 70, 0.4);
+  }
+  
+  button.tool.yellow { 
+    background: linear-gradient(135deg, rgba(255, 183, 3, 0.2) 0%, rgba(255, 214, 10, 0.1) 100%);
+    border-color: rgba(255, 183, 3, 0.3);
+    color: #ffd60a; 
+  }
+  
+  button.tool.yellow.active { 
+    background: linear-gradient(135deg, #ffb703 0%, #ffd60a 100%);
+    color: #000;
+    border-color: transparent;
+    box-shadow: 0 8px 24px rgba(255, 183, 3, 0.4);
   }
   
   button.tool.gray.active { 
-    background: rgba(255, 255, 255, 0.1); 
+    background: rgba(255, 255, 255, 0.12); 
     color: #fff;
-    border-color: var(--glass-border);
+    border-color: rgba(255, 255, 255, 0.3);
   }
   
   button.tool.alert { 
-    background: var(--gradient-primary); 
+    background: linear-gradient(135deg, #e63946 0%, #ff4d6d 100%);
     color: #fff; 
     animation: pulseGlow 2s ease-in-out infinite;
     border-color: transparent;
@@ -352,42 +372,42 @@
 
   @keyframes pulseGlow { 
     0%, 100% { 
-      box-shadow: 0 0 15px rgba(230, 57, 70, 0.4);
+      box-shadow: 0 0 20px rgba(230, 57, 70, 0.5);
       transform: scale(1);
     } 
     50% { 
-      box-shadow: 0 0 30px rgba(230, 57, 70, 0.6);
-      transform: scale(1.02);
+      box-shadow: 0 0 40px rgba(230, 57, 70, 0.8);
+      transform: scale(1.05);
     }
   }
 
   /* ===== MAIN CONTENT ===== */
   main { 
-    max-width: 1200px; 
+    max-width: 1400px; 
     margin: 0 auto; 
-    padding: 32px 28px;
+    padding: 40px 32px;
     position: relative;
   }
   
   h2 { 
     font-family: 'Poppins', sans-serif;
-    background: var(--gradient-accent);
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 32px;
+    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-top: 0; 
-    font-size: 1.8rem;
-    font-weight: 800;
     letter-spacing: -0.5px;
   }
   
   .empty { 
     text-align: center; 
     color: var(--text-muted); 
-    border: 1px dashed var(--glass-border); 
+    border: 2px dashed var(--glass-border); 
     border-radius: var(--radius-lg); 
-    padding: 60px 20px;
-    background: var(--bg-card);
+    padding: 80px 32px;
+    background: rgba(255, 255, 255, 0.02);
     backdrop-filter: blur(10px);
   }
 
@@ -396,32 +416,33 @@
     width: 100%; 
     border-collapse: separate;
     border-spacing: 0;
-    font-size: 0.88rem;
-    background: var(--bg-card);
-    backdrop-filter: blur(10px);
+    font-size: 0.92rem;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
     border-radius: var(--radius-lg);
     overflow: hidden;
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--glass-shadow);
+    border: 1px solid var(--glass-border);
   }
   
   thead { 
-    background: linear-gradient(135deg, rgba(230, 57, 70, 0.15) 0%, rgba(255, 183, 3, 0.08) 100%);
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.1) 100%);
   }
   
   th { 
     text-align: left; 
-    padding: 14px 16px; 
+    padding: 18px 20px; 
     text-transform: uppercase; 
-    font-size: 0.72rem; 
-    letter-spacing: 0.8px;
-    color: var(--accent);
+    font-size: 0.75rem; 
+    letter-spacing: 1px;
+    color: var(--text-secondary);
     font-weight: 700;
     border-bottom: 1px solid var(--glass-border);
   }
   
   td { 
-    padding: 14px 16px; 
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    padding: 18px 20px; 
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     vertical-align: middle;
     transition: var(--transition-fast);
   }
@@ -431,121 +452,116 @@
   }
 
   tbody tr:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.05);
   }
   
   tr.due-today td { 
-    background: rgba(230, 57, 70, 0.08);
+    background: rgba(230, 57, 70, 0.1);
     border-left: 3px solid var(--primary);
   }
 
   /* ===== BADGES ===== */
   .badge { 
-    padding: 5px 12px; 
+    padding: 6px 14px; 
     border-radius: 20px; 
-    font-size: 0.72rem; 
+    font-size: 0.75rem; 
     font-weight: 700; 
     display: inline-block;
     letter-spacing: 0.3px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
   
   .badge-major { 
-    background: var(--gradient-primary); 
+    background: linear-gradient(135deg, #e63946 0%, #ff4d6d 100%); 
     color: #fff; 
   } 
   
   .badge-minor { 
-    background: linear-gradient(135deg, var(--info) 0%, var(--info-dark) 100%); 
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); 
     color: #fff; 
   } 
   
   .badge-emergency { 
-    background: linear-gradient(135deg, var(--warning) 0%, #e85d04 100%); 
-    color: #fff; 
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); 
+    color: #000; 
   }
 
   /* ===== STATUS SELECT ===== */
   .status-select { 
-    font-size: 0.78rem; 
+    font-size: 0.82rem; 
     font-weight: 700; 
     border-radius: 20px; 
-    padding: 8px 14px; 
+    padding: 10px 18px; 
     border: none; 
-    min-width: 120px;
+    min-width: 130px;
     cursor: pointer;
     transition: var(--transition);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
   .status-select:hover {
-    transform: scale(1.02);
+    transform: scale(1.05);
   }
   
   .status-In_Progress { 
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); 
+    background: linear-gradient(135deg, #ffb703 0%, #ffd60a 100%); 
     color: #000; 
   } 
   
   .status-Ready { 
-    background: linear-gradient(135deg, var(--info) 0%, var(--info-dark) 100%); 
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); 
     color: #fff; 
   } 
   
   .status-Delivered { 
-    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%); 
+    background: linear-gradient(135deg, #06d6a0 0%, #059669 100%); 
     color: #fff; 
   }
 
   /* ===== ICON BUTTONS ===== */
   .icon-btn { 
-    background: rgba(255, 255, 255, 0.04); 
+    background: rgba(255, 255, 255, 0.06); 
     border: 1px solid var(--glass-border); 
     color: var(--text-secondary); 
     cursor: pointer; 
-    padding: 10px 14px; 
-    border-radius: var(--radius-sm); 
-    font-size: 1.1rem; 
+    padding: 12px 16px; 
+    border-radius: var(--radius-md); 
+    font-size: 1.2rem; 
     display: inline-flex; 
     align-items: center; 
     justify-content: center; 
-    min-width: 42px; 
-    min-height: 42px;
+    min-width: 48px; 
+    min-height: 48px;
     transition: var(--transition);
+    backdrop-filter: blur(10px);
   }
   
   .icon-btn:hover { 
-    background: rgba(255, 183, 3, 0.1); 
+    background: rgba(255, 255, 255, 0.12); 
     color: var(--accent); 
-    border-color: rgba(255, 183, 3, 0.3);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-accent-glow);
+    border-color: rgba(255, 183, 3, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(255, 183, 3, 0.3);
   }
   
   .icon-btn.danger:hover { 
-    background: rgba(239, 71, 111, 0.1); 
+    background: rgba(239, 71, 111, 0.15); 
     color: var(--danger); 
-    border-color: rgba(239, 71, 111, 0.3);
-    box-shadow: 0 0 20px rgba(239, 71, 111, 0.2);
+    border-color: rgba(239, 71, 111, 0.4);
+    box-shadow: 0 8px 24px rgba(239, 71, 111, 0.3);
   }
 
   .icon-btn.edit:hover { 
-    background: rgba(76, 201, 240, 0.1); 
+    background: rgba(79, 172, 254, 0.15); 
     color: var(--info); 
-    border-color: rgba(76, 201, 240, 0.3);
-    box-shadow: 0 0 20px rgba(76, 201, 240, 0.2);
+    border-color: rgba(79, 172, 254, 0.4);
+    box-shadow: 0 8px 24px rgba(79, 172, 254, 0.3);
   }
 
   /* ===== CARDS ===== */
   .card { 
-    background: var(--gradient-card);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border); 
-    border-radius: var(--radius-xl); 
-    padding: 32px; 
-    max-width: 650px;
-    box-shadow: var(--shadow-lg);
+    padding: 40px; 
+    max-width: 700px;
     position: relative;
     overflow: hidden;
   }
@@ -555,69 +571,65 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 2px;
-    background: var(--gradient-primary);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
   }
 
-  .field { margin-bottom: 18px; display: block; }
+  .field { margin-bottom: 24px; display: block; }
   
   .field span { 
     display: block; 
-    font-size: 0.8rem; 
+    font-size: 0.85rem; 
     color: var(--text-secondary); 
     font-weight: 600; 
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     letter-spacing: 0.3px;
   }
   
   .field input, .field select, .field textarea { 
     width: 100%; 
-    background: rgba(255, 255, 255, 0.04); 
+    background: rgba(255, 255, 255, 0.05); 
     border: 1px solid var(--glass-border); 
     border-radius: var(--radius-md); 
-    padding: 12px 16px; 
+    padding: 14px 20px; 
     color: var(--text-primary); 
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-family: 'Inter', sans-serif;
     transition: var(--transition);
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
+    backdrop-filter: blur(10px);
   }
 
-  /* FIX: Dropdown styling for visibility */
   .field select {
     cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffb703' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 16px center;
-    padding-right: 40px;
-    color: #ffffff !important;
-    background-color: rgba(255, 255, 255, 0.04) !important;
+    background-position: right 20px center;
+    padding-right: 48px;
   }
 
   .field select option {
-    color: #000000 !important;
-    background-color: #ffffff !important;
-    padding: 8px;
+    background: #1a1a2e;
+    color: #fff;
   }
   
   .field input:focus, .field select:focus, .field textarea:focus { 
     outline: none;
-    border-color: var(--primary);
-    background: rgba(255, 255, 255, 0.06);
-    box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
   }
   
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
   
   @media (max-width: 768px) { 
     .grid2 { grid-template-columns: 1fr; } 
     .toolbar { padding: 12px 16px; } 
-    button.tool { padding: 10px 14px; font-size: 0.8rem; }
+    button.tool { padding: 10px 16px; font-size: 0.85rem; }
     header { padding: 16px 20px; }
     main { padding: 24px 16px; }
-    .card { padding: 24px 20px; }
-    h2 { font-size: 1.5rem; }
+    .card { padding: 28px 24px; }
+    h2 { font-size: 1.6rem; }
   }
 
   @media (max-width: 480px) {
@@ -633,28 +645,28 @@
       margin-top: 8px;
     }
     header h1 {
-      font-size: 1.4rem;
+      font-size: 1.5rem;
     }
     .login-card {
-      padding: 32px 24px;
+      padding: 36px 28px;
     }
   }
 
   /* ===== INFO BOXES ===== */
   .info-box { 
-    background: rgba(255, 255, 255, 0.03); 
+    background: rgba(255, 255, 255, 0.05); 
     border: 1px solid var(--glass-border); 
     border-radius: var(--radius-md); 
-    padding: 14px 18px; 
-    font-size: 0.88rem; 
-    margin-bottom: 16px;
+    padding: 18px 24px; 
+    font-size: 0.92rem; 
+    margin-bottom: 20px;
     backdrop-filter: blur(10px);
   }
   
   .info-box.yellow { 
-    border-color: rgba(255, 183, 3, 0.3);
-    background: linear-gradient(135deg, rgba(255, 183, 3, 0.08) 0%, rgba(255, 214, 10, 0.04) 100%);
-    box-shadow: var(--shadow-accent-glow);
+    border-color: rgba(255, 183, 3, 0.4);
+    background: linear-gradient(135deg, rgba(255, 183, 3, 0.1) 0%, rgba(255, 214, 10, 0.05) 100%);
+    box-shadow: 0 8px 24px rgba(255, 183, 3, 0.15);
   }
 
   /* ===== BUTTONS ===== */
@@ -663,137 +675,156 @@
     background: var(--gradient-primary);
     color: #fff; 
     font-weight: 700; 
-    padding: 16px; 
+    padding: 18px; 
     border-radius: var(--radius-md); 
     border: none; 
     cursor: pointer; 
-    font-size: 1rem; 
-    margin-bottom: 10px;
+    font-size: 1.05rem; 
+    margin-bottom: 12px;
     transition: var(--transition);
-    box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
     letter-spacing: 0.3px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: var(--transition);
+  }
+
+  .submit-btn:hover::before {
+    left: 100%;
   }
 
   .submit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(230, 57, 70, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
   }
 
   .submit-btn:active {
-    transform: translateY(0);
+    transform: translateY(-1px);
   }
   
   .cancel-btn { 
     width: 100%; 
-    background: rgba(255, 255, 255, 0.06); 
+    background: rgba(255, 255, 255, 0.08); 
     color: var(--text-secondary); 
     font-weight: 600; 
-    padding: 14px; 
+    padding: 16px; 
     border-radius: var(--radius-md); 
     border: 1px solid var(--glass-border); 
     cursor: pointer; 
-    font-size: 0.95rem;
+    font-size: 1rem;
     transition: var(--transition);
+    backdrop-filter: blur(10px);
   }
 
   .cancel-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.12);
     color: var(--text-primary);
+    transform: translateY(-2px);
   }
 
   /* ===== SEARCH ===== */
-  .search-box { position: relative; margin-bottom: 20px; }
+  .search-box { position: relative; margin-bottom: 24px; }
   
   .search-box input { 
     width: 100%; 
-    background: var(--gradient-card);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border); 
     border-radius: var(--radius-lg); 
-    padding: 14px 18px 14px 48px; 
+    padding: 18px 24px 18px 56px; 
     color: var(--text-primary); 
-    font-size: 0.95rem;
+    font-size: 1rem;
     transition: var(--transition);
   }
 
   .search-box input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   }
   
   .search-box .icon { 
     position: absolute; 
-    left: 16px; 
-    top: 16px; 
+    left: 20px; 
+    top: 20px; 
     color: var(--text-muted); 
-    font-size: 1.2rem; 
+    font-size: 1.3rem; 
   }
 
   .search-result { 
-    background: var(--gradient-card);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border); 
     border-radius: var(--radius-lg); 
-    padding: 18px; 
+    padding: 24px; 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
     flex-wrap: wrap; 
-    gap: 12px; 
-    margin-bottom: 12px;
+    gap: 16px; 
+    margin-bottom: 16px;
     transition: var(--transition);
   }
 
   .search-result:hover {
-    border-color: rgba(255, 183, 3, 0.2);
-    transform: translateX(4px);
+    border-color: rgba(255, 183, 3, 0.3);
+    transform: translateX(6px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   }
   
   .search-result .jobno { 
     color: var(--accent); 
     font-family: 'Poppins', monospace; 
-    font-size: 0.88rem;
+    font-size: 0.92rem;
     font-weight: 700;
   }
 
   /* ===== STATS ===== */
   .stats-grid { 
     display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
-    gap: 12px; 
-    margin-bottom: 24px; 
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+    gap: 16px; 
+    margin-bottom: 32px; 
   }
   
   .stat { 
-    background: var(--gradient-card);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg); 
-    padding: 20px 16px; 
+    padding: 28px 20px; 
     text-align: center;
     transition: var(--transition);
   }
 
   .stat:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
-    border-color: rgba(255, 183, 3, 0.2);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 183, 3, 0.3);
   }
   
   .stat .val { 
-    font-size: 1.8rem; 
+    font-size: 2rem; 
     font-weight: 800;
     font-family: 'Poppins', sans-serif;
-    background: var(--gradient-accent);
+    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   } 
   
   .stat .lbl { 
-    font-size: 0.75rem; 
+    font-size: 0.8rem; 
     color: var(--text-muted); 
-    margin-top: 6px;
+    margin-top: 8px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-weight: 600;
@@ -801,74 +832,74 @@
 
   /* ===== ALERT ROW ===== */
   .alert-row { 
-    background: linear-gradient(135deg, rgba(230, 57, 70, 0.08) 0%, rgba(239, 71, 111, 0.04) 100%);
-    border: 1px solid rgba(230, 57, 70, 0.2); 
+    background: linear-gradient(135deg, rgba(230, 57, 70, 0.1) 0%, rgba(239, 71, 111, 0.05) 100%);
+    border: 1px solid rgba(230, 57, 70, 0.3); 
     border-radius: var(--radius-lg); 
-    padding: 18px; 
+    padding: 24px; 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
     flex-wrap: wrap; 
-    gap: 12px; 
-    margin-bottom: 12px;
+    gap: 16px; 
+    margin-bottom: 16px;
     transition: var(--transition);
   }
 
   .alert-row:hover {
-    border-color: rgba(230, 57, 70, 0.4);
-    box-shadow: var(--shadow-glow);
+    border-color: rgba(230, 57, 70, 0.5);
+    box-shadow: 0 8px 32px rgba(230, 57, 70, 0.2);
   }
 
   /* ===== CALENDAR ===== */
   .cal-toolbar { 
     display: flex; 
     align-items: center; 
-    gap: 10px; 
-    margin-bottom: 16px; 
+    gap: 12px; 
+    margin-bottom: 20px; 
     flex-wrap: wrap; 
   }
   
   .cal-toolbar select, .cal-toolbar button.navbtn { 
-    background: var(--gradient-card);
+    background: rgba(255, 255, 255, 0.06);
     backdrop-filter: blur(10px);
     border: 1px solid var(--glass-border); 
-    border-radius: var(--radius-sm); 
+    border-radius: var(--radius-md); 
     color: var(--text-primary); 
-    font-size: 0.88rem; 
-    padding: 10px 14px; 
+    font-size: 0.92rem; 
+    padding: 12px 18px; 
     cursor: pointer;
     transition: var(--transition);
   }
 
   .cal-toolbar button.navbtn:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
   }
   
   .cal-weekdays { 
     display: grid; 
     grid-template-columns: repeat(7, 1fr); 
-    gap: 6px; 
+    gap: 8px; 
     text-align: center; 
-    font-size: 0.72rem; 
-    color: var(--accent);
+    font-size: 0.75rem; 
+    color: var(--text-muted);
     text-transform: uppercase; 
     font-weight: 700; 
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     letter-spacing: 0.5px;
   }
   
   .cal-grid { 
     display: grid; 
     grid-template-columns: repeat(7, 1fr); 
-    gap: 6px; 
+    gap: 8px; 
   }
   
   .cal-cell { 
-    min-height: 70px; 
+    min-height: 80px; 
     border-radius: var(--radius-md); 
     border: 1px solid var(--glass-border); 
-    background: var(--gradient-card);
+    background: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(10px);
     display: flex; 
     flex-direction: column; 
@@ -876,14 +907,14 @@
     justify-content: center; 
     cursor: pointer; 
     color: var(--text-primary); 
-    padding: 6px;
+    padding: 8px;
     transition: var(--transition);
   }
 
   .cal-cell:hover {
-    transform: scale(1.05);
-    border-color: var(--accent);
-    box-shadow: var(--shadow-accent-glow);
+    transform: scale(1.08);
+    border-color: rgba(255, 183, 3, 0.4);
+    box-shadow: 0 8px 24px rgba(255, 183, 3, 0.2);
   }
   
   .cal-cell.empty { 
@@ -899,100 +930,99 @@
   
   .cal-cell.full { 
     background: linear-gradient(135deg, rgba(230, 57, 70, 0.2) 0%, rgba(239, 71, 111, 0.1) 100%);
-    border-color: rgba(230, 57, 70, 0.3); 
+    border-color: rgba(230, 57, 70, 0.4); 
   }
   
   .cal-cell.selected { 
-    box-shadow: 0 0 0 2px var(--accent) inset, var(--shadow-accent-glow);
+    box-shadow: 0 0 0 3px rgba(255, 183, 3, 0.5) inset, 0 8px 24px rgba(255, 183, 3, 0.3);
   }
   
   .cal-cell .num { 
-    font-size: 0.95rem; 
+    font-size: 1rem; 
     font-weight: 700; 
   } 
   
   .cal-cell .num.today { 
     color: var(--accent);
-    text-shadow: 0 0 10px rgba(255, 183, 3, 0.5);
+    text-shadow: 0 0 12px rgba(255, 183, 3, 0.6);
   }
   
   .cal-cell .cnt { 
-    font-size: 0.72rem; 
+    font-size: 0.75rem; 
     font-weight: 700; 
-    margin-top: 4px; 
+    margin-top: 6px; 
   } 
   
   .cal-cell .cnt.ok { color: var(--success); } 
   .cal-cell .cnt.full { color: var(--danger); }
 
   .day-detail { 
-    background: var(--gradient-card);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border); 
     border-radius: var(--radius-lg); 
-    padding: 16px; 
+    padding: 20px; 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
     flex-wrap: wrap; 
-    gap: 10px; 
-    margin-bottom: 10px;
+    gap: 12px; 
+    margin-bottom: 12px;
     transition: var(--transition);
   }
 
   .day-detail:hover {
-    border-color: rgba(255, 183, 3, 0.2);
+    border-color: rgba(255, 183, 3, 0.3);
+    transform: translateX(4px);
   }
 
   /* ===== SYNC STATUS ===== */
   .sync-status { 
     text-align: center; 
-    font-size: 0.82rem; 
-    padding: 10px 20px; 
+    font-size: 0.85rem; 
+    padding: 12px 24px; 
     border-top: 1px solid var(--glass-border); 
     font-weight: 600;
     letter-spacing: 0.3px;
+    backdrop-filter: blur(10px);
   }
   
   .sync-status.connected { 
     background: linear-gradient(135deg, rgba(6, 214, 160, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
     color: var(--success); 
-    border-top-color: rgba(6, 214, 160, 0.2);
   }
   
   .sync-status.error { 
     background: linear-gradient(135deg, rgba(239, 71, 111, 0.1) 0%, rgba(239, 71, 111, 0.05) 100%);
     color: var(--danger); 
-    border-top-color: rgba(239, 71, 111, 0.2);
   }
   
   .sync-status.loading { 
     background: linear-gradient(135deg, rgba(255, 183, 3, 0.1) 0%, rgba(255, 183, 3, 0.05) 100%);
     color: var(--accent); 
-    border-top-color: rgba(255, 183, 3, 0.2);
   }
 
   /* ===== TOAST ===== */
   .toast { 
     position: fixed; 
-    top: 20px; 
-    right: 20px; 
-    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+    top: 24px; 
+    right: 24px; 
+    background: linear-gradient(135deg, #06d6a0 0%, #059669 100%);
     color: #fff; 
     font-weight: 700; 
-    padding: 18px 28px; 
+    padding: 20px 32px; 
     border-radius: var(--radius-lg); 
-    max-width: 380px; 
-    font-size: 0.95rem; 
+    max-width: 400px; 
+    font-size: 1rem; 
     z-index: 10000; 
     border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 30px rgba(6, 214, 160, 0.3);
-    animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(10px);
+    box-shadow: 0 12px 40px rgba(6, 214, 160, 0.4);
+    animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(20px);
   }
 
   @keyframes slideInRight {
-    from { opacity: 0; transform: translateX(100px); }
+    from { opacity: 0; transform: translateX(120px); }
     to { opacity: 1; transform: translateX(0); }
   }
   
@@ -1000,34 +1030,34 @@
     background: none; 
     border: none; 
     float: right; 
-    margin-left: 12px; 
+    margin-left: 16px; 
     cursor: pointer; 
     font-weight: 700; 
-    font-size: 1.2rem; 
+    font-size: 1.3rem; 
     color: #fff;
     transition: var(--transition-fast);
   }
 
   .toast button:hover {
-    transform: scale(1.2);
+    transform: scale(1.3) rotate(90deg);
   }
 
   .toast.error { 
-    background: linear-gradient(135deg, var(--danger) 0%, #c9184a 100%);
-    box-shadow: 0 8px 30px rgba(239, 71, 111, 0.3);
+    background: linear-gradient(135deg, #ef476f 0%, #c9184a 100%);
+    box-shadow: 0 12px 40px rgba(239, 71, 111, 0.4);
   }
 
   /* ===== MODAL ===== */
   .modal-bg { 
     position: fixed; 
     inset: 0; 
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(10px);
     display: flex; 
     align-items: center; 
     justify-content: center; 
     z-index: 200; 
-    padding: 20px;
+    padding: 24px;
     animation: fadeIn 0.3s ease;
   }
 
@@ -1037,73 +1067,74 @@
   }
   
   .modal { 
-    background: linear-gradient(135deg, #1a1b2e 0%, #0f1019 100%);
+    background: rgba(26, 26, 46, 0.95);
+    backdrop-filter: blur(30px);
     color: var(--text-primary); 
     border-radius: var(--radius-xl); 
-    max-width: 450px; 
+    max-width: 480px; 
     width: 100%; 
-    padding: 32px; 
+    padding: 40px; 
     position: relative; 
     max-height: 90vh; 
     overflow-y: auto;
     border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-lg);
-    animation: modalSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: modalSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   @keyframes modalSlideUp {
-    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
     to { opacity: 1; transform: translateY(0) scale(1); }
   }
   
   .modal .close { 
     position: absolute; 
-    top: 16px; 
-    right: 16px; 
-    background: rgba(255, 255, 255, 0.06);
+    top: 20px; 
+    right: 20px; 
+    background: rgba(255, 255, 255, 0.08);
     border: 1px solid var(--glass-border);
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.3rem; 
+    font-size: 1.4rem; 
     cursor: pointer; 
     transition: var(--transition);
     color: var(--text-secondary);
   }
 
   .modal .close:hover {
-    background: rgba(239, 71, 111, 0.1);
+    background: rgba(239, 71, 111, 0.15);
     color: var(--danger);
-    border-color: rgba(239, 71, 111, 0.3);
+    border-color: rgba(239, 71, 111, 0.4);
     transform: rotate(90deg);
   }
   
   .modal h2 { 
     font-family: 'Poppins', sans-serif;
-    background: var(--gradient-accent);
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 28px;
+    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.9) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin: 0 0 20px 0; 
-    font-size: 1.5rem;
-    font-weight: 800;
   }
   
   .modal .row { 
     display: flex; 
     justify-content: space-between; 
     border-bottom: 1px solid var(--glass-border); 
-    padding: 12px 0; 
-    font-size: 0.92rem;
+    padding: 16px 0; 
+    font-size: 0.95rem;
     transition: var(--transition-fast);
   }
 
   .modal .row:hover {
-    background: rgba(255, 255, 255, 0.02);
-    padding-left: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    padding-left: 12px;
   }
   
   .modal .row span:first-child { 
@@ -1117,24 +1148,24 @@
   }
 
   .print-btn { 
-    margin-top: 20px; 
+    margin-top: 24px; 
     width: 100%; 
     background: var(--gradient-primary);
     color: #fff; 
     font-weight: 700; 
-    padding: 16px; 
+    padding: 18px; 
     border-radius: var(--radius-md); 
     border: none; 
     cursor: pointer; 
-    margin-bottom: 10px; 
-    font-size: 1rem;
+    margin-bottom: 12px; 
+    font-size: 1.05rem;
     transition: var(--transition);
-    box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
   }
 
   .print-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(230, 57, 70, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
   }
   
   .whatsapp-btn { 
@@ -1142,27 +1173,27 @@
     background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
     color: #fff; 
     font-weight: 700; 
-    padding: 16px; 
+    padding: 18px; 
     border-radius: var(--radius-md); 
     border: none; 
     cursor: pointer; 
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    gap: 10px; 
-    font-size: 1rem;
+    gap: 12px; 
+    font-size: 1.05rem;
     transition: var(--transition);
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
   }
 
   .whatsapp-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(37, 211, 102, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(37, 211, 102, 0.5);
   }
 
   .edit-modal-content { 
-    background: rgba(255, 255, 255, 0.02);
-    padding: 24px; 
+    background: rgba(255, 255, 255, 0.03);
+    padding: 32px; 
     border-radius: var(--radius-lg); 
     border: 1px solid var(--glass-border);
   }
@@ -1176,7 +1207,7 @@
   .required-star { 
     color: var(--danger); 
     font-weight: bold; 
-    margin-left: 3px;
+    margin-left: 4px;
     animation: pulse 2s ease-in-out infinite;
   }
 
@@ -1188,18 +1219,19 @@
   /* ===== FOOTER ===== */
   footer { 
     text-align: center; 
-    font-size: 0.78rem; 
+    font-size: 0.82rem; 
     color: var(--text-muted); 
-    padding: 20px; 
+    padding: 24px; 
     border-top: 1px solid var(--glass-border);
     font-weight: 500;
     letter-spacing: 0.3px;
+    backdrop-filter: blur(10px);
   }
 
   /* ===== SCROLLBAR ===== */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
   }
 
   ::-webkit-scrollbar-track {
@@ -1207,19 +1239,19 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-    border-radius: 4px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 5px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent-light) 100%);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
   }
 
   /* ===== PRINT ===== */
   @media print {
     .no-print, header, .toolbar, footer, #toastArea, main, #deleteModal, #editModal { display: none !important; }
     .modal-bg { position: static !important; background: #ffffff !important; display: block !important; inset: auto !important; padding: 0 !important; margin: 0 !important; }
-    .modal { box-shadow: none !important; border: 1px solid #000 !important; max-width: 100% !important; width: 100% !important; color: #000 !important; background: #fff !important; padding: 24px !important; }
+    .modal { box-shadow: none !important; border: 1px solid #000 !important; max-width: 100% !important; width: 100% !important; color: #000 !important; background: #fff !important; padding: 32px !important; }
     .modal * { color: #000 !important; }
     .modal .close, .modal .print-btn, .modal .whatsapp-btn { display: none !important; }
   }
@@ -1246,23 +1278,23 @@
   /* ===== TABLET OPTIMIZATION ===== */
   @media (min-width: 769px) and (max-width: 1024px) {
     main {
-      padding: 28px 24px;
+      padding: 32px 28px;
     }
     .card {
-      padding: 28px 24px;
+      padding: 32px 28px;
     }
     table {
-      font-size: 0.82rem;
+      font-size: 0.88rem;
     }
     th, td {
-      padding: 12px 14px;
+      padding: 14px 16px;
     }
   }
 
   /* ===== LARGE SCREENS ===== */
   @media (min-width: 1400px) {
     main {
-      max-width: 1400px;
+      max-width: 1600px;
     }
   }
 </style>
@@ -1270,7 +1302,7 @@
 <body>
 
 <div id="loginScreen" class="login-screen">
-  <div class="login-card">
+  <div class="login-card glass-card">
     <h2>2K CAR CARE</h2>
     <p>Workshop Scheduler Login</p>
     <form onsubmit="handleLogin(event)">
@@ -1286,7 +1318,7 @@
   <header class="no-print">
     <div><h1>2K CAR CARE</h1><p>Workshop Scheduler & Job Card System</p></div>
     <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
-      <div><p>Today: <strong id="todayLabel"></strong></p><p id="saveStatus" style="color:rgba(255,183,3,0.8);font-size:0.7rem;"></p></div>
+      <div><p>Today: <strong id="todayLabel"></strong></p><p id="saveStatus" style="color:rgba(255,183,3,0.8);font-size:0.75rem;"></p></div>
       <button class="logout-btn" onclick="logout()">🚪 Logout</button>
     </div>
   </header>
@@ -1304,7 +1336,7 @@
     <button class="tool gray" onclick="setWorkTypeFilter('painting')">🎨 Painting</button>
     <button class="tool gray" onclick="setWorkTypeFilter('polishing')">✨ Polishing</button>
     <button class="tool gray" onclick="clearFilters()">Clear</button>
-    <select id="filterDate" style="background: rgba(255,255,255,0.04); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 130px;" onchange="setDateFilter(this.value)">
+    <select id="filterDate" style="background: rgba(255,255,255,0.06); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 12px 18px; border-radius: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 140px; backdrop-filter: blur(10px);" onchange="setDateFilter(this.value)">
       <option value="all" style="color:#000;background:#fff">All Dates</option>
       <option value="today" style="color:#000;background:#fff">Due Today</option>
       <option value="week" style="color:#000;background:#fff">Due This Week</option>
@@ -1322,16 +1354,16 @@
     <div class="modal">
       <button class="close" onclick="closeDeleteModal()">✕</button>
       <h2>⚠️ Confirm Deletion</h2>
-      <p style="color:var(--text-secondary); margin-bottom:20px;">Enter admin password to permanently delete this job card.</p>
+      <p style="color:var(--text-secondary); margin-bottom:24px;">Enter admin password to permanently delete this job card.</p>
       <div class="field">
-        <input type="password" id="deletePasswordInput" placeholder="Enter Admin Password" style="width:100%; padding:14px; margin-bottom:20px; border-radius:12px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.04); color:#fff; font-size:1rem;">
+        <input type="password" id="deletePasswordInput" placeholder="Enter Admin Password" style="width:100%; padding:16px; margin-bottom:24px; border-radius:12px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:#fff; font-size:1rem;">
       </div>
       <button class="submit-btn" onclick="executeDelete()" style="background: linear-gradient(135deg, #ef476f 0%, #c9184a 100%);">🗑️ Delete Job</button>
     </div>
   </div>
 
   <div id="editModal" class="modal-bg" style="display:none;">
-    <div class="modal" style="max-width: 650px;">
+    <div class="modal" style="max-width: 700px;">
       <button class="close" onclick="closeEditModal()">✕</button>
       <h2>✏️ Edit Job Card</h2>
       <div class="edit-modal-content">
@@ -1345,17 +1377,17 @@
           <label class="field"><span>Vehicle Number *</span><input id="edit_vehicle" maxlength="10"></label>
           <label class="field"><span>Customer Name *</span><input id="edit_customer"></label>
           <label class="field"><span>Phone Number</span>
-            <div style="display: flex; gap: 8px;">
-              <select id="edit_countryCode" style="width: 110px;">
-                <option value="+91" style="color:#000;background:#fff">🇮 +91</option>
+            <div style="display: flex; gap: 10px;">
+              <select id="edit_countryCode" style="width: 120px;">
+                <option value="+91" style="color:#000;background:#fff">🇮🇳 +91</option>
                 <option value="+971" style="color:#000;background:#fff">🇦🇪 +971</option>
-                <option value="+968" style="color:#000;background:#fff">🇴🇲 +968</option>
+                <option value="+968" style="color:#000;background:#fff">🇴 +968</option>
                 <option value="+966" style="color:#000;background:#fff">🇸🇦 +966</option>
                 <option value="+974" style="color:#000;background:#fff">🇶 +974</option>
                 <option value="+1" style="color:#000;background:#fff">🇺 +1</option>
                 <option value="+44" style="color:#000;background:#fff">🇬🇧 +44</option>
-                <option value="+92" style="color:#000;background:#fff">🇵🇰 +92</option>
-                <option value="+880" style="color:#000;background:#fff">🇧 +880</option>
+                <option value="+92" style="color:#000;background:#fff">🇵 +92</option>
+                <option value="+880" style="color:#000;background:#fff">🇧🇩 +880</option>
               </select>
               <input id="edit_phone" maxlength="10" inputmode="numeric">
             </div>
@@ -1514,7 +1546,7 @@ function getDeliveryDate(jobType,startDate,majorDays) { if (jobType === "Emergen
 function getCapacityForDate(date, excludeId) { return state.jobs.filter(j=>{ if(j.id===excludeId) return false; if(j.status==="Delivered") return false; return rangeDates(j.startDate,j.deliveryDate).includes(date); }).length; }
 
 function renderDateSelect(id, selectedDate) {
-  let html = `<select id="${id}" style="width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px 16px; color: #fff; font-size: 0.95rem;">`;
+  let html = `<select id="${id}" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; padding: 14px 20px; color: #fff; font-size: 1rem;">`;
   for (let i = 0; i < 30; i++) {
     const d = addDays(todayStr(), i); const count = getCapacityForDate(d, null); const remaining = CAPACITY_PER_DAY - count;
     let statusText = remaining > 0 ? `(${remaining} slots avail)` : '(FULL)';
@@ -1645,14 +1677,14 @@ function renderWorkTags(job) {
   if (items.length === 0) return '';
   const tags = items.map((item, idx) => {
     const isDone = item.done;
-    const bg = isDone ? 'rgba(6, 214, 160, 0.15)' : 'rgba(255, 183, 3, 0.1)';
+    const bg = isDone ? 'rgba(6, 214, 160, 0.2)' : 'rgba(255, 183, 3, 0.15)';
     const border = isDone ? 'var(--success)' : 'var(--accent)';
     const color = isDone ? 'var(--success)' : 'var(--accent)';
     const check = isDone ? '✅ ' : ''; 
     const strike = isDone ? 'text-decoration: line-through; opacity: 0.8;' : '';
-    return `<span onclick="toggleWorkItem('${job.id}', ${idx})" style="background:${bg}; border:1px solid ${border}; color:${color}; padding:5px 10px; border-radius:20px; font-size:0.72rem; white-space:nowrap; cursor:pointer; user-select:none; ${strike}; transition: all 0.2s ease; font-weight:600;">${check}${item.name}</span>`;
+    return `<span onclick="toggleWorkItem('${job.id}', ${idx})" style="background:${bg}; border:1px solid ${border}; color:${color}; padding:6px 12px; border-radius:20px; font-size:0.78rem; white-space:nowrap; cursor:pointer; user-select:none; ${strike}; transition: all 0.3s ease; font-weight:600;">${check}${item.name}</span>`;
   }).join(' ');
-  return `<div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:6px;">${tags}</div>`;
+  return `<div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;">${tags}</div>`;
 }
 
 function toggleWorkItem(jobId, index) {
@@ -1700,20 +1732,20 @@ function renderAddForm() {
   const year = new Date().getFullYear();
   const workload = getTeamWorkload();
   const teamOptions = `<option value="Auto">✨ Auto-Assign (Least Workload)</option>` + TEAMS.map(t => `<option value="${t}" style="color:#000;background:#fff">${t} (${workload[t]} active)</option>`).join("");
-  return `<h2>Add New Job</h2><div class="card">
+  return `<h2>Add New Job</h2><div class="card glass-card">
     <div class="info-box yellow">Job Card No. (auto): <span style="font-family:'Poppins',monospace;color:var(--accent);font-weight:700">2K-${year}-${String(state.counter).padStart(4,"0")}</span></div>
     <div class="grid2">
       <label class="field"><span>Vehicle Maker *</span><select id="f_maker" required><option value="">Select Maker</option>${VEHICLE_MAKERS.map(m=>`<option value="${m}" style="color:#000;background:#fff">${m}</option>`).join("")}</select></label>
       <label class="field"><span>Vehicle Number *</span><input id="f_vehicle" placeholder="e.g. AP16AB1234" maxlength="10"></label>
       <label class="field"><span>Customer Name *</span><input id="f_customer" placeholder="e.g. Ramesh Kumar"></label>
-      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 8px;"><select id="f_countryCode" style="width: 110px;"><option value="+91" style="color:#000;background:#fff">🇮🇳 +91</option><option value="+971" style="color:#000;background:#fff">🇦🇪 +971</option><option value="+968" style="color:#000;background:#fff">🇴 +968</option><option value="+966" style="color:#000;background:#fff">🇸🇦 +966</option><option value="+974" style="color:#000;background:#fff">🇶🇦 +974</option><option value="+1" style="color:#000;background:#fff">🇺🇸 +1</option><option value="+44" style="color:#000;background:#fff">🇬🇧 +44</option><option value="+92" style="color:#000;background:#fff">🇵🇰 +92</option><option value="+880" style="color:#000;background:#fff">🇧🇩 +880</option></select><input id="f_phone" placeholder="10 digit number" maxlength="10" inputmode="numeric" style="flex:1;"></div></label>
+      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 10px;"><select id="f_countryCode" style="width: 120px;"><option value="+91" style="color:#000;background:#fff">🇮 +91</option><option value="+971" style="color:#000;background:#fff">🇦🇪 +971</option><option value="+968" style="color:#000;background:#fff">🇴🇲 +968</option><option value="+966" style="color:#000;background:#fff">🇸🇦 +966</option><option value="+974" style="color:#000;background:#fff">🇶🇦 +974</option><option value="+1" style="color:#000;background:#fff">🇺🇸 +1</option><option value="+44" style="color:#000;background:#fff">🇬🇧 +44</option><option value="+92" style="color:#000;background:#fff">🇵 +92</option><option value="+880" style="color:#000;background:#fff">🇧🇩 +880</option></select><input id="f_phone" placeholder="10 digit number" maxlength="10" inputmode="numeric" style="flex:1;"></div></label>
       <label class="field"><span>Job Type</span><select id="f_type"><option value="Emergency" style="color:#000;background:#fff">Emergency (1 day)</option><option value="Minor" style="color:#000;background:#fff">Minor Job (3 days)</option><option value="Major" style="color:#000;background:#fff">Major Job (5-15 days)</option></select></label>
       <label class="field" id="majorDaysField"><span>Major Job Duration (5-15 days)</span><input type="number" id="f_majorDays" min="5" max="15" value="5" inputmode="numeric"></label>
       <label class="field"><span>Assigned Team</span><select id="f_team">${teamOptions}</select></label>
       <label class="field"><span>Start Date</span>${renderDateSelect("f_start", todayStr())}</label>
     </div>
     <label class="field"><span>Notes (Separate tasks with commas) <span class="required-star">*</span></span><textarea id="f_notes" rows="2" placeholder="e.g., denting, painting"></textarea></label>
-    <div class="info-box" id="deliveryPreview" style="background: linear-gradient(135deg, rgba(76, 201, 240, 0.1) 0%, rgba(0, 150, 199, 0.05) 100%); border-color: rgba(76, 201, 240, 0.3); color: var(--info);">📅 Expected Delivery: <strong>${formatDate(getDeliveryDate("Major", todayStr(), 5))}</strong></div>
+    <div class="info-box" id="deliveryPreview" style="background: linear-gradient(135deg, rgba(79, 172, 254, 0.15) 0%, rgba(0, 242, 254, 0.08) 100%); border-color: rgba(79, 172, 254, 0.4); color: var(--info);">📅 Expected Delivery: <strong>${formatDate(getDeliveryDate("Major", todayStr(), 5))}</strong></div>
     <button class="submit-btn" onclick="submitJob()">✓ Add Job</button></div>`;
 }
 
@@ -1728,7 +1760,7 @@ function updateSearchResults() {
   else if(jobs.length===0){ html += `<div class="empty">No matching job cards found.</div>`; } 
   else {
     jobs.forEach((j, index)=>{
-      html += `<div class="search-result"><div style="display:flex; align-items:center; gap:12px;"><span style="background:var(--gradient-accent); color:#000; font-weight:800; padding:6px 12px; border-radius:20px; font-family:'Poppins',sans-serif;">${index + 1}</span><div><div class="jobno">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div></div></div><div style="display:flex;align-items:center;gap:10px"><span class="badge ${statusClass(j.status)}" style="background:none;border:1px solid currentColor">${j.status}</span><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button></div></div>`;
+      html += `<div class="search-result"><div style="display:flex; align-items:center; gap:14px;"><span style="background:var(--gradient-accent); color:#000; font-weight:800; padding:8px 16px; border-radius:20px; font-family:'Poppins',sans-serif;">${index + 1}</span><div><div class="jobno">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div></div></div><div style="display:flex;align-items:center;gap:12px"><span class="badge ${statusClass(j.status)}" style="background:none;border:1px solid currentColor">${j.status}</span><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button></div></div>`;
     });
   }
   resultsContainer.innerHTML = html;
@@ -1740,13 +1772,13 @@ function renderCapacity() {
   for (let i = 0; i < 30; i++) { const d = addDays(todayStr(), i); dateOptions += `<option value="${d}" ${d === capacityCheckDate ? 'selected' : ''} style="color:#000;background:#fff">${formatDate(d)} (${getCapacityForDate(d, null)}/${CAPACITY_PER_DAY})</option>`; }
   const workload = getTeamWorkload();
   let teamStats = ''; TEAMS.forEach(t => { teamStats += `<div class="stat"><div class="val">${workload[t]}</div><div class="lbl">${t}</div></div>`; });
-  return `<h2>Capacity & Team Workload</h2><div class="card"><h3 style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px; font-family:'Poppins',sans-serif;">Current Active Jobs per Team</h3><div class="stats-grid">${teamStats}</div><label class="field" style="margin-top:24px"><span>Check daily capacity for date</span><select id="capacityDate" style="width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; color: #fff;" onchange="updateCapacityDate(this.value)">${dateOptions}</select></label><div class="stats-grid" style="margin-top:20px"><div class="stat"><div class="val">${count}</div><div class="lbl">Scheduled</div></div><div class="stat"><div class="val">${CAPACITY_PER_DAY}</div><div class="lbl">Capacity</div></div><div class="stat"><div class="val" style="color:${remaining>0?'var(--success)':'var(--danger)'}">${remaining}</div><div class="lbl">Remaining</div></div></div></div>`;
+  return `<h2>Capacity & Team Workload</h2><div class="card glass-card"><h3 style="font-size:0.95rem; color:var(--text-muted); margin-bottom:20px; font-family:'Poppins',sans-serif;">Current Active Jobs per Team</h3><div class="stats-grid">${teamStats}</div><label class="field" style="margin-top:28px"><span>Check daily capacity for date</span><select id="capacityDate" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; padding: 14px; color: #fff;" onchange="updateCapacityDate(this.value)">${dateOptions}</select></label><div class="stats-grid" style="margin-top:24px"><div class="stat"><div class="val">${count}</div><div class="lbl">Scheduled</div></div><div class="stat"><div class="val">${CAPACITY_PER_DAY}</div><div class="lbl">Capacity</div></div><div class="stat"><div class="val" style="color:${remaining>0?'var(--success)':'var(--danger)'}">${remaining}</div><div class="lbl">Remaining</div></div></div></div>`;
 }
 function updateCapacityDate(val) { capacityCheckDate = val; render(); }
 
 function renderCalendar() {
   const firstDay = new Date(calendarYear, calendarMonth, 1).getDay(); const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
-  let html = `<h2>Calendar View</h2><div class="cal-toolbar"><button class="navbtn" onclick="changeMonth(-1)">&lt;</button><select id="calMonth" onchange="calendarMonth=parseInt(this.value);render();" style="flex:1">${MONTH_NAMES.map((m, i) => `<option value="${i}" ${i === calendarMonth ? 'selected' : ''} style="color:#000;background:#fff">${m}</option>`).join('')}</select><select id="calYear" onchange="calendarYear=parseInt(this.value);render();" style="width: 90px;">${[calendarYear - 2, calendarYear - 1, calendarYear, calendarYear + 1, calendarYear + 2].map(y => `<option value="${y}" ${y === calendarYear ? 'selected' : ''} style="color:#000;background:#fff">${y}</option>`).join('')}</select><button class="navbtn" onclick="changeMonth(1)">&gt;</button></div><div class="cal-weekdays"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div><div class="cal-grid">`;
+  let html = `<h2>Calendar View</h2><div class="cal-toolbar"><button class="navbtn" onclick="changeMonth(-1)">&lt;</button><select id="calMonth" onchange="calendarMonth=parseInt(this.value);render();" style="flex:1">${MONTH_NAMES.map((m, i) => `<option value="${i}" ${i === calendarMonth ? 'selected' : ''} style="color:#000;background:#fff">${m}</option>`).join('')}</select><select id="calYear" onchange="calendarYear=parseInt(this.value);render();" style="width: 100px;">${[calendarYear - 2, calendarYear - 1, calendarYear, calendarYear + 1, calendarYear + 2].map(y => `<option value="${y}" ${y === calendarYear ? 'selected' : ''} style="color:#000;background:#fff">${y}</option>`).join('')}</select><button class="navbtn" onclick="changeMonth(1)">&gt;</button></div><div class="cal-weekdays"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div><div class="cal-grid">`;
   for (let i = 0; i < firstDay; i++) html += `<div class="cal-cell empty"></div>`;
   const today = todayStr();
   for (let d = 1; d <= daysInMonth; d++) {
@@ -1757,10 +1789,10 @@ function renderCalendar() {
   html += `</div>`;
   if (selectedDay) {
     const dayJobs = state.jobs.filter(j => rangeDates(j.startDate, j.deliveryDate).includes(selectedDay));
-    html += `<h3 style="margin-top:24px; font-size:1rem; color:var(--accent); font-family:'Poppins',sans-serif;">Jobs on ${formatDate(selectedDay)}</h3>`;
-    if (dayJobs.length === 0) html += `<div class="empty" style="padding:20px">No jobs.</div>`;
+    html += `<h3 style="margin-top:32px; font-size:1.1rem; color:var(--accent); font-family:'Poppins',sans-serif;">Jobs on ${formatDate(selectedDay)}</h3>`;
+    if (dayJobs.length === 0) html += `<div class="empty" style="padding:24px">No jobs.</div>`;
     else dayJobs.forEach((j, index) => { 
-      html += `<div class="day-detail"><div style="display:flex; align-items:center; gap:12px;"><span style="background:var(--gradient-accent); color:#000; font-weight:800; padding:6px 12px; border-radius:20px; font-family:'Poppins',sans-serif;">${index + 1}</span><div><div style="font-family:'Poppins',monospace;color:var(--accent); font-weight:700;">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div>${renderWorkTags(j)}</div></div><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div>`; 
+      html += `<div class="day-detail"><div style="display:flex; align-items:center; gap:14px;"><span style="background:var(--gradient-accent); color:#000; font-weight:800; padding:8px 16px; border-radius:20px; font-family:'Poppins',sans-serif;">${index + 1}</span><div><div style="font-family:'Poppins',monospace;color:var(--accent); font-weight:700;">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div>${renderWorkTags(j)}</div></div><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div>`; 
     });
   }
   return html;
@@ -1778,7 +1810,7 @@ function renderAlerts() {
   let html = `<h2>Delivery Alerts — Due Today</h2>`;
   if(dueToday.length===0) return html + `<div class="empty">No vehicles due today.</div>`;
   dueToday.forEach((j, index)=>{ 
-    html += `<div class="alert-row"><div style="display:flex; align-items:center; gap:12px;"><span style="background:var(--gradient-accent); color:#000; font-weight:800; padding:6px 12px; border-radius:20px; font-family:'Poppins',sans-serif;">${index + 1}</span><div><div class="jobno">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div><div style="font-size:0.78rem;color:var(--text-secondary)">${j.jobType} job · ${j.team} · Phone: ${j.phone||"-"}</div>${renderWorkTags(j)}</div></div><div><select class="status-select ${statusClass(j.status)}" onchange="updateStatus('${j.id}',this.value)"><option value="In Progress" ${j.status==="In Progress"?"selected":""}>In Progress</option><option value="Ready" ${j.status==="Ready"?"selected":""}>Ready</option><option value="Delivered" ${j.status==="Delivered"?"selected":""}>Delivered</option></select> <button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div></div>`; 
+    html += `<div class="alert-row"><div style="display:flex; align-items:center; gap:14px;"><span style="background:var(--gradient-accent); color:#000; font-weight:800; padding:8px 16px; border-radius:20px; font-family:'Poppins',sans-serif;">${index + 1}</span><div><div class="jobno">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div><div style="font-size:0.82rem;color:var(--text-secondary)">${j.jobType} job · ${j.team} · Phone: ${j.phone||"-"}</div>${renderWorkTags(j)}</div></div><div><select class="status-select ${statusClass(j.status)}" onchange="updateStatus('${j.id}',this.value)"><option value="In Progress" ${j.status==="In Progress"?"selected":""}>In Progress</option><option value="Ready" ${j.status==="Ready"?"selected":""}>Ready</option><option value="Delivered" ${j.status==="Delivered"?"selected":""}>Delivered</option></select> <button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div></div>`; 
   });
   return html;
 }
