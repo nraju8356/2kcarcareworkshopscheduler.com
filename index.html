@@ -1,136 +1,1269 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <link rel="icon" type="image/png" href="https://i.postimg.cc/rD884FkQ/2k-car-care.png">
-   <meta name="google-site-verification" content="4-5G3lC6mZ8Dd3pEyGVmQbQSLGVtPVPko19RXkEfKdU" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>2K Car Care vijayawada - Workshop Scheduler & Management Software</title>
-<meta name="description" content="Manage your auto workshop efficiently with 2K Car Care vijayawada. Features include job tracking, capacity scheduling, and calendar management for denting, painting, and polishing services." />
+<title>2K Car Care - Workshop Scheduler</title>
+<link rel="icon" type="image/png" href="https://i.postimg.cc/rD884FkQ/2k-car-care.png">
 
 <!-- FIREBASE SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
+
 <style>
   :root {
-    --red: #dc2626; --red-dark: #b91c1c; --yellow: #facc15; --black: #0a0a0a;
-    --gray-900: #111827; --gray-800: #1f2937; --gray-700: #374151; --gray-400: #9ca3af;
-    --whatsapp: #25D366; --green: #22c55e;
+    --primary: #e63946;
+    --primary-dark: #9d0208;
+    --primary-light: #ff4d6d;
+    --accent: #ffb703;
+    --accent-light: #ffd60a;
+    --accent-dark: #fb8500;
+    --bg-dark: #0b0c10;
+    --bg-card: rgba(255, 255, 255, 0.03);
+    --bg-card-hover: rgba(255, 255, 255, 0.06);
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --text-primary: #ffffff;
+    --text-secondary: #a8b2d1;
+    --text-muted: #6c7a99;
+    --success: #06d6a0;
+    --success-dark: #059669;
+    --info: #4cc9f0;
+    --info-dark: #0096c7;
+    --warning: #f77f00;
+    --danger: #ef476f;
+    --gradient-primary: linear-gradient(135deg, #e63946 0%, #ff4d6d 50%, #ff758f 100%);
+    --gradient-accent: linear-gradient(135deg, #ffb703 0%, #ffd60a 100%);
+    --gradient-dark: linear-gradient(180deg, #0b0c10 0%, #1a1b2e 50%, #0b0c10 100%);
+    --gradient-card: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+    --shadow-glow: 0 0 30px rgba(230, 57, 70, 0.3);
+    --shadow-accent-glow: 0 0 20px rgba(255, 183, 3, 0.2);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--black); color: #fff; }
   
-  .login-screen { position: fixed; inset: 0; background: var(--black); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
-  .login-card { background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 12px; padding: 32px 24px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-  .login-card h2 { color: var(--yellow); margin: 0 0 8px 0; font-size: 1.5rem; }
-  .login-card p { color: var(--gray-400); font-size: 0.85rem; margin: 0 0 24px 0; }
-  .login-field { margin-bottom: 16px; text-align: left; }
-  .login-field label { display: block; font-size: 0.75rem; color: var(--gray-400); font-weight: 600; margin-bottom: 6px; }
-  .login-field input { width: 100%; background: var(--black); border: 1px solid var(--gray-700); border-radius: 6px; padding: 12px; color: #fff; font-size: 1rem; }
-  .login-field input:focus { outline: 2px solid var(--yellow); border-color: var(--yellow); }
-  .login-btn { width: 100%; background: var(--red); color: #fff; font-weight: 700; padding: 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 1rem; margin-top: 8px; }
-  .login-error { color: #ef4444; font-size: 0.8rem; margin-top: 12px; display: none; }
+  html { scroll-behavior: smooth; }
+  
+  body { 
+    margin: 0; 
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+    background: var(--bg-dark); 
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: 
+      radial-gradient(ellipse at 20% 20%, rgba(230, 57, 70, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(255, 183, 3, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(76, 201, 240, 0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #appContainer, .login-screen { position: relative; z-index: 1; }
+  
+  /* ===== LOGIN SCREEN ===== */
+  .login-screen { 
+    position: fixed; inset: 0; 
+    display: flex; align-items: center; justify-content: center; 
+    z-index: 9999; padding: 20px;
+    background: var(--bg-dark);
+  }
+
+  .login-screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(circle at 30% 40%, rgba(230, 57, 70, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 70% 60%, rgba(255, 183, 3, 0.1) 0%, transparent 50%);
+    animation: bgPulse 8s ease-in-out infinite;
+  }
+
+  @keyframes bgPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .login-card { 
+    position: relative;
+    background: var(--gradient-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl); 
+    padding: 40px 32px; 
+    width: 100%; max-width: 400px; 
+    text-align: center; 
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .login-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 3px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+
+  .login-card h2 { 
+    font-family: 'Poppins', sans-serif;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0 0 8px 0; 
+    font-size: 2rem; 
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  
+  .login-card p { 
+    color: var(--text-secondary); 
+    font-size: 0.9rem; 
+    margin: 0 0 32px 0; 
+    font-weight: 400;
+  }
+  
+  .login-field { margin-bottom: 20px; text-align: left; }
+  
+  .login-field label { 
+    display: block; 
+    font-size: 0.8rem; 
+    color: var(--text-secondary); 
+    font-weight: 600; 
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+  
+  .login-field input { 
+    width: 100%; 
+    background: rgba(255, 255, 255, 0.04); 
+    border: 1px solid var(--glass-border); 
+    border-radius: var(--radius-md); 
+    padding: 14px 16px; 
+    color: var(--text-primary); 
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    transition: var(--transition);
+  }
+  
+  .login-field input:focus { 
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.15);
+  }
+  
+  .login-btn { 
+    width: 100%; 
+    background: var(--gradient-primary);
+    color: #fff; 
+    font-weight: 700; 
+    padding: 16px; 
+    border-radius: var(--radius-md); 
+    border: none; 
+    cursor: pointer; 
+    font-size: 1rem; 
+    margin-top: 12px;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+    letter-spacing: 0.3px;
+  }
+  
+  .login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(230, 57, 70, 0.4);
+  }
+  
+  .login-btn:active {
+    transform: translateY(0);
+  }
+
+  .login-error { 
+    color: var(--danger); 
+    font-size: 0.85rem; 
+    margin-top: 16px; 
+    display: none;
+    font-weight: 500;
+  }
+
+  /* ===== HEADER ===== */
   #appContainer { display: none; }
-  header { background: linear-gradient(to right, var(--red-dark), var(--red), #000); border-bottom: 4px solid var(--yellow); padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-  header h1 { margin: 0; color: var(--yellow); font-size: 1.8rem; letter-spacing: 1px; }
-  header p { margin: 2px 0 0; color: #e5e7eb; font-size: 0.85rem; }
-  .toolbar { background: #000; padding: 10px 24px; display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid var(--gray-800); align-items: center; }
-  button.tool { background: var(--gray-800); color: #d1d5db; border: none; padding: 10px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-  button.tool.red { color: #f87171; } button.tool.red.active { background: var(--red); color: #fff; }
-  button.tool.yellow { color: var(--yellow); } button.tool.yellow.active { background: var(--yellow); color: #000; }
-  button.tool.gray.active { background: #4b5563; color: #fff; }
-  button.tool.alert { background: var(--red); color: #fff; animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
-  .logout-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
   
-  main { max-width: 1100px; margin: 0 auto; padding: 24px; }
-  h2 { color: var(--yellow); margin-top: 0; }
-  .empty { text-align: center; color: var(--gray-400); border: 1px dashed var(--gray-700); border-radius: 8px; padding: 48px 16px; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  thead { background: var(--gray-900); color: var(--yellow); }
-  th { text-align: left; padding: 10px; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.5px; }
-  td { padding: 10px; border-top: 1px solid var(--gray-800); background: rgba(17,24,39,0.4); vertical-align: middle; }
-  tr.due-today td { background: rgba(127,29,29,0.3); }
-  .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; display: inline-block; }
-  .badge-major { background: var(--red); color: #fff; } .badge-minor { background: #2563eb; color: #fff; } .badge-emergency { background: #f97316; color: #fff; }
-  .status-select { font-size: 0.75rem; font-weight: 700; border-radius: 4px; padding: 6px 8px; border: none; min-width: 110px; }
-  .status-In_Progress { background: var(--yellow); color: #000; } .status-Ready { background: #60a5fa; color: #000; } .status-Delivered { background: #22c55e; color: #fff; }
+  header { 
+    background: linear-gradient(135deg, rgba(230, 57, 70, 0.9) 0%, rgba(157, 2, 8, 0.95) 50%, rgba(11, 12, 16, 0.98) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 183, 3, 0.3); 
+    padding: 20px 28px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    flex-wrap: wrap; 
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  }
   
-  .icon-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--gray-700); color: #d1d5db; cursor: pointer; padding: 8px 12px; border-radius: 6px; font-size: 1.1rem; display: inline-flex; align-items: center; justify-content: center; min-width: 40px; min-height: 40px; }
-  .icon-btn:hover, .icon-btn:active { background: rgba(250, 204, 21, 0.15); color: var(--yellow); border-color: var(--yellow); }
-  .icon-btn.danger:hover, .icon-btn.danger:active { background: rgba(239, 68, 68, 0.15); color: #ef4444; border-color: #ef4444; }
-  .icon-btn.edit:hover, .icon-btn.edit:active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border-color: #60a5fa; }
+  header h1 { 
+    margin: 0; 
+    font-family: 'Poppins', sans-serif;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.8rem; 
+    letter-spacing: -0.5px;
+    font-weight: 800;
+  }
+  
+  header p { 
+    margin: 4px 0 0; 
+    color: rgba(255, 255, 255, 0.8); 
+    font-size: 0.85rem; 
+    font-weight: 400;
+  }
 
-  .card { background: var(--gray-900); border: 1px solid var(--gray-800); border-radius: 8px; padding: 20px; max-width: 600px; }
-  .field { margin-bottom: 14px; display: block; }
-  .field span { display: block; font-size: 0.75rem; color: var(--gray-400); font-weight: 600; margin-bottom: 4px; }
-  .field input, .field select, .field textarea { width: 100%; background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 6px; padding: 10px 12px; color: #fff; font-size: 0.9rem; }
-  .field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid var(--yellow); }
+  .logout-btn { 
+    background: rgba(255, 255, 255, 0.08); 
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15); 
+    color: #fff; 
+    padding: 8px 16px; 
+    border-radius: var(--radius-sm); 
+    cursor: pointer; 
+    font-size: 0.85rem; 
+    font-weight: 600;
+    transition: var(--transition);
+  }
+
+  .logout-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+  }
+
+  /* ===== TOOLBAR ===== */
+  .toolbar { 
+    background: rgba(11, 12, 16, 0.95);
+    backdrop-filter: blur(20px);
+    padding: 12px 28px; 
+    display: flex; 
+    gap: 8px; 
+    flex-wrap: wrap; 
+    border-bottom: 1px solid var(--glass-border); 
+    align-items: center;
+    position: sticky;
+    top: 80px;
+    z-index: 99;
+  }
+  
+  button.tool { 
+    background: rgba(255, 255, 255, 0.04); 
+    color: var(--text-secondary); 
+    border: 1px solid transparent;
+    padding: 10px 16px; 
+    border-radius: var(--radius-sm); 
+    font-size: 0.85rem; 
+    font-weight: 600; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    gap: 6px;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  button.tool::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: var(--transition);
+  }
+
+  button.tool:hover::before { opacity: 1; }
+  
+  button.tool:hover {
+    transform: translateY(-1px);
+    border-color: var(--glass-border);
+  }
+
+  button.tool.red { color: var(--primary-light); } 
+  button.tool.red.active { 
+    background: var(--gradient-primary); 
+    color: #fff; 
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+  }
+  
+  button.tool.yellow { color: var(--accent); } 
+  button.tool.yellow.active { 
+    background: var(--gradient-accent); 
+    color: #000; 
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(255, 183, 3, 0.3);
+  }
+  
+  button.tool.gray.active { 
+    background: rgba(255, 255, 255, 0.1); 
+    color: #fff;
+    border-color: var(--glass-border);
+  }
+  
+  button.tool.alert { 
+    background: var(--gradient-primary); 
+    color: #fff; 
+    animation: pulseGlow 2s ease-in-out infinite;
+    border-color: transparent;
+  }
+
+  @keyframes pulseGlow { 
+    0%, 100% { 
+      box-shadow: 0 0 15px rgba(230, 57, 70, 0.4);
+      transform: scale(1);
+    } 
+    50% { 
+      box-shadow: 0 0 30px rgba(230, 57, 70, 0.6);
+      transform: scale(1.02);
+    }
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  main { 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    padding: 32px 28px;
+    position: relative;
+  }
+  
+  h2 { 
+    font-family: 'Poppins', sans-serif;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-top: 0; 
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  
+  .empty { 
+    text-align: center; 
+    color: var(--text-muted); 
+    border: 1px dashed var(--glass-border); 
+    border-radius: var(--radius-lg); 
+    padding: 60px 20px;
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+  }
+
+  /* ===== TABLE ===== */
+  table { 
+    width: 100%; 
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.88rem;
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+  
+  thead { 
+    background: linear-gradient(135deg, rgba(230, 57, 70, 0.15) 0%, rgba(255, 183, 3, 0.08) 100%);
+  }
+  
+  th { 
+    text-align: left; 
+    padding: 14px 16px; 
+    text-transform: uppercase; 
+    font-size: 0.72rem; 
+    letter-spacing: 0.8px;
+    color: var(--accent);
+    font-weight: 700;
+    border-bottom: 1px solid var(--glass-border);
+  }
+  
+  td { 
+    padding: 14px 16px; 
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    vertical-align: middle;
+    transition: var(--transition-fast);
+  }
+
+  tbody tr {
+    transition: var(--transition);
+  }
+
+  tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+  
+  tr.due-today td { 
+    background: rgba(230, 57, 70, 0.08);
+    border-left: 3px solid var(--primary);
+  }
+
+  /* ===== BADGES ===== */
+  .badge { 
+    padding: 5px 12px; 
+    border-radius: 20px; 
+    font-size: 0.72rem; 
+    font-weight: 700; 
+    display: inline-block;
+    letter-spacing: 0.3px;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .badge-major { 
+    background: var(--gradient-primary); 
+    color: #fff; 
+  } 
+  
+  .badge-minor { 
+    background: linear-gradient(135deg, var(--info) 0%, var(--info-dark) 100%); 
+    color: #fff; 
+  } 
+  
+  .badge-emergency { 
+    background: linear-gradient(135deg, var(--warning) 0%, #e85d04 100%); 
+    color: #fff; 
+  }
+
+  /* ===== STATUS SELECT ===== */
+  .status-select { 
+    font-size: 0.78rem; 
+    font-weight: 700; 
+    border-radius: 20px; 
+    padding: 8px 14px; 
+    border: none; 
+    min-width: 120px;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .status-select:hover {
+    transform: scale(1.02);
+  }
+  
+  .status-In_Progress { 
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); 
+    color: #000; 
+  } 
+  
+  .status-Ready { 
+    background: linear-gradient(135deg, var(--info) 0%, var(--info-dark) 100%); 
+    color: #fff; 
+  } 
+  
+  .status-Delivered { 
+    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%); 
+    color: #fff; 
+  }
+
+  /* ===== ICON BUTTONS ===== */
+  .icon-btn { 
+    background: rgba(255, 255, 255, 0.04); 
+    border: 1px solid var(--glass-border); 
+    color: var(--text-secondary); 
+    cursor: pointer; 
+    padding: 10px 14px; 
+    border-radius: var(--radius-sm); 
+    font-size: 1.1rem; 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    min-width: 42px; 
+    min-height: 42px;
+    transition: var(--transition);
+  }
+  
+  .icon-btn:hover { 
+    background: rgba(255, 183, 3, 0.1); 
+    color: var(--accent); 
+    border-color: rgba(255, 183, 3, 0.3);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-accent-glow);
+  }
+  
+  .icon-btn.danger:hover { 
+    background: rgba(239, 71, 111, 0.1); 
+    color: var(--danger); 
+    border-color: rgba(239, 71, 111, 0.3);
+    box-shadow: 0 0 20px rgba(239, 71, 111, 0.2);
+  }
+
+  .icon-btn.edit:hover { 
+    background: rgba(76, 201, 240, 0.1); 
+    color: var(--info); 
+    border-color: rgba(76, 201, 240, 0.3);
+    box-shadow: 0 0 20px rgba(76, 201, 240, 0.2);
+  }
+
+  /* ===== CARDS ===== */
+  .card { 
+    background: var(--gradient-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border); 
+    border-radius: var(--radius-xl); 
+    padding: 32px; 
+    max-width: 650px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gradient-primary);
+  }
+
+  .field { margin-bottom: 18px; display: block; }
+  
+  .field span { 
+    display: block; 
+    font-size: 0.8rem; 
+    color: var(--text-secondary); 
+    font-weight: 600; 
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+  
+  .field input, .field select, .field textarea { 
+    width: 100%; 
+    background: rgba(255, 255, 255, 0.04); 
+    border: 1px solid var(--glass-border); 
+    border-radius: var(--radius-md); 
+    padding: 12px 16px; 
+    color: var(--text-primary); 
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    transition: var(--transition);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+
+  /* FIX: Dropdown styling for visibility */
+  .field select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffb703' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.04) !important;
+  }
+
+  .field select option {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+    padding: 8px;
+  }
+  
+  .field input:focus, .field select:focus, .field textarea:focus { 
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1);
+  }
+  
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } .toolbar { padding: 10px 12px; } button.tool { padding: 10px 12px; font-size: 0.8rem; } }
-  .info-box { background: rgba(0,0,0,0.4); border: 1px solid var(--gray-700); border-radius: 6px; padding: 10px 12px; font-size: 0.85rem; margin-bottom: 14px; }
-  .info-box.yellow { border-color: rgba(250,204,21,0.4); }
-  .submit-btn { width: 100%; background: var(--red); color: #fff; font-weight: 700; padding: 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 1rem; margin-bottom: 8px; }
-  .cancel-btn { width: 100%; background: var(--gray-700); color: #fff; font-weight: 700; padding: 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 1rem; }
   
-  .search-box { position: relative; margin-bottom: 16px; }
-  .search-box input { width: 100%; background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 8px; padding: 12px 14px 12px 40px; color: #fff; font-size: 0.95rem; }
-  .search-box .icon { position: absolute; left: 12px; top: 13px; color: var(--gray-400); font-size: 1.1rem; }
-  .search-result { background: var(--gray-900); border: 1px solid var(--gray-800); border-radius: 8px; padding: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; }
-  .search-result .jobno { color: var(--yellow); font-family: monospace; font-size: 0.85rem; }
-  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px,1fr)); gap: 10px; margin-bottom: 20px; }
-  .stat { background: rgba(0,0,0,0.4); border-radius: 8px; padding: 12px; text-align: center; }
-  .stat .val { font-size: 1.6rem; font-weight: 800; } .stat .lbl { font-size: 0.7rem; color: var(--gray-400); margin-top: 4px; }
-  .day-row { display: flex; justify-content: space-between; align-items: center; background: var(--gray-900); border: 1px solid var(--gray-800); border-radius: 6px; padding: 10px 12px; font-size: 0.85rem; margin-bottom: 6px; }
-  .bar { width: 120px; height: 8px; background: var(--gray-800); border-radius: 4px; overflow: hidden; margin-right: 8px; }
-  .bar-fill { height: 100%; background: var(--yellow); } .bar-fill.full { background: var(--red); }
-  .alert-row { background: rgba(127,29,29,0.3); border: 1px solid var(--red); border-radius: 8px; padding: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; }
+  @media (max-width: 768px) { 
+    .grid2 { grid-template-columns: 1fr; } 
+    .toolbar { padding: 12px 16px; } 
+    button.tool { padding: 10px 14px; font-size: 0.8rem; }
+    header { padding: 16px 20px; }
+    main { padding: 24px 16px; }
+    .card { padding: 24px 20px; }
+    h2 { font-size: 1.5rem; }
+  }
 
-  .cal-toolbar { display:flex; align-items:center; gap:8px; margin-bottom: 12px; flex-wrap: wrap; }
-  .cal-toolbar select, .cal-toolbar button.navbtn { background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 6px; color: #fff; font-size: 0.85rem; padding: 8px 10px; cursor: pointer; }
-  .cal-weekdays { display:grid; grid-template-columns: repeat(7,1fr); gap:4px; text-align:center; font-size:0.7rem; color:var(--gray-400); text-transform:uppercase; font-weight:700; margin-bottom:4px; }
-  .cal-grid { display:grid; grid-template-columns: repeat(7,1fr); gap:4px; }
-  .cal-cell { min-height:64px; border-radius:6px; border:1px solid var(--gray-800); background:var(--gray-900); display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; color:#fff; padding:4px; }
-  .cal-cell.empty { background:transparent; border:none; cursor:default; }
-  .cal-cell.full { background: rgba(127,29,29,0.5); border-color:#b91c1c; }
-  .cal-cell.selected { box-shadow: 0 0 0 2px var(--yellow) inset; }
-  .cal-cell .num { font-size:0.9rem; font-weight:700; } .cal-cell .num.today { color: var(--yellow); }
-  .cal-cell .cnt { font-size:0.7rem; font-weight:700; margin-top:2px; } .cal-cell .cnt.ok { color:#4ade80; } .cal-cell .cnt.full { color:#ef4444; }
-  .day-detail { background: var(--gray-900); border:1px solid var(--gray-800); border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+  @media (max-width: 480px) {
+    .toolbar { 
+      flex-direction: column; 
+      align-items: stretch;
+    }
+    button.tool {
+      justify-content: center;
+    }
+    #filterDate {
+      width: 100%;
+      margin-top: 8px;
+    }
+    header h1 {
+      font-size: 1.4rem;
+    }
+    .login-card {
+      padding: 32px 24px;
+    }
+  }
+
+  /* ===== INFO BOXES ===== */
+  .info-box { 
+    background: rgba(255, 255, 255, 0.03); 
+    border: 1px solid var(--glass-border); 
+    border-radius: var(--radius-md); 
+    padding: 14px 18px; 
+    font-size: 0.88rem; 
+    margin-bottom: 16px;
+    backdrop-filter: blur(10px);
+  }
   
-  .sync-status { text-align: center; font-size: 0.8rem; padding: 8px 16px; border-top: 1px solid var(--gray-800); font-weight: 600; }
-  .sync-status.connected { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-  .sync-status.error { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-  .sync-status.loading { background: rgba(250, 204, 21, 0.2); color: #facc15; }
+  .info-box.yellow { 
+    border-color: rgba(255, 183, 3, 0.3);
+    background: linear-gradient(135deg, rgba(255, 183, 3, 0.08) 0%, rgba(255, 214, 10, 0.04) 100%);
+    box-shadow: var(--shadow-accent-glow);
+  }
+
+  /* ===== BUTTONS ===== */
+  .submit-btn { 
+    width: 100%; 
+    background: var(--gradient-primary);
+    color: #fff; 
+    font-weight: 700; 
+    padding: 16px; 
+    border-radius: var(--radius-md); 
+    border: none; 
+    cursor: pointer; 
+    font-size: 1rem; 
+    margin-bottom: 10px;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+    letter-spacing: 0.3px;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(230, 57, 70, 0.4);
+  }
+
+  .submit-btn:active {
+    transform: translateY(0);
+  }
   
-  .toast { position: fixed; top: 16px; right: 16px; background: #22c55e; color: #fff; font-weight: 700; padding: 16px 24px; border-radius: 8px; max-width: 350px; font-size: 1rem; z-index: 10000; border: 2px solid #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.6); animation: slideIn 0.3s ease-out; }
-  @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-  .toast button { background: none; border: none; float: right; margin-left: 12px; cursor: pointer; font-weight: 700; font-size: 1.2rem; color: #fff; }
-  .toast.error { background: #ef4444; }
+  .cancel-btn { 
+    width: 100%; 
+    background: rgba(255, 255, 255, 0.06); 
+    color: var(--text-secondary); 
+    font-weight: 600; 
+    padding: 14px; 
+    border-radius: var(--radius-md); 
+    border: 1px solid var(--glass-border); 
+    cursor: pointer; 
+    font-size: 0.95rem;
+    transition: var(--transition);
+  }
 
-  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
-  .modal { background: #fff; color: #000; border-radius: 8px; max-width: 420px; width: 100%; padding: 24px; position: relative; max-height: 90vh; overflow-y: auto; }
-  .modal .close { position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 8px; }
-  .modal h2 { color: var(--red); margin: 0 0 16px 0; }
-  .modal .row { display: flex; justify-content: space-between; border-bottom: 1px solid #e5e7eb; padding: 8px 0; font-size: 0.9rem; }
-  .modal .row span:first-child { color: #6b7280; }
-  .modal .row.bold span:last-child { font-weight: 700; }
-  .print-btn { margin-top: 16px; width: 100%; background: var(--red); color: #fff; font-weight: 700; padding: 14px; border-radius: 8px; border: none; cursor: pointer; margin-bottom: 8px; font-size: 1rem; }
-  .whatsapp-btn { width: 100%; background: var(--whatsapp); color: #fff; font-weight: 700; padding: 14px; border-radius: 8px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1rem; }
+  .cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+  }
 
-  .edit-modal-content { background: var(--gray-900); padding: 20px; border-radius: 8px; color: #fff; }
-  .edit-modal-content h3 { color: var(--yellow); margin-top: 0; }
+  /* ===== SEARCH ===== */
+  .search-box { position: relative; margin-bottom: 20px; }
+  
+  .search-box input { 
+    width: 100%; 
+    background: var(--gradient-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border); 
+    border-radius: var(--radius-lg); 
+    padding: 14px 18px 14px 48px; 
+    color: var(--text-primary); 
+    font-size: 0.95rem;
+    transition: var(--transition);
+  }
 
-  .required-star { color: var(--red); font-weight: bold; margin-left: 2px; }
+  .search-box input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.1);
+  }
+  
+  .search-box .icon { 
+    position: absolute; 
+    left: 16px; 
+    top: 16px; 
+    color: var(--text-muted); 
+    font-size: 1.2rem; 
+  }
 
+  .search-result { 
+    background: var(--gradient-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border); 
+    border-radius: var(--radius-lg); 
+    padding: 18px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    flex-wrap: wrap; 
+    gap: 12px; 
+    margin-bottom: 12px;
+    transition: var(--transition);
+  }
+
+  .search-result:hover {
+    border-color: rgba(255, 183, 3, 0.2);
+    transform: translateX(4px);
+  }
+  
+  .search-result .jobno { 
+    color: var(--accent); 
+    font-family: 'Poppins', monospace; 
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+
+  /* ===== STATS ===== */
+  .stats-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+    gap: 12px; 
+    margin-bottom: 24px; 
+  }
+  
+  .stat { 
+    background: var(--gradient-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg); 
+    padding: 20px 16px; 
+    text-align: center;
+    transition: var(--transition);
+  }
+
+  .stat:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(255, 183, 3, 0.2);
+  }
+  
+  .stat .val { 
+    font-size: 1.8rem; 
+    font-weight: 800;
+    font-family: 'Poppins', sans-serif;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  } 
+  
+  .stat .lbl { 
+    font-size: 0.75rem; 
+    color: var(--text-muted); 
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  /* ===== ALERT ROW ===== */
+  .alert-row { 
+    background: linear-gradient(135deg, rgba(230, 57, 70, 0.08) 0%, rgba(239, 71, 111, 0.04) 100%);
+    border: 1px solid rgba(230, 57, 70, 0.2); 
+    border-radius: var(--radius-lg); 
+    padding: 18px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    flex-wrap: wrap; 
+    gap: 12px; 
+    margin-bottom: 12px;
+    transition: var(--transition);
+  }
+
+  .alert-row:hover {
+    border-color: rgba(230, 57, 70, 0.4);
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* ===== CALENDAR ===== */
+  .cal-toolbar { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    margin-bottom: 16px; 
+    flex-wrap: wrap; 
+  }
+  
+  .cal-toolbar select, .cal-toolbar button.navbtn { 
+    background: var(--gradient-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border); 
+    border-radius: var(--radius-sm); 
+    color: var(--text-primary); 
+    font-size: 0.88rem; 
+    padding: 10px 14px; 
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .cal-toolbar button.navbtn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent);
+  }
+  
+  .cal-weekdays { 
+    display: grid; 
+    grid-template-columns: repeat(7, 1fr); 
+    gap: 6px; 
+    text-align: center; 
+    font-size: 0.72rem; 
+    color: var(--accent);
+    text-transform: uppercase; 
+    font-weight: 700; 
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+  
+  .cal-grid { 
+    display: grid; 
+    grid-template-columns: repeat(7, 1fr); 
+    gap: 6px; 
+  }
+  
+  .cal-cell { 
+    min-height: 70px; 
+    border-radius: var(--radius-md); 
+    border: 1px solid var(--glass-border); 
+    background: var(--gradient-card);
+    backdrop-filter: blur(10px);
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    cursor: pointer; 
+    color: var(--text-primary); 
+    padding: 6px;
+    transition: var(--transition);
+  }
+
+  .cal-cell:hover {
+    transform: scale(1.05);
+    border-color: var(--accent);
+    box-shadow: var(--shadow-accent-glow);
+  }
+  
+  .cal-cell.empty { 
+    background: transparent; 
+    border: none; 
+    cursor: default; 
+  }
+
+  .cal-cell.empty:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .cal-cell.full { 
+    background: linear-gradient(135deg, rgba(230, 57, 70, 0.2) 0%, rgba(239, 71, 111, 0.1) 100%);
+    border-color: rgba(230, 57, 70, 0.3); 
+  }
+  
+  .cal-cell.selected { 
+    box-shadow: 0 0 0 2px var(--accent) inset, var(--shadow-accent-glow);
+  }
+  
+  .cal-cell .num { 
+    font-size: 0.95rem; 
+    font-weight: 700; 
+  } 
+  
+  .cal-cell .num.today { 
+    color: var(--accent);
+    text-shadow: 0 0 10px rgba(255, 183, 3, 0.5);
+  }
+  
+  .cal-cell .cnt { 
+    font-size: 0.72rem; 
+    font-weight: 700; 
+    margin-top: 4px; 
+  } 
+  
+  .cal-cell .cnt.ok { color: var(--success); } 
+  .cal-cell .cnt.full { color: var(--danger); }
+
+  .day-detail { 
+    background: var(--gradient-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border); 
+    border-radius: var(--radius-lg); 
+    padding: 16px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    flex-wrap: wrap; 
+    gap: 10px; 
+    margin-bottom: 10px;
+    transition: var(--transition);
+  }
+
+  .day-detail:hover {
+    border-color: rgba(255, 183, 3, 0.2);
+  }
+
+  /* ===== SYNC STATUS ===== */
+  .sync-status { 
+    text-align: center; 
+    font-size: 0.82rem; 
+    padding: 10px 20px; 
+    border-top: 1px solid var(--glass-border); 
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  
+  .sync-status.connected { 
+    background: linear-gradient(135deg, rgba(6, 214, 160, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
+    color: var(--success); 
+    border-top-color: rgba(6, 214, 160, 0.2);
+  }
+  
+  .sync-status.error { 
+    background: linear-gradient(135deg, rgba(239, 71, 111, 0.1) 0%, rgba(239, 71, 111, 0.05) 100%);
+    color: var(--danger); 
+    border-top-color: rgba(239, 71, 111, 0.2);
+  }
+  
+  .sync-status.loading { 
+    background: linear-gradient(135deg, rgba(255, 183, 3, 0.1) 0%, rgba(255, 183, 3, 0.05) 100%);
+    color: var(--accent); 
+    border-top-color: rgba(255, 183, 3, 0.2);
+  }
+
+  /* ===== TOAST ===== */
+  .toast { 
+    position: fixed; 
+    top: 20px; 
+    right: 20px; 
+    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+    color: #fff; 
+    font-weight: 700; 
+    padding: 18px 28px; 
+    border-radius: var(--radius-lg); 
+    max-width: 380px; 
+    font-size: 0.95rem; 
+    z-index: 10000; 
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 30px rgba(6, 214, 160, 0.3);
+    animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  
+  .toast button { 
+    background: none; 
+    border: none; 
+    float: right; 
+    margin-left: 12px; 
+    cursor: pointer; 
+    font-weight: 700; 
+    font-size: 1.2rem; 
+    color: #fff;
+    transition: var(--transition-fast);
+  }
+
+  .toast button:hover {
+    transform: scale(1.2);
+  }
+
+  .toast.error { 
+    background: linear-gradient(135deg, var(--danger) 0%, #c9184a 100%);
+    box-shadow: 0 8px 30px rgba(239, 71, 111, 0.3);
+  }
+
+  /* ===== MODAL ===== */
+  .modal-bg { 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 200; 
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .modal { 
+    background: linear-gradient(135deg, #1a1b2e 0%, #0f1019 100%);
+    color: var(--text-primary); 
+    border-radius: var(--radius-xl); 
+    max-width: 450px; 
+    width: 100%; 
+    padding: 32px; 
+    position: relative; 
+    max-height: 90vh; 
+    overflow-y: auto;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-lg);
+    animation: modalSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  
+  .modal .close { 
+    position: absolute; 
+    top: 16px; 
+    right: 16px; 
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem; 
+    cursor: pointer; 
+    transition: var(--transition);
+    color: var(--text-secondary);
+  }
+
+  .modal .close:hover {
+    background: rgba(239, 71, 111, 0.1);
+    color: var(--danger);
+    border-color: rgba(239, 71, 111, 0.3);
+    transform: rotate(90deg);
+  }
+  
+  .modal h2 { 
+    font-family: 'Poppins', sans-serif;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0 0 20px 0; 
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+  
+  .modal .row { 
+    display: flex; 
+    justify-content: space-between; 
+    border-bottom: 1px solid var(--glass-border); 
+    padding: 12px 0; 
+    font-size: 0.92rem;
+    transition: var(--transition-fast);
+  }
+
+  .modal .row:hover {
+    background: rgba(255, 255, 255, 0.02);
+    padding-left: 8px;
+  }
+  
+  .modal .row span:first-child { 
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  
+  .modal .row.bold span:last-child { 
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .print-btn { 
+    margin-top: 20px; 
+    width: 100%; 
+    background: var(--gradient-primary);
+    color: #fff; 
+    font-weight: 700; 
+    padding: 16px; 
+    border-radius: var(--radius-md); 
+    border: none; 
+    cursor: pointer; 
+    margin-bottom: 10px; 
+    font-size: 1rem;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+  }
+
+  .print-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(230, 57, 70, 0.4);
+  }
+  
+  .whatsapp-btn { 
+    width: 100%; 
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: #fff; 
+    font-weight: 700; 
+    padding: 16px; 
+    border-radius: var(--radius-md); 
+    border: none; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 10px; 
+    font-size: 1rem;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+  }
+
+  .whatsapp-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(37, 211, 102, 0.4);
+  }
+
+  .edit-modal-content { 
+    background: rgba(255, 255, 255, 0.02);
+    padding: 24px; 
+    border-radius: var(--radius-lg); 
+    border: 1px solid var(--glass-border);
+  }
+  
+  .edit-modal-content h3 { 
+    color: var(--accent); 
+    margin-top: 0; 
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .required-star { 
+    color: var(--danger); 
+    font-weight: bold; 
+    margin-left: 3px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* ===== FOOTER ===== */
+  footer { 
+    text-align: center; 
+    font-size: 0.78rem; 
+    color: var(--text-muted); 
+    padding: 20px; 
+    border-top: 1px solid var(--glass-border);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent-light) 100%);
+  }
+
+  /* ===== PRINT ===== */
   @media print {
     .no-print, header, .toolbar, footer, #toastArea, main, #deleteModal, #editModal { display: none !important; }
     .modal-bg { position: static !important; background: #ffffff !important; display: block !important; inset: auto !important; padding: 0 !important; margin: 0 !important; }
-    .modal { box-shadow: none !important; border: 1px solid #000 !important; max-width: 100% !important; width: 100% !important; color: #000 !important; background: #fff !important; padding: 20px !important; }
+    .modal { box-shadow: none !important; border: 1px solid #000 !important; max-width: 100% !important; width: 100% !important; color: #000 !important; background: #fff !important; padding: 24px !important; }
     .modal * { color: #000 !important; }
     .modal .close, .modal .print-btn, .modal .whatsapp-btn { display: none !important; }
+  }
+
+  /* ===== SELECTION ===== */
+  ::selection {
+    background: rgba(255, 183, 3, 0.3);
+    color: var(--text-primary);
+  }
+
+  /* ===== TOUCH DEVICES ===== */
+  @media (hover: none) {
+    button.tool:hover {
+      transform: none;
+    }
+    .icon-btn:hover {
+      transform: none;
+    }
+    .submit-btn:hover {
+      transform: none;
+    }
+  }
+
+  /* ===== TABLET OPTIMIZATION ===== */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    main {
+      padding: 28px 24px;
+    }
+    .card {
+      padding: 28px 24px;
+    }
+    table {
+      font-size: 0.82rem;
+    }
+    th, td {
+      padding: 12px 14px;
+    }
+  }
+
+  /* ===== LARGE SCREENS ===== */
+  @media (min-width: 1400px) {
+    main {
+      max-width: 1400px;
+    }
   }
 </style>
 </head>
@@ -138,7 +1271,7 @@
 
 <div id="loginScreen" class="login-screen">
   <div class="login-card">
-    <h2>2K CAR CARE VIJAYAWADA</h2>
+    <h2>2K CAR CARE</h2>
     <p>Workshop Scheduler Login</p>
     <form onsubmit="handleLogin(event)">
       <div class="login-field"><label>User ID</label><input type="text" id="loginUser" placeholder="Enter ID" required></div>
@@ -151,9 +1284,9 @@
 
 <div id="appContainer">
   <header class="no-print">
-    <div><h1>2K CAR CARE</h1><p>Workshop Scheduler & Job Card System BY DJ</p></div>
+    <div><h1>2K CAR CARE</h1><p>Workshop Scheduler & Job Card System</p></div>
     <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
-      <div><p>Today: <strong id="todayLabel"></strong></p><p id="saveStatus" style="color:#fde68a;font-size:0.7rem;"></p></div>
+      <div><p>Today: <strong id="todayLabel"></strong></p><p id="saveStatus" style="color:rgba(255,183,3,0.8);font-size:0.7rem;"></p></div>
       <button class="logout-btn" onclick="logout()">🚪 Logout</button>
     </div>
   </header>
@@ -161,7 +1294,7 @@
   <div class="toolbar no-print">
     <button class="tool red" onclick="changeView('add')">+ Add Job</button>
     <button class="tool red" onclick="changeView('search')">🔍 Search</button>
-    <button class="tool gray" onclick="changeView('dashboard'); toast('Refreshed.');">↻ Refresh</button>
+    <button class="tool gray" onclick="changeView('dashboard'); toast('Refreshed');">↻ Refresh</button>
     <button class="tool gray" onclick="changeView('capacity')">📊 Capacity</button>
     <button class="tool gray" onclick="changeView('calendar')">📅 Calendar</button>
     <button class="tool yellow" onclick="setFilter('emergency')">Emergency</button>
@@ -171,8 +1304,11 @@
     <button class="tool gray" onclick="setWorkTypeFilter('painting')">🎨 Painting</button>
     <button class="tool gray" onclick="setWorkTypeFilter('polishing')">✨ Polishing</button>
     <button class="tool gray" onclick="clearFilters()">Clear</button>
-    <select id="filterDate" style="background: var(--gray-800); color: #d1d5db; border: none; padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 120px;" onchange="setDateFilter(this.value)">
-      <option value="all">All Dates</option><option value="today">Due Today</option><option value="week">Due This Week</option><option value="overdue">Overdue</option>
+    <select id="filterDate" style="background: rgba(255,255,255,0.04); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 130px;" onchange="setDateFilter(this.value)">
+      <option value="all" style="color:#000;background:#fff">All Dates</option>
+      <option value="today" style="color:#000;background:#fff">Due Today</option>
+      <option value="week" style="color:#000;background:#fff">Due This Week</option>
+      <option value="overdue" style="color:#000;background:#fff">Overdue</option>
     </select>
     <button class="tool red" onclick="changeView('report')">📄 Report</button>
     <button class="tool gray" id="alertBtn" onclick="changeView('alerts')">🔔 Alerts</button>
@@ -186,16 +1322,16 @@
     <div class="modal">
       <button class="close" onclick="closeDeleteModal()">✕</button>
       <h2>⚠️ Confirm Deletion</h2>
-      <p class="sub">Enter admin password to permanently delete this job card.</p>
+      <p style="color:var(--text-secondary); margin-bottom:20px;">Enter admin password to permanently delete this job card.</p>
       <div class="field">
-        <input type="password" id="deletePasswordInput" placeholder="Enter Admin Password" style="width:100%; padding:12px; margin-bottom:16px; border-radius:6px; border:1px solid var(--gray-700); background:var(--gray-900); color:#fff; font-size:1rem;">
+        <input type="password" id="deletePasswordInput" placeholder="Enter Admin Password" style="width:100%; padding:14px; margin-bottom:20px; border-radius:12px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.04); color:#fff; font-size:1rem;">
       </div>
-      <button class="submit-btn" onclick="executeDelete()" style="background:#ef4444;">🗑️ Delete Job</button>
+      <button class="submit-btn" onclick="executeDelete()" style="background: linear-gradient(135deg, #ef476f 0%, #c9184a 100%);">🗑️ Delete Job</button>
     </div>
   </div>
 
   <div id="editModal" class="modal-bg" style="display:none;">
-    <div class="modal" style="max-width: 600px;">
+    <div class="modal" style="max-width: 650px;">
       <button class="close" onclick="closeEditModal()">✕</button>
       <h2>✏️ Edit Job Card</h2>
       <div class="edit-modal-content">
@@ -211,34 +1347,34 @@
           <label class="field"><span>Phone Number</span>
             <div style="display: flex; gap: 8px;">
               <select id="edit_countryCode" style="width: 110px;">
-                <option value="+91">🇮 +91</option>
-                <option value="+971">🇦🇪 +971</option>
-                <option value="+968">🇴🇲 +968</option>
-                <option value="+966">🇸🇦 +966</option>
-                <option value="+974">🇶🇦 +974</option>
-                <option value="+1">🇺🇸 +1</option>
-                <option value="+44">🇬 +44</option>
-                <option value="+92">🇵🇰 +92</option>
-                <option value="+880">🇧🇩 +880</option>
+                <option value="+91" style="color:#000;background:#fff">🇮 +91</option>
+                <option value="+971" style="color:#000;background:#fff">🇦🇪 +971</option>
+                <option value="+968" style="color:#000;background:#fff">🇴🇲 +968</option>
+                <option value="+966" style="color:#000;background:#fff">🇸🇦 +966</option>
+                <option value="+974" style="color:#000;background:#fff">🇶 +974</option>
+                <option value="+1" style="color:#000;background:#fff">🇺 +1</option>
+                <option value="+44" style="color:#000;background:#fff">🇬🇧 +44</option>
+                <option value="+92" style="color:#000;background:#fff">🇵🇰 +92</option>
+                <option value="+880" style="color:#000;background:#fff">🇧 +880</option>
               </select>
               <input id="edit_phone" maxlength="10" inputmode="numeric">
             </div>
           </label>
           <label class="field"><span>Job Type</span>
             <select id="edit_type">
-              <option value="Emergency">Emergency (1 day)</option>
-              <option value="Minor">Minor Job (3 days)</option>
-              <option value="Major">Major Job (5-15 days)</option>
+              <option value="Emergency" style="color:#000;background:#fff">Emergency (1 day)</option>
+              <option value="Minor" style="color:#000;background:#fff">Minor Job (3 days)</option>
+              <option value="Major" style="color:#000;background:#fff">Major Job (5-15 days)</option>
             </select>
           </label>
           <label class="field" id="edit_majorDaysField"><span>Major Job Duration (5-15 days)</span><input type="number" id="edit_majorDays" min="5" max="15"></label>
           <label class="field"><span>Assigned Team</span>
             <select id="edit_team">
-              <option value="Team 1">Team 1</option>
-              <option value="Team 2">Team 2</option>
-              <option value="Team 3">Team 3</option>
-              <option value="Team 4">Team 4</option>
-              <option value="Team 5">Team 5</option>
+              <option value="Team 1" style="color:#000;background:#fff">Team 1</option>
+              <option value="Team 2" style="color:#000;background:#fff">Team 2</option>
+              <option value="Team 3" style="color:#000;background:#fff">Team 3</option>
+              <option value="Team 4" style="color:#000;background:#fff">Team 4</option>
+              <option value="Team 5" style="color:#000;background:#fff">Team 5</option>
             </select>
           </label>
           <label class="field"><span>Start Date</span><input type="date" id="edit_start"></label>
@@ -298,6 +1434,8 @@ VEHICLE_MAKERS.forEach(m => {
     const opt = document.createElement('option');
     opt.value = m;
     opt.textContent = m;
+    opt.style.color = '#000';
+    opt.style.backgroundColor = '#fff';
     editMakerSelect.appendChild(opt);
 });
 
@@ -311,7 +1449,7 @@ function updateSyncStatus(type, message) {
 function getTeamWorkload() {
   const workload = { "Team 1": 0, "Team 2": 0, "Team 3": 0, "Team 4": 0, "Team 5": 0 };
   state.jobs.forEach(j => {
-    if (j.status !== "Delivered" && j.status !== "Deleted" && workload[j.team] !== undefined) workload[j.team]++;
+    if (j.status !== "Delivered" && workload[j.team] !== undefined) workload[j.team]++;
   });
   return workload;
 }
@@ -333,7 +1471,7 @@ function startRealtimeSync() {
     db.collection("jobs").onSnapshot((snapshot) => {
         state.jobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         if (view === "search") updateSearchResults(); else render();
-        if (firebaseConnected) updateSyncStatus("connected", `✅ Live Sync Active `);
+        if (firebaseConnected) updateSyncStatus("connected", `✅ Live Sync Active - ${state.jobs.length} jobs`);
     }, (error) => {
         updateSyncStatus("error", "❌ Sync error: " + error.message);
     });
@@ -373,14 +1511,14 @@ function addDays(dateStr, days) { const d = new Date(dateStr); d.setDate(d.getDa
 function formatDate(dateStr) { if(!dateStr) return ""; const d = new Date(dateStr+"T00:00:00"); return d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}); }
 function rangeDates(start,end) { const dates=[]; let cur=new Date(start); const last=new Date(end); while(cur<=last){ dates.push(cur.toISOString().split("T")[0]); cur.setDate(cur.getDate()+1); } return dates; }
 function getDeliveryDate(jobType,startDate,majorDays) { if (jobType === "Emergency") return addDays(startDate, 1); if (jobType === "Minor") return addDays(startDate, 3); return addDays(startDate, majorDays || 5); }
-function getCapacityForDate(date, excludeId) { return state.jobs.filter(j=>{ if(j.id===excludeId) return false; if(j.status==="Delivered" || j.status==="Deleted") return false; return rangeDates(j.startDate,j.deliveryDate).includes(date); }).length; }
+function getCapacityForDate(date, excludeId) { return state.jobs.filter(j=>{ if(j.id===excludeId) return false; if(j.status==="Delivered") return false; return rangeDates(j.startDate,j.deliveryDate).includes(date); }).length; }
 
 function renderDateSelect(id, selectedDate) {
-  let html = `<select id="${id}" style="width: 100%; background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 6px; padding: 10px 12px; color: #fff; font-size: 0.9rem;">`;
+  let html = `<select id="${id}" style="width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px 16px; color: #fff; font-size: 0.95rem;">`;
   for (let i = 0; i < 30; i++) {
     const d = addDays(todayStr(), i); const count = getCapacityForDate(d, null); const remaining = CAPACITY_PER_DAY - count;
     let statusText = remaining > 0 ? `(${remaining} slots avail)` : '(FULL)';
-    html += `<option value="${d}" ${d === selectedDate ? 'selected' : ''} ${remaining <= 0 ? 'disabled' : ''}>${formatDate(d)} ${statusText}</option>`;
+    html += `<option value="${d}" ${d === selectedDate ? 'selected' : ''} ${remaining <= 0 ? 'disabled' : ''} style="color:#000;background:#fff">${formatDate(d)} ${statusText}</option>`;
   }
   return html + `</select>`;
 }
@@ -413,7 +1551,7 @@ function render() {
 
   const alertBtn = document.getElementById("alertBtn");
   const today = todayStr();
-  const dueToday = state.jobs.filter(j=>j.deliveryDate===today && j.status!=="Delivered" && j.status!=="Deleted");
+  const dueToday = state.jobs.filter(j=>j.deliveryDate===today && j.status!=="Delivered");
   alertBtn.textContent = "🔔" + (dueToday.length?` (${dueToday.length})`:"");
   alertBtn.className = "tool no-print " + (dueToday.length ? "alert" : "gray");
   if(view==="alerts") alertBtn.classList.add("active");
@@ -441,7 +1579,7 @@ function render() {
     else if(view==="calendar") main.innerHTML = renderCalendar();
     else if(view==="report") main.innerHTML = renderReport();
     else if(view==="alerts") main.innerHTML = renderAlerts();
-  } catch(e) { main.innerHTML = `<div class="empty" style="color:red">Error: ${e.message}</div>`; }
+  } catch(e) { main.innerHTML = `<div class="empty" style="color:var(--danger)">Error: ${e.message}</div>`; }
 
   renderModal();
 
@@ -480,7 +1618,7 @@ function normalizeWorkItems(wi) {
 }
 
 function getVisibleJobs() {
-  let jobs = [...state.jobs].filter(j => j.status !== "Deleted").sort((a,b)=> a.startDate<b.startDate?1:-1);
+  let jobs = [...state.jobs].sort((a,b)=> a.startDate<b.startDate?1:-1);
   if(filter==="emergency") jobs = jobs.filter(j=>j.jobType==="Emergency");
   if(filter==="major") jobs = jobs.filter(j=>j.jobType==="Major");
   if(filter==="minor") jobs = jobs.filter(j=>j.jobType==="Minor");
@@ -507,14 +1645,14 @@ function renderWorkTags(job) {
   if (items.length === 0) return '';
   const tags = items.map((item, idx) => {
     const isDone = item.done;
-    const bg = isDone ? 'rgba(34,197,94,0.2)' : 'rgba(250,204,21,0.1)';
-    const border = isDone ? 'var(--green)' : 'var(--yellow)';
-    const color = isDone ? '#4ade80' : 'var(--yellow)';
+    const bg = isDone ? 'rgba(6, 214, 160, 0.15)' : 'rgba(255, 183, 3, 0.1)';
+    const border = isDone ? 'var(--success)' : 'var(--accent)';
+    const color = isDone ? 'var(--success)' : 'var(--accent)';
     const check = isDone ? '✅ ' : ''; 
     const strike = isDone ? 'text-decoration: line-through; opacity: 0.8;' : '';
-    return `<span onclick="toggleWorkItem('${job.id}', ${idx})" style="background:${bg}; border:1px solid ${border}; color:${color}; padding:4px 8px; border-radius:4px; font-size:0.7rem; white-space:nowrap; cursor:pointer; user-select:none; ${strike}">${check}${item.name}</span>`;
+    return `<span onclick="toggleWorkItem('${job.id}', ${idx})" style="background:${bg}; border:1px solid ${border}; color:${color}; padding:5px 10px; border-radius:20px; font-size:0.72rem; white-space:nowrap; cursor:pointer; user-select:none; ${strike}; transition: all 0.2s ease; font-weight:600;">${check}${item.name}</span>`;
   }).join(' ');
-  return `<div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">${tags}</div>`;
+  return `<div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:6px;">${tags}</div>`;
 }
 
 function toggleWorkItem(jobId, index) {
@@ -535,8 +1673,8 @@ function renderDashboard() {
   html += `<div style="overflow-x:auto"><table><thead><tr><th>S.No</th><th>Job Card</th><th>Maker</th><th>Vehicle</th><th>Customer</th><th>Type</th><th>Team</th><th>Start</th><th>Delivery</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
   jobs.forEach((j, index)=>{
     html += `<tr class="${j.deliveryDate===today && j.status!=="Delivered" ? "due-today" : ""}">
-      <td style="font-weight:700; color:var(--yellow); text-align:center;">${index + 1}</td>
-      <td style="font-family:monospace;color:var(--yellow)">${j.jobCardNo}</td>
+      <td style="font-weight:800; color:var(--accent); text-align:center; font-family:'Poppins',sans-serif;">${index + 1}</td>
+      <td style="font-family:'Poppins',monospace;color:var(--accent); font-weight:700;">${j.jobCardNo}</td>
       <td>${j.vehicleMaker || '-'}</td>
       <td><strong>${j.vehicleNo}</strong></td><td>${j.customerName}</td>
       <td><span class="badge ${j.jobType==="Major"?"badge-major":j.jobType==="Minor"?"badge-minor":"badge-emergency"}">${j.jobType}</span></td><td>${j.team}</td>
@@ -561,25 +1699,25 @@ function renderDashboard() {
 function renderAddForm() {
   const year = new Date().getFullYear();
   const workload = getTeamWorkload();
-  const teamOptions = `<option value="Auto">✨ Auto-Assign (Least Workload)</option>` + TEAMS.map(t => `<option value="${t}">${t} (${workload[t]} active)</option>`).join("");
+  const teamOptions = `<option value="Auto">✨ Auto-Assign (Least Workload)</option>` + TEAMS.map(t => `<option value="${t}" style="color:#000;background:#fff">${t} (${workload[t]} active)</option>`).join("");
   return `<h2>Add New Job</h2><div class="card">
-    <div class="info-box yellow">Job Card No. (auto): <span style="font-family:monospace;color:var(--yellow);font-weight:700">2K-${year}-${String(state.counter).padStart(4,"0")}</span></div>
+    <div class="info-box yellow">Job Card No. (auto): <span style="font-family:'Poppins',monospace;color:var(--accent);font-weight:700">2K-${year}-${String(state.counter).padStart(4,"0")}</span></div>
     <div class="grid2">
-      <label class="field"><span>Vehicle Maker *</span><select id="f_maker" required><option value="">Select Maker</option>${VEHICLE_MAKERS.map(m=>`<option value="${m}">${m}</option>`).join("")}</select></label>
+      <label class="field"><span>Vehicle Maker *</span><select id="f_maker" required><option value="">Select Maker</option>${VEHICLE_MAKERS.map(m=>`<option value="${m}" style="color:#000;background:#fff">${m}</option>`).join("")}</select></label>
       <label class="field"><span>Vehicle Number *</span><input id="f_vehicle" placeholder="e.g. AP16AB1234" maxlength="10"></label>
       <label class="field"><span>Customer Name *</span><input id="f_customer" placeholder="e.g. Ramesh Kumar"></label>
-      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 8px;"><select id="f_countryCode" style="width: 110px;"><option value="+91">🇮 +91</option><option value="+971">🇦 +971</option><option value="+968">🇴 +968</option><option value="+966">🇸 +966</option><option value="+974">🇶 +974</option><option value="+1">🇺🇸 +1</option><option value="+44">🇬🇧 +44</option><option value="+92">🇵🇰 +92</option><option value="+880">🇧 +880</option></select><input id="f_phone" placeholder="10 digit number" maxlength="10" inputmode="numeric" style="flex:1;"></div></label>
-      <label class="field"><span>Job Type</span><select id="f_type"><option value="Emergency">Emergency (1 day)</option><option value="Minor">Minor Job (3 days)</option><option value="Major" selected>Major Job (5-15 days)</option></select></label>
+      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 8px;"><select id="f_countryCode" style="width: 110px;"><option value="+91" style="color:#000;background:#fff">🇮🇳 +91</option><option value="+971" style="color:#000;background:#fff">🇦🇪 +971</option><option value="+968" style="color:#000;background:#fff">🇴 +968</option><option value="+966" style="color:#000;background:#fff">🇸🇦 +966</option><option value="+974" style="color:#000;background:#fff">🇶🇦 +974</option><option value="+1" style="color:#000;background:#fff">🇺🇸 +1</option><option value="+44" style="color:#000;background:#fff">🇬🇧 +44</option><option value="+92" style="color:#000;background:#fff">🇵🇰 +92</option><option value="+880" style="color:#000;background:#fff">🇧🇩 +880</option></select><input id="f_phone" placeholder="10 digit number" maxlength="10" inputmode="numeric" style="flex:1;"></div></label>
+      <label class="field"><span>Job Type</span><select id="f_type"><option value="Emergency" style="color:#000;background:#fff">Emergency (1 day)</option><option value="Minor" style="color:#000;background:#fff">Minor Job (3 days)</option><option value="Major" style="color:#000;background:#fff">Major Job (5-15 days)</option></select></label>
       <label class="field" id="majorDaysField"><span>Major Job Duration (5-15 days)</span><input type="number" id="f_majorDays" min="5" max="15" value="5" inputmode="numeric"></label>
       <label class="field"><span>Assigned Team</span><select id="f_team">${teamOptions}</select></label>
       <label class="field"><span>Start Date</span>${renderDateSelect("f_start", todayStr())}</label>
     </div>
     <label class="field"><span>Notes (Separate tasks with commas) <span class="required-star">*</span></span><textarea id="f_notes" rows="2" placeholder="e.g., denting, painting"></textarea></label>
-    <div class="info-box" id="deliveryPreview" style="background: rgba(59, 130, 246, 0.1); border-color: #60a5fa; color: #60a5fa;">📅 Expected Delivery: <strong>${formatDate(getDeliveryDate("Major", todayStr(), 5))}</strong></div>
+    <div class="info-box" id="deliveryPreview" style="background: linear-gradient(135deg, rgba(76, 201, 240, 0.1) 0%, rgba(0, 150, 199, 0.05) 100%); border-color: rgba(76, 201, 240, 0.3); color: var(--info);">📅 Expected Delivery: <strong>${formatDate(getDeliveryDate("Major", todayStr(), 5))}</strong></div>
     <button class="submit-btn" onclick="submitJob()">✓ Add Job</button></div>`;
 }
 
-function renderSearch() { return `<h2>Search Vehicle</h2><div class="search-box"><span class="icon">🔍</span><input id="searchInput" placeholder="Search..."></div><div id="searchResults"></div>`; }
+function renderSearch() { return `<h2>Search Vehicle</h2><div class="search-box"><span class="icon">🔍</span><input id="searchInput" placeholder="Search by maker, vehicle, customer, or job card..."></div><div id="searchResults"></div>`; }
 
 function updateSearchResults() {
   const resultsContainer = document.getElementById("searchResults");
@@ -590,7 +1728,7 @@ function updateSearchResults() {
   else if(jobs.length===0){ html += `<div class="empty">No matching job cards found.</div>`; } 
   else {
     jobs.forEach((j, index)=>{
-      html += `<div class="search-result"><div style="display:flex; align-items:center; gap:10px;"><span style="background:var(--yellow); color:#000; font-weight:800; padding:4px 10px; border-radius:4px;">${index + 1}</span><div><div class="jobno">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div></div></div><div style="display:flex;align-items:center;gap:10px"><span class="badge ${statusClass(j.status)}" style="background:none;border:1px solid currentColor">${j.status}</span><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button></div></div>`;
+      html += `<div class="search-result"><div style="display:flex; align-items:center; gap:12px;"><span style="background:var(--gradient-accent); color:#000; font-weight:800; padding:6px 12px; border-radius:20px; font-family:'Poppins',sans-serif;">${index + 1}</span><div><div class="jobno">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div></div></div><div style="display:flex;align-items:center;gap:10px"><span class="badge ${statusClass(j.status)}" style="background:none;border:1px solid currentColor">${j.status}</span><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button></div></div>`;
     });
   }
   resultsContainer.innerHTML = html;
@@ -599,16 +1737,16 @@ function updateSearchResults() {
 function renderCapacity() {
   const count = getCapacityForDate(capacityCheckDate, null); const remaining = CAPACITY_PER_DAY - count;
   let dateOptions = '';
-  for (let i = 0; i < 30; i++) { const d = addDays(todayStr(), i); dateOptions += `<option value="${d}" ${d === capacityCheckDate ? 'selected' : ''}>${formatDate(d)} (${getCapacityForDate(d, null)}/${CAPACITY_PER_DAY})</option>`; }
+  for (let i = 0; i < 30; i++) { const d = addDays(todayStr(), i); dateOptions += `<option value="${d}" ${d === capacityCheckDate ? 'selected' : ''} style="color:#000;background:#fff">${formatDate(d)} (${getCapacityForDate(d, null)}/${CAPACITY_PER_DAY})</option>`; }
   const workload = getTeamWorkload();
-  let teamStats = ''; TEAMS.forEach(t => { teamStats += `<div class="stat"><div class="val" style="color:var(--yellow)">${workload[t]}</div><div class="lbl">${t}</div></div>`; });
-  return `<h2>Capacity & Team Workload</h2><div class="card"><h3 style="font-size:0.85rem; color:#9ca3af; margin-bottom:12px">Current Active Jobs per Team</h3><div class="stats-grid">${teamStats}</div><label class="field" style="margin-top:20px"><span>Check daily capacity for date</span><select id="capacityDate" style="width: 100%; background: var(--gray-900); border: 1px solid var(--gray-700); border-radius: 6px; padding: 10px; color: #fff;" onchange="updateCapacityDate(this.value)">${dateOptions}</select></label><div class="stats-grid" style="margin-top:16px"><div class="stat"><div class="val">${count}</div><div class="lbl">Scheduled</div></div><div class="stat"><div class="val" style="color:var(--yellow)">${CAPACITY_PER_DAY}</div><div class="lbl">Capacity</div></div><div class="stat"><div class="val" style="color:${remaining>0?'#4ade80':'#ef4444'}">${remaining}</div><div class="lbl">Remaining</div></div></div></div>`;
+  let teamStats = ''; TEAMS.forEach(t => { teamStats += `<div class="stat"><div class="val">${workload[t]}</div><div class="lbl">${t}</div></div>`; });
+  return `<h2>Capacity & Team Workload</h2><div class="card"><h3 style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px; font-family:'Poppins',sans-serif;">Current Active Jobs per Team</h3><div class="stats-grid">${teamStats}</div><label class="field" style="margin-top:24px"><span>Check daily capacity for date</span><select id="capacityDate" style="width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; color: #fff;" onchange="updateCapacityDate(this.value)">${dateOptions}</select></label><div class="stats-grid" style="margin-top:20px"><div class="stat"><div class="val">${count}</div><div class="lbl">Scheduled</div></div><div class="stat"><div class="val">${CAPACITY_PER_DAY}</div><div class="lbl">Capacity</div></div><div class="stat"><div class="val" style="color:${remaining>0?'var(--success)':'var(--danger)'}">${remaining}</div><div class="lbl">Remaining</div></div></div></div>`;
 }
 function updateCapacityDate(val) { capacityCheckDate = val; render(); }
 
 function renderCalendar() {
   const firstDay = new Date(calendarYear, calendarMonth, 1).getDay(); const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
-  let html = `<h2>Calendar View</h2><div class="cal-toolbar"><button class="navbtn" onclick="changeMonth(-1)">&lt;</button><select id="calMonth" onchange="calendarMonth=parseInt(this.value);render();" style="flex:1">${MONTH_NAMES.map((m, i) => `<option value="${i}" ${i === calendarMonth ? 'selected' : ''}>${m}</option>`).join('')}</select><select id="calYear" onchange="calendarYear=parseInt(this.value);render();" style="width: 90px;">${[calendarYear - 2, calendarYear - 1, calendarYear, calendarYear + 1, calendarYear + 2].map(y => `<option value="${y}" ${y === calendarYear ? 'selected' : ''}>${y}</option>`).join('')}</select><button class="navbtn" onclick="changeMonth(1)">&gt;</button></div><div class="cal-weekdays"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div><div class="cal-grid">`;
+  let html = `<h2>Calendar View</h2><div class="cal-toolbar"><button class="navbtn" onclick="changeMonth(-1)">&lt;</button><select id="calMonth" onchange="calendarMonth=parseInt(this.value);render();" style="flex:1">${MONTH_NAMES.map((m, i) => `<option value="${i}" ${i === calendarMonth ? 'selected' : ''} style="color:#000;background:#fff">${m}</option>`).join('')}</select><select id="calYear" onchange="calendarYear=parseInt(this.value);render();" style="width: 90px;">${[calendarYear - 2, calendarYear - 1, calendarYear, calendarYear + 1, calendarYear + 2].map(y => `<option value="${y}" ${y === calendarYear ? 'selected' : ''} style="color:#000;background:#fff">${y}</option>`).join('')}</select><button class="navbtn" onclick="changeMonth(1)">&gt;</button></div><div class="cal-weekdays"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div><div class="cal-grid">`;
   for (let i = 0; i < firstDay; i++) html += `<div class="cal-cell empty"></div>`;
   const today = todayStr();
   for (let d = 1; d <= daysInMonth; d++) {
@@ -618,11 +1756,11 @@ function renderCalendar() {
   }
   html += `</div>`;
   if (selectedDay) {
-    const dayJobs = state.jobs.filter(j => rangeDates(j.startDate, j.deliveryDate).includes(selectedDay) && j.status !== "Deleted");
-    html += `<h3 style="margin-top:20px; font-size:0.9rem; color:var(--yellow)">Jobs on ${formatDate(selectedDay)}</h3>`;
-    if (dayJobs.length === 0) html += `<div class="empty" style="padding:16px">No jobs.</div>`;
+    const dayJobs = state.jobs.filter(j => rangeDates(j.startDate, j.deliveryDate).includes(selectedDay));
+    html += `<h3 style="margin-top:24px; font-size:1rem; color:var(--accent); font-family:'Poppins',sans-serif;">Jobs on ${formatDate(selectedDay)}</h3>`;
+    if (dayJobs.length === 0) html += `<div class="empty" style="padding:20px">No jobs.</div>`;
     else dayJobs.forEach((j, index) => { 
-      html += `<div class="day-detail"><div style="display:flex; align-items:center; gap:10px;"><span style="background:var(--yellow); color:#000; font-weight:800; padding:4px 10px; border-radius:4px;">${index + 1}</span><div><div style="font-family:monospace;color:var(--yellow)">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div>${renderWorkTags(j)}</div></div><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div>`; 
+      html += `<div class="day-detail"><div style="display:flex; align-items:center; gap:12px;"><span style="background:var(--gradient-accent); color:#000; font-weight:800; padding:6px 12px; border-radius:20px; font-family:'Poppins',sans-serif;">${index + 1}</span><div><div style="font-family:'Poppins',monospace;color:var(--accent); font-weight:700;">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div>${renderWorkTags(j)}</div></div><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div>`; 
     });
   }
   return html;
@@ -631,49 +1769,16 @@ function changeMonth(delta) { calendarMonth += delta; if (calendarMonth < 0) { c
 function selectDay(dateStr) { selectedDay = selectedDay === dateStr ? null : dateStr; render(); }
 
 function renderReport() {
-  const now = new Date(); 
-  const monthJobs = state.jobs.filter(j=>{ const d = new Date(j.startDate); return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); });
-  
-  const deletedJobs = monthJobs.filter(j => j.status === "Deleted");
-  const activeJobs = monthJobs.filter(j => j.status !== "Deleted");
-  const deliveredJobs = activeJobs.filter(j => j.status === "Delivered");
-
-  let html = `<h2>Monthly Report</h2>
-  <div class="stats-grid">
-    <div class="stat"><div class="val">${monthJobs.length}</div><div class="lbl">Total Jobs (Month)</div></div>
-    <div class="stat"><div class="val" style="color:#4ade80">${deliveredJobs.length}</div><div class="lbl">Delivered</div></div>
-    <div class="stat"><div class="val" style="color:var(--yellow)">${activeJobs.length}</div><div class="lbl">Active Jobs</div></div>
-    <div class="stat"><div class="val" style="color:#ef4444">${deletedJobs.length}</div><div class="lbl">Deleted / Archived</div></div>
-  </div>`;
-
-  if (deletedJobs.length > 0) {
-    html += `<h3 style="color:var(--yellow); margin-top: 24px; margin-bottom: 12px;">🗑️ Deleted / Archived Jobs This Month</h3>`;
-    html += `<div style="overflow-x:auto"><table><thead><tr><th>S.No</th><th>Job Card</th><th>Maker</th><th>Vehicle</th><th>Customer</th><th>Type</th><th>Team</th><th>Start</th><th>Delivery</th></tr></thead><tbody>`;
-    deletedJobs.forEach((j, index) => {
-      html += `<tr>
-        <td style="font-weight:700; color:var(--yellow); text-align:center;">${index + 1}</td>
-        <td style="font-family:monospace;color:var(--yellow)">${j.jobCardNo}</td>
-        <td>${j.vehicleMaker || '-'}</td>
-        <td><strong>${j.vehicleNo}</strong></td>
-        <td>${j.customerName}</td>
-        <td><span class="badge ${j.jobType==="Major"?"badge-major":j.jobType==="Minor"?"badge-minor":"badge-emergency"}">${j.jobType}</span></td>
-        <td>${j.team}</td>
-        <td>${formatDate(j.startDate)}</td>
-        <td>${formatDate(j.deliveryDate)}</td>
-      </tr>`;
-    });
-    html += `</tbody></table></div>`;
-  }
-
-  return html;
+  const now = new Date(); const monthJobs = state.jobs.filter(j=>{ const d = new Date(j.startDate); return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); });
+  return `<h2>Monthly Report</h2><div class="stats-grid"><div class="stat"><div class="val">${monthJobs.length}</div><div class="lbl">Total Jobs</div></div><div class="stat"><div class="val" style="color:var(--success)">${monthJobs.filter(j=>j.status==="Delivered").length}</div><div class="lbl">Delivered</div></div></div>`;
 }
 
 function renderAlerts() {
-  const today = todayStr(); const dueToday = state.jobs.filter(j=>j.deliveryDate===today && j.status!=="Delivered" && j.status!=="Deleted");
-  let html = `<h2>Delivery Alerts &mdash; Due Today</h2>`;
+  const today = todayStr(); const dueToday = state.jobs.filter(j=>j.deliveryDate===today && j.status!=="Delivered");
+  let html = `<h2>Delivery Alerts — Due Today</h2>`;
   if(dueToday.length===0) return html + `<div class="empty">No vehicles due today.</div>`;
   dueToday.forEach((j, index)=>{ 
-    html += `<div class="alert-row"><div style="display:flex; align-items:center; gap:10px;"><span style="background:var(--yellow); color:#000; font-weight:800; padding:4px 10px; border-radius:4px;">${index + 1}</span><div><div class="jobno">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div><div style="font-size:0.75rem;color:#d1d5db">${j.jobType} job · ${j.team} · Phone: ${j.phone||"-"}</div>${renderWorkTags(j)}</div></div><div><select class="status-select ${statusClass(j.status)}" onchange="updateStatus('${j.id}',this.value)"><option value="In Progress" ${j.status==="In Progress"?"selected":""}>In Progress</option><option value="Ready" ${j.status==="Ready"?"selected":""}>Ready</option><option value="Delivered" ${j.status==="Delivered"?"selected":""}>Delivered</option></select> <button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div></div>`; 
+    html += `<div class="alert-row"><div style="display:flex; align-items:center; gap:12px;"><span style="background:var(--gradient-accent); color:#000; font-weight:800; padding:6px 12px; border-radius:20px; font-family:'Poppins',sans-serif;">${index + 1}</span><div><div class="jobno">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div><div style="font-size:0.78rem;color:var(--text-secondary)">${j.jobType} job · ${j.team} · Phone: ${j.phone||"-"}</div>${renderWorkTags(j)}</div></div><div><select class="status-select ${statusClass(j.status)}" onchange="updateStatus('${j.id}',this.value)"><option value="In Progress" ${j.status==="In Progress"?"selected":""}>In Progress</option><option value="Ready" ${j.status==="Ready"?"selected":""}>Ready</option><option value="Delivered" ${j.status==="Delivered"?"selected":""}>Delivered</option></select> <button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div></div>`; 
   });
   return html;
 }
@@ -699,7 +1804,7 @@ function renderModal() {
   <div class="row"><span>Team</span><span>${j.team}</span></div>
   <div class="row"><span>Start</span><span>${formatDate(j.startDate)}</span></div>
   <div class="row"><span>Delivery</span><span>${formatDate(j.deliveryDate)}</span></div>
-  <div class="row bold"><span>Status</span><span style="color:var(--red); font-weight:800;">${j.status}</span></div>
+  <div class="row bold"><span>Status</span><span style="color:var(--primary-light); font-weight:800;">${j.status}</span></div>
   ${renderWorkItemsForPrint(j)}
   <div class="row"><span>Notes</span><span>${j.notes||"-"}</span></div>
   <button class="print-btn" onclick="window.print()">🖨️ Print Job Card</button>
@@ -737,11 +1842,8 @@ function executeDelete() {
   const pwd = document.getElementById('deletePasswordInput').value;
   if (pwd === DEFAULT_PASS) {
     if (db) {
-        db.collection("jobs").doc(jobToDelete).update({ 
-            status: "Deleted", 
-            deletedAt: firebase.firestore.FieldValue.serverTimestamp() 
-        })
-          .then(() => { toast("✅ Job archived for reports - Syncing..."); closeDeleteModal(); })
+        db.collection("jobs").doc(jobToDelete).delete()
+          .then(() => { toast("✅ Job deleted - Syncing..."); closeDeleteModal(); })
           .catch(e => toast("❌ Delete failed: " + e.message, true));
     }
   } else { toast("❌ Invalid password"); document.getElementById('deletePasswordInput').value = ''; document.getElementById('deletePasswordInput').focus(); }
@@ -779,7 +1881,6 @@ function openEdit(id) {
     document.getElementById('edit_delivery').value = job.deliveryDate;
     document.getElementById('edit_notes').value = job.notes || '';
     
-    // Show/hide major days field based on job type
     const majorDaysField = document.getElementById('edit_majorDaysField');
     if(majorDaysField) {
       majorDaysField.style.display = job.jobType === "Major" ? "block" : "none";
@@ -941,7 +2042,6 @@ function attachHandlers() {
   const vehicleInput = document.getElementById("f_vehicle");
   if(vehicleInput) vehicleInput.addEventListener("input", (e)=>{ e.target.value = e.target.value.toUpperCase().slice(0,10); });
   
-  // Phone number maxlength handler
   const countryCodeEl = document.getElementById("f_countryCode");
   const phoneInputEl = document.getElementById("f_phone");
   function updatePhoneLimit() {
