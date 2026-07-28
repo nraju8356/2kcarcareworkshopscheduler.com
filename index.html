@@ -11,36 +11,28 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 
 <style>
   :root {
-    --glass-bg: rgba(255, 255, 255, 0.08);
-    --glass-border: rgba(255, 255, 255, 0.15);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    --glass-blur: blur(20px);
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --glass-blur: blur(12px);
     --primary: #e63946;
-    --primary-light: #ff4d6d;
     --accent: #ffb703;
-    --accent-light: #ffd60a;
     --success: #06d6a0;
     --info: #4cc9f0;
-    --warning: #f77f00;
     --danger: #ef476f;
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
     --text-muted: rgba(255, 255, 255, 0.5);
     --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --gradient-accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    --gradient-warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-    --radius-sm: 12px;
-    --radius-md: 16px;
-    --radius-lg: 24px;
-    --radius-xl: 32px;
-    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   * { 
@@ -54,31 +46,15 @@
   
   body { 
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    background: #0f172a;
+    background-image: 
+      radial-gradient(circle at 10% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(240, 147, 251, 0.1) 0%, transparent 40%);
     background-attachment: fixed;
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: 
-      radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(240, 147, 251, 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 40% 80%, rgba(79, 172, 254, 0.08) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 0;
-    animation: bgShift 20s ease-in-out infinite;
-  }
-
-  @keyframes bgShift {
-    0%, 100% { opacity: 0.5; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.1); }
   }
 
   #appContainer, .login-screen { position: relative; z-index: 1; }
@@ -90,205 +66,147 @@
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     box-shadow: var(--glass-shadow);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .glass-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
   }
 
   .login-screen { 
     position: fixed; inset: 0; 
     display: flex; align-items: center; justify-content: center; 
     z-index: 9999; padding: 20px;
+    overflow-y: auto;
   }
 
   .login-card { 
-    padding: 48px 36px; 
-    width: 100%; max-width: 420px; 
+    padding: 32px 24px; 
+    width: 100%; max-width: 400px; 
     text-align: center;
-    animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: auto;
+    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   @keyframes slideUp {
-    from { opacity: 0; transform: translateY(40px) scale(0.95); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .login-card h2 { 
     font-family: 'Poppins', sans-serif;
-    font-size: 2.2rem; 
+    font-size: 1.8rem; 
     font-weight: 800;
     margin-bottom: 8px;
-    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
   }
   
   .login-card p { 
     color: var(--text-secondary); 
-    font-size: 0.95rem; 
-    margin-bottom: 36px; 
-    font-weight: 400;
+    font-size: 0.9rem; 
+    margin-bottom: 24px; 
   }
   
-  .login-field { margin-bottom: 24px; text-align: left; }
+  .login-field { margin-bottom: 20px; text-align: left; }
   
   .login-field label { 
     display: block; 
     font-size: 0.85rem; 
     color: var(--text-secondary); 
     font-weight: 600; 
-    margin-bottom: 10px;
-    letter-spacing: 0.3px;
+    margin-bottom: 8px;
   }
   
-  .login-field input { 
+  .login-field input, .field input, .field select, .field textarea, .search-box input { 
     width: 100%; 
-    background: rgba(255, 255, 255, 0.05); 
+    background: rgba(255, 255, 255, 0.06); 
     border: 1px solid var(--glass-border); 
     border-radius: var(--radius-md); 
-    padding: 16px 20px; 
+    padding: 14px 16px; 
     color: var(--text-primary); 
-    font-size: 1rem;
+    font-size: 16px; /* Prevents iOS auto-zoom */
     font-family: 'Inter', sans-serif;
     transition: var(--transition);
-    backdrop-filter: blur(10px);
+    min-height: 48px;
   }
   
-  .login-field input:focus { 
+  .login-field input:focus, .field input:focus, .field select:focus, .field textarea:focus, .search-box input:focus { 
     outline: none;
-    border-color: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.3);
     background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
   }
   
-  .login-btn { 
+  .login-btn, .submit-btn { 
     width: 100%; 
     background: var(--gradient-primary);
     color: #fff; 
     font-weight: 700; 
-    padding: 18px; 
+    padding: 16px; 
     border-radius: var(--radius-md); 
     border: none; 
     cursor: pointer; 
-    font-size: 1.05rem; 
-    margin-top: 16px;
+    font-size: 1rem; 
+    margin-top: 8px;
     transition: var(--transition);
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
-    letter-spacing: 0.3px;
-    position: relative;
-    overflow: hidden;
+    min-height: 52px;
   }
 
-  .login-btn::before {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: var(--transition);
-  }
-
-  .login-btn:hover::before {
-    left: 100%;
-  }
-  
-  .login-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
-  }
-  
-  .login-btn:active {
-    transform: translateY(-1px);
-  }
+  .login-btn:active, .submit-btn:active { transform: scale(0.98); }
 
   .login-error { 
     color: var(--danger); 
-    font-size: 0.9rem; 
-    margin-top: 20px; 
+    font-size: 0.85rem; 
+    margin-top: 16px; 
     display: none;
-    font-weight: 500;
   }
 
   #appContainer { display: none; }
   
   header { 
-    padding: 20px 24px; 
+    padding: 16px 20px; 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    flex-wrap: wrap; 
     gap: 12px;
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(26, 26, 46, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--glass-border);
   }
   
   header h1 { 
-    margin: 0; 
     font-family: 'Poppins', sans-serif;
-    font-size: 1.6rem; 
-    letter-spacing: -0.5px;
+    font-size: 1.3rem; 
     font-weight: 800;
-    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.9) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
   }
   
   header p { 
     margin: 4px 0 0; 
     color: var(--text-secondary); 
-    font-size: 0.85rem; 
-    font-weight: 400;
+    font-size: 0.8rem; 
   }
 
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  .header-right { display: flex; align-items: center; gap: 12px; }
 
   .logout-btn { 
     background: rgba(255, 255, 255, 0.08); 
-    backdrop-filter: blur(10px);
     border: 1px solid var(--glass-border); 
     color: var(--text-primary); 
-    padding: 10px 16px; 
+    padding: 10px 14px; 
     border-radius: var(--radius-md); 
     cursor: pointer; 
     font-size: 0.85rem; 
     font-weight: 600;
     transition: var(--transition);
+    min-height: 44px;
   }
+  .logout-btn:active { transform: scale(0.95); }
 
-  .logout-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  }
-
-  /* Hamburger Menu Button */
+  /* Hamburger Menu */
   .hamburger-btn {
     display: none;
     background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-md);
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     cursor: pointer;
     transition: var(--transition);
     align-items: center;
@@ -296,195 +214,92 @@
     z-index: 1001;
     flex-shrink: 0;
   }
-
-  .hamburger-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: scale(1.05);
-  }
-
-  .hamburger-btn.active {
-    background: rgba(230, 57, 70, 0.2);
-    border-color: var(--primary);
-  }
+  .hamburger-btn:active { transform: scale(0.9); }
 
   .hamburger-icon {
-    width: 24px;
+    width: 20px;
     height: 2px;
     background: var(--text-primary);
     position: relative;
     transition: var(--transition);
   }
-
-  .hamburger-icon::before,
-  .hamburger-icon::after {
+  .hamburger-icon::before, .hamburger-icon::after {
     content: '';
     position: absolute;
-    width: 24px;
+    width: 20px;
     height: 2px;
     background: var(--text-primary);
     transition: var(--transition);
   }
+  .hamburger-icon::before { top: -6px; }
+  .hamburger-icon::after { top: 6px; }
 
-  .hamburger-icon::before {
-    top: -7px;
-  }
+  .hamburger-btn.active .hamburger-icon { background: transparent; }
+  .hamburger-btn.active .hamburger-icon::before { transform: rotate(45deg); top: 0; }
+  .hamburger-btn.active .hamburger-icon::after { transform: rotate(-45deg); top: 0; }
 
-  .hamburger-icon::after {
-    top: 7px;
-  }
-
-  .hamburger-btn.active .hamburger-icon {
-    background: transparent;
-  }
-
-  .hamburger-btn.active .hamburger-icon::before {
-    transform: rotate(45deg);
-    top: 0;
-  }
-
-  .hamburger-btn.active .hamburger-icon::after {
-    transform: rotate(-45deg);
-    top: 0;
-  }
-
-  /* Mobile Menu Overlay */
+  /* Mobile Menu Overlay & Drawer */
   .mobile-menu-overlay {
-    display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
     z-index: 998;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.3s ease;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
+  .mobile-menu-overlay.active { opacity: 1; pointer-events: auto; }
 
-  .mobile-menu-overlay.active {
-    display: block;
-    opacity: 1;
-  }
-
-  /* Mobile Menu */
   .mobile-menu {
-    display: none;
     position: fixed;
     top: 0;
-    right: -100%;
+    right: 0;
     width: 85%;
-    max-width: 320px;
+    max-width: 300px;
     height: 100vh;
-    background: rgba(26, 26, 46, 0.98);
-    backdrop-filter: blur(30px);
+    background: rgba(15, 23, 42, 0.98);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     border-left: 1px solid var(--glass-border);
     z-index: 999;
-    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
     overflow-y: auto;
-    padding: 100px 24px 24px;
+    -webkit-overflow-scrolling: touch;
+    padding: 80px 20px 20px;
   }
+  .mobile-menu.active { transform: translateX(0); }
 
-  .mobile-menu.active {
-    right: 0;
-  }
-
-  .mobile-menu-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--glass-border);
-  }
-
-  .mobile-menu-title {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .mobile-menu-section {
-    margin-bottom: 32px;
-  }
-
+  .mobile-menu-section { margin-bottom: 24px; }
   .mobile-menu-section-title {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--text-muted);
-    margin-bottom: 16px;
-    font-weight: 600;
+    margin-bottom: 12px;
+    font-weight: 700;
   }
-
   .mobile-menu-item {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 16px;
+    gap: 14px;
+    padding: 14px;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-md);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     cursor: pointer;
     transition: var(--transition);
-    min-height: 56px;
+    min-height: 52px;
   }
+  .mobile-menu-item:active { transform: scale(0.98); background: rgba(255, 255, 255, 0.08); }
+  .mobile-menu-icon { font-size: 1.2rem; width: 24px; text-align: center; }
+  .mobile-menu-label { font-size: 0.9rem; font-weight: 600; flex: 1; }
 
-  .mobile-menu-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-    transform: translateX(4px);
-    border-color: rgba(255, 183, 3, 0.3);
-  }
-
-  .mobile-menu-item:active {
-    transform: scale(0.98);
-  }
-
-  .mobile-menu-item.active {
-    background: linear-gradient(135deg, rgba(230, 57, 70, 0.2) 0%, rgba(239, 71, 111, 0.1) 100%);
-    border-color: var(--primary);
-  }
-
-  .mobile-menu-icon {
-    font-size: 1.4rem;
-    width: 28px;
-    text-align: center;
-  }
-
-  .mobile-menu-label {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    flex: 1;
-  }
-
-  .mobile-menu-badge {
-    background: var(--gradient-accent);
-    color: #000;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 20px;
-  }
-
-  .mobile-menu-filter {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .mobile-menu-filter .mobile-menu-item {
-    flex: 1;
-    min-width: calc(50% - 4px);
-    margin-bottom: 8px;
-    padding: 14px;
-  }
-
+  /* Desktop Toolbar */
   .toolbar { 
     padding: 12px 16px; 
     display: flex; 
@@ -492,11 +307,11 @@
     flex-wrap: wrap; 
     align-items: center;
     position: sticky;
-    top: 80px;
+    top: 73px;
     z-index: 99;
-    background: rgba(26, 26, 46, 0.4);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--glass-border);
   }
   
@@ -504,112 +319,30 @@
     background: rgba(255, 255, 255, 0.06); 
     color: var(--text-secondary); 
     border: 1px solid var(--glass-border);
-    padding: 12px 16px; 
+    padding: 10px 14px; 
     border-radius: var(--radius-md); 
-    font-size: 0.85rem; 
+    font-size: 0.8rem; 
     font-weight: 600; 
     cursor: pointer; 
     display: flex; 
     align-items: center; 
     gap: 6px;
     transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(10px);
-    white-space: nowrap;
     min-height: 44px;
+    white-space: nowrap;
   }
+  button.tool:active { transform: scale(0.95); }
+  button.tool.red.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  button.tool.yellow.active { background: var(--accent); color: #000; border-color: var(--accent); }
+  button.tool.alert { background: var(--danger); color: #fff; border-color: var(--danger); }
 
-  button.tool::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    opacity: 0;
-    transition: var(--transition);
-  }
-
-  button.tool:hover::before { opacity: 1; }
-  
-  button.tool:hover {
-    transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  }
-
-  button.tool:active {
-    transform: scale(0.95);
-  }
-
-  button.tool.red { 
-    background: linear-gradient(135deg, rgba(230, 57, 70, 0.2) 0%, rgba(239, 71, 111, 0.1) 100%);
-    border-color: rgba(230, 57, 70, 0.3);
-    color: #ff6b8a; 
-  }
-  
-  button.tool.red.active { 
-    background: linear-gradient(135deg, #e63946 0%, #ff4d6d 100%);
-    color: #fff;
-    border-color: transparent;
-    box-shadow: 0 8px 24px rgba(230, 57, 70, 0.4);
-  }
-  
-  button.tool.yellow { 
-    background: linear-gradient(135deg, rgba(255, 183, 3, 0.2) 0%, rgba(255, 214, 10, 0.1) 100%);
-    border-color: rgba(255, 183, 3, 0.3);
-    color: #ffd60a; 
-  }
-  
-  button.tool.yellow.active { 
-    background: linear-gradient(135deg, #ffb703 0%, #ffd60a 100%);
-    color: #000;
-    border-color: transparent;
-    box-shadow: 0 8px 24px rgba(255, 183, 3, 0.4);
-  }
-  
-  button.tool.gray.active { 
-    background: rgba(255, 255, 255, 0.12); 
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.3);
-  }
-  
-  button.tool.alert { 
-    background: linear-gradient(135deg, #e63946 0%, #ff4d6d 100%);
-    color: #fff; 
-    animation: pulseGlow 2s ease-in-out infinite;
-    border-color: transparent;
-  }
-
-  @keyframes pulseGlow { 
-    0%, 100% { 
-      box-shadow: 0 0 20px rgba(230, 57, 70, 0.5);
-      transform: scale(1);
-    } 
-    50% { 
-      box-shadow: 0 0 40px rgba(230, 57, 70, 0.8);
-      transform: scale(1.05);
-    }
-  }
-
-  main { 
-    max-width: 1400px; 
-    margin: 0 auto; 
-    padding: 24px 16px;
-    position: relative;
-    z-index: 10;
-  }
+  main { max-width: 1400px; margin: 0 auto; padding: 20px 16px; }
   
   h2 { 
     font-family: 'Poppins', sans-serif;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     font-weight: 800;
-    margin-bottom: 24px;
-    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -0.5px;
+    margin-bottom: 20px;
   }
   
   .empty { 
@@ -617,333 +350,186 @@
     color: var(--text-muted); 
     border: 2px dashed var(--glass-border); 
     border-radius: var(--radius-lg); 
-    padding: 60px 24px;
+    padding: 40px 20px;
     background: rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(10px);
   }
 
-  .table-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--glass-shadow);
-  }
-
-  table { 
+  /* SMART HYBRID LAYOUT: Cards on Mobile, Table on PC */
+  .job-list { 
+    display: grid; 
+    gap: 12px; 
     width: 100%; 
-    border-collapse: separate;
-    border-spacing: 0;
-    font-size: 0.88rem;
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    box-shadow: var(--glass-shadow);
-    border: 1px solid var(--glass-border);
-    min-width: 900px;
-  }
-  
-  thead { 
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.1) 100%);
-  }
-  
-  th { 
-    text-align: left; 
-    padding: 16px 18px; 
-    text-transform: uppercase; 
-    font-size: 0.72rem; 
-    letter-spacing: 1px;
-    color: var(--text-secondary);
-    font-weight: 700;
-    border-bottom: 1px solid var(--glass-border);
-  }
-  
-  td { 
-    padding: 16px 18px; 
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    vertical-align: middle;
-    transition: var(--transition-fast);
   }
 
-  tbody tr {
-    transition: var(--transition);
+  .job-card { 
+    background: rgba(255, 255, 255, 0.04); 
+    border: 1px solid var(--glass-border); 
+    border-radius: var(--radius-md); 
+    padding: 16px; 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 12px; 
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .job-card:active { transform: scale(0.99); }
+
+  .job-card > div {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+  }
+  .job-card > div::before {
+    content: attr(data-label);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    font-weight: 600;
   }
 
-  tbody tr:hover {
-    background: rgba(255, 255, 255, 0.05);
+  /* Make key fields full width on mobile for readability */
+  .job-card > div[data-label="Status"],
+  .job-card > div[data-label="Actions"],
+  .job-card > div[data-label="Customer"],
+  .job-card > div[data-label="Vehicle"] {
+    grid-column: 1 / -1;
   }
-  
-  tr.due-today td { 
-    background: rgba(230, 57, 70, 0.1);
+
+  .job-card.header { display: none; } /* Hide table header on mobile */
+
+  .job-card.due-today {
     border-left: 3px solid var(--primary);
+    background: rgba(230, 57, 70, 0.08);
+  }
+
+  /* PC/Tablet Table View */
+  @media (min-width: 1024px) {
+    .hamburger-btn { display: none; }
+    .toolbar { display: flex; }
+    
+    .job-list { 
+      display: table; 
+      border-collapse: separate; 
+      border-spacing: 0; 
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+    }
+    .job-card { 
+      display: table-row; 
+      background: transparent; 
+      border: none; 
+      border-radius: 0; 
+      padding: 0; 
+    }
+    .job-card:hover { background: rgba(255, 255, 255, 0.04); transform: none; }
+    .job-card > div { 
+      display: table-cell; 
+      padding: 14px 16px; 
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+      vertical-align: middle; 
+      font-size: 0.88rem;
+    }
+    .job-card > div::before { display: none; } /* Hide labels on PC */
+    .job-card > div[data-label="Status"],
+    .job-card > div[data-label="Actions"],
+    .job-card > div[data-label="Customer"],
+    .job-card > div[data-label="Vehicle"] {
+      grid-column: auto; /* Reset mobile span */
+    }
+    
+    .job-card.header { 
+      display: table-header-group; 
+      background: rgba(102, 126, 234, 0.1);
+    }
+    .job-card.header > div { 
+      font-size: 0.72rem; 
+      text-transform: uppercase; 
+      letter-spacing: 1px; 
+      color: var(--text-secondary); 
+      font-weight: 700; 
+      border-bottom: 1px solid var(--glass-border); 
+      padding: 14px 16px;
+    }
+    .job-card.header > div::before { display: none; }
+  }
+
+  @media (max-width: 1023px) {
+    .toolbar { display: none; } /* Hide desktop toolbar on mobile/tablet */
+    .hamburger-btn { display: flex; }
   }
 
   .badge { 
-    padding: 6px 12px; 
+    padding: 4px 10px; 
     border-radius: 20px; 
-    font-size: 0.72rem; 
+    font-size: 0.75rem; 
     font-weight: 700; 
     display: inline-block;
-    letter-spacing: 0.3px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    width: fit-content;
   }
-  
-  .badge-major { 
-    background: linear-gradient(135deg, #e63946 0%, #ff4d6d 100%); 
-    color: #fff; 
-  } 
-  
-  .badge-minor { 
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); 
-    color: #fff; 
-  } 
-  
-  .badge-emergency { 
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); 
-    color: #000; 
-  }
+  .badge-major { background: rgba(230, 57, 70, 0.2); color: #ff6b8a; border: 1px solid rgba(230, 57, 70, 0.3); } 
+  .badge-minor { background: rgba(79, 172, 254, 0.2); color: #4facfe; border: 1px solid rgba(79, 172, 254, 0.3); } 
+  .badge-emergency { background: rgba(255, 183, 3, 0.2); color: #ffd60a; border: 1px solid rgba(255, 183, 3, 0.3); }
 
   .status-select { 
-    font-size: 0.8rem; 
+    font-size: 0.85rem; 
     font-weight: 700; 
     border-radius: 20px; 
-    padding: 10px 16px; 
+    padding: 8px 12px; 
     border: none; 
-    min-width: 120px;
+    width: 100%;
+    max-width: 140px;
     cursor: pointer;
     transition: var(--transition);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 28px;
   }
-
-  .status-select:hover {
-    transform: scale(1.05);
-  }
-  
-  .status-In_Progress { 
-    background: linear-gradient(135deg, #ffb703 0%, #ffd60a 100%); 
-    color: #000; 
-  } 
-  
-  .status-Ready { 
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); 
-    color: #fff; 
-  } 
-  
-  .status-Delivered { 
-    background: linear-gradient(135deg, #06d6a0 0%, #059669 100%); 
-    color: #fff; 
-  }
+  .status-select option { background: #0f172a; color: #fff; }
+  .status-In_Progress { background: rgba(255, 183, 3, 0.2); color: #ffd60a; } 
+  .status-Ready { background: rgba(79, 172, 254, 0.2); color: #4facfe; } 
+  .status-Delivered { background: rgba(6, 214, 160, 0.2); color: #06d6a0; }
 
   .icon-btn { 
     background: rgba(255, 255, 255, 0.06); 
     border: 1px solid var(--glass-border); 
     color: var(--text-secondary); 
     cursor: pointer; 
-    padding: 12px; 
+    padding: 0;
     border-radius: var(--radius-md); 
-    font-size: 1.2rem; 
+    font-size: 1.1rem; 
     display: inline-flex; 
     align-items: center; 
     justify-content: center; 
-    min-width: 48px; 
-    min-height: 48px;
+    min-width: 40px; 
+    min-height: 40px;
     transition: var(--transition);
-    backdrop-filter: blur(10px);
   }
-  
-  .icon-btn:hover { 
-    background: rgba(255, 255, 255, 0.12); 
-    color: var(--accent); 
-    border-color: rgba(255, 183, 3, 0.4);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(255, 183, 3, 0.3);
-  }
-  
-  .icon-btn:active {
-    transform: scale(0.9);
-  }
-  
-  .icon-btn.danger:hover { 
-    background: rgba(239, 71, 111, 0.15); 
-    color: var(--danger); 
-    border-color: rgba(239, 71, 111, 0.4);
-    box-shadow: 0 8px 24px rgba(239, 71, 111, 0.3);
-  }
+  .icon-btn:active { transform: scale(0.9); }
+  .icon-btn.danger:active { background: rgba(239, 71, 111, 0.2); color: var(--danger); }
+  .icon-btn.edit:active { background: rgba(79, 172, 254, 0.2); color: var(--info); }
 
-  .icon-btn.edit:hover { 
-    background: rgba(79, 172, 254, 0.15); 
-    color: var(--info); 
-    border-color: rgba(79, 172, 254, 0.4);
-    box-shadow: 0 8px 24px rgba(79, 172, 254, 0.3);
-  }
-
-  .card { 
-    padding: 32px 24px; 
-    max-width: 700px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  }
-
-  .field { margin-bottom: 20px; display: block; }
+  .field { margin-bottom: 16px; display: block; }
+  .field span { display: block; font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 8px; }
+  .field select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
+  .field select option { background: #0f172a; color: #fff; }
   
-  .field span { 
-    display: block; 
-    font-size: 0.85rem; 
-    color: var(--text-secondary); 
-    font-weight: 600; 
-    margin-bottom: 10px;
-    letter-spacing: 0.3px;
-  }
-  
-  .field input, .field select, .field textarea { 
-    width: 100%; 
-    background: rgba(255, 255, 255, 0.05); 
-    border: 1px solid var(--glass-border); 
-    border-radius: var(--radius-md); 
-    padding: 14px 18px; 
-    color: var(--text-primary); 
-    font-size: 1rem;
-    font-family: 'Inter', sans-serif;
-    transition: var(--transition);
-    backdrop-filter: blur(10px);
-    min-height: 48px;
-  }
-
-  .field select {
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 18px center;
-    padding-right: 44px;
-  }
-
-  .field select option {
-    background: #1a1a2e;
-    color: #fff;
-  }
-  
-  .field input:focus, .field select:focus, .field textarea:focus { 
-    outline: none;
-    border-color: rgba(255, 255, 255, 0.4);
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
-  }
-  
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  
-  @media (max-width: 768px) { 
-    .grid2 { grid-template-columns: 1fr; } 
-    header { padding: 16px; }
-    header h1 { font-size: 1.3rem; }
-    main { padding: 16px 12px; }
-    .card { padding: 24px 20px; }
-    h2 { font-size: 1.4rem; }
-    
-    /* Show hamburger menu on mobile */
-    .hamburger-btn {
-      display: flex;
-    }
-    
-    .mobile-menu {
-      display: block;
-    }
-    
-    .mobile-menu-overlay {
-      display: block;
-    }
-    
-    /* Hide desktop toolbar on mobile */
-    .toolbar {
-      display: none;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .login-card {
-      padding: 36px 24px;
-    }
-    .login-card h2 {
-      font-size: 1.8rem;
-    }
-    header h1 {
-      font-size: 1.2rem;
-    }
-    .logout-btn {
-      padding: 8px 12px;
-      font-size: 0.8rem;
-    }
-    .mobile-menu {
-      width: 90%;
-    }
-  }
+  .grid2 { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media (min-width: 768px) { .grid2 { grid-template-columns: 1fr 1fr; } }
 
   .info-box { 
-    background: rgba(255, 255, 255, 0.05); 
-    border: 1px solid var(--glass-border); 
+    background: rgba(255, 183, 3, 0.1); 
+    border: 1px solid rgba(255, 183, 3, 0.3); 
     border-radius: var(--radius-md); 
-    padding: 16px 20px; 
+    padding: 14px 16px; 
     font-size: 0.9rem; 
     margin-bottom: 20px;
-    backdrop-filter: blur(10px);
-  }
-  
-  .info-box.yellow { 
-    border-color: rgba(255, 183, 3, 0.4);
-    background: linear-gradient(135deg, rgba(255, 183, 3, 0.1) 0%, rgba(255, 214, 10, 0.05) 100%);
-    box-shadow: 0 8px 24px rgba(255, 183, 3, 0.15);
   }
 
-  .submit-btn { 
-    width: 100%; 
-    background: var(--gradient-primary);
-    color: #fff; 
-    font-weight: 700; 
-    padding: 18px; 
-    border-radius: var(--radius-md); 
-    border: none; 
-    cursor: pointer; 
-    font-size: 1.05rem; 
-    margin-bottom: 12px;
-    transition: var(--transition);
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
-    letter-spacing: 0.3px;
-    position: relative;
-    overflow: hidden;
-    min-height: 56px;
-  }
-
-  .submit-btn::before {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: var(--transition);
-  }
-
-  .submit-btn:hover::before {
-    left: 100%;
-  }
-
-  .submit-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
-  }
-
-  .submit-btn:active {
-    transform: translateY(-1px);
-  }
-  
   .cancel-btn { 
     width: 100%; 
     background: rgba(255, 255, 255, 0.08); 
@@ -955,572 +541,104 @@
     cursor: pointer; 
     font-size: 1rem;
     transition: var(--transition);
-    backdrop-filter: blur(10px);
-    min-height: 56px;
-  }
-
-  .cancel-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: var(--text-primary);
-    transform: translateY(-2px);
-  }
-
-  .search-box { position: relative; margin-bottom: 24px; }
-  
-  .search-box input { 
-    width: 100%; 
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border); 
-    border-radius: var(--radius-lg); 
-    padding: 16px 20px 16px 52px; 
-    color: var(--text-primary); 
-    font-size: 1rem;
-    transition: var(--transition);
-    min-height: 56px;
-  }
-
-  .search-box input:focus {
-    border-color: rgba(255, 255, 255, 0.4);
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  }
-  
-  .search-box .icon { 
-    position: absolute; 
-    left: 18px; 
-    top: 18px; 
-    color: var(--text-muted); 
-    font-size: 1.3rem; 
-  }
-
-  .search-result { 
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border); 
-    border-radius: var(--radius-lg); 
-    padding: 20px; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    flex-wrap: wrap; 
-    gap: 16px; 
-    margin-bottom: 16px;
-    transition: var(--transition);
-  }
-
-  .search-result:hover {
-    border-color: rgba(255, 183, 3, 0.3);
-    transform: translateX(6px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  }
-  
-  .search-result .jobno { 
-    color: var(--accent); 
-    font-family: 'Poppins', monospace; 
-    font-size: 0.9rem;
-    font-weight: 700;
-  }
-
-  .stats-grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
-    gap: 12px; 
-    margin-bottom: 24px; 
-  }
-  
-  .stat { 
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg); 
-    padding: 24px 16px; 
-    text-align: center;
-    transition: var(--transition);
-  }
-
-  .stat:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 183, 3, 0.3);
-  }
-  
-  .stat .val { 
-    font-size: 1.8rem; 
-    font-weight: 800;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  } 
-  
-  .stat .lbl { 
-    font-size: 0.75rem; 
-    color: var(--text-muted); 
+    min-height: 52px;
     margin-top: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 600;
   }
+  .cancel-btn:active { transform: scale(0.98); }
 
-  .alert-row { 
-    background: linear-gradient(135deg, rgba(230, 57, 70, 0.1) 0%, rgba(239, 71, 111, 0.05) 100%);
-    border: 1px solid rgba(230, 57, 70, 0.3); 
-    border-radius: var(--radius-lg); 
-    padding: 20px; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    flex-wrap: wrap; 
-    gap: 16px; 
-    margin-bottom: 16px;
-    transition: var(--transition);
-  }
+  .search-box { position: relative; margin-bottom: 20px; }
+  .search-box .icon { position: absolute; left: 16px; top: 16px; color: var(--text-muted); font-size: 1.2rem; pointer-events: none; }
+  .search-box input { padding-left: 48px; }
 
-  .alert-row:hover {
-    border-color: rgba(230, 57, 70, 0.5);
-    box-shadow: 0 8px 32px rgba(230, 57, 70, 0.2);
-  }
-
-  .cal-toolbar { 
-    display: flex; 
-    align-items: center; 
-    gap: 10px; 
-    margin-bottom: 20px; 
-    flex-wrap: wrap; 
-  }
-  
-  .cal-toolbar select, .cal-toolbar button.navbtn { 
-    background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border); 
-    border-radius: var(--radius-md); 
-    color: var(--text-primary); 
-    font-size: 0.9rem; 
-    padding: 12px 16px; 
-    cursor: pointer;
-    transition: var(--transition);
-    min-height: 48px;
-  }
-
-  .cal-toolbar button.navbtn:hover {
-    background: rgba(255, 255, 255, 0.12);
-    transform: translateY(-2px);
-  }
-  
-  .cal-weekdays { 
-    display: grid; 
-    grid-template-columns: repeat(7, 1fr); 
-    gap: 6px; 
-    text-align: center; 
-    font-size: 0.7rem; 
-    color: var(--text-muted);
-    text-transform: uppercase; 
-    font-weight: 700; 
-    margin-bottom: 8px;
-    letter-spacing: 0.5px;
-  }
-  
-  .cal-grid { 
-    display: grid; 
-    grid-template-columns: repeat(7, 1fr); 
-    gap: 6px; 
-  }
-  
-  .cal-cell { 
-    min-height: 70px; 
-    border-radius: var(--radius-md); 
-    border: 1px solid var(--glass-border); 
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(10px);
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-    cursor: pointer; 
-    color: var(--text-primary); 
-    padding: 8px;
-    transition: var(--transition);
-  }
-
-  .cal-cell:hover {
-    transform: scale(1.08);
-    border-color: rgba(255, 183, 3, 0.4);
-    box-shadow: 0 8px 24px rgba(255, 183, 3, 0.2);
-  }
-  
-  .cal-cell.empty { 
-    background: transparent; 
-    border: none; 
-    cursor: default; 
-  }
-
-  .cal-cell.empty:hover {
-    transform: none;
-    box-shadow: none;
-  }
-  
-  .cal-cell.full { 
-    background: linear-gradient(135deg, rgba(230, 57, 70, 0.2) 0%, rgba(239, 71, 111, 0.1) 100%);
-    border-color: rgba(230, 57, 70, 0.4); 
-  }
-  
-  .cal-cell.selected { 
-    box-shadow: 0 0 0 3px rgba(255, 183, 3, 0.5) inset, 0 8px 24px rgba(255, 183, 3, 0.3);
-  }
-  
-  .cal-cell .num { 
-    font-size: 0.95rem; 
-    font-weight: 700; 
-  } 
-  
-  .cal-cell .num.today { 
-    color: var(--accent);
-    text-shadow: 0 0 12px rgba(255, 183, 3, 0.6);
-  }
-  
-  .cal-cell .cnt { 
-    font-size: 0.7rem; 
-    font-weight: 700; 
-    margin-top: 4px; 
-  } 
-  
-  .cal-cell .cnt.ok { color: var(--success); } 
-  .cal-cell .cnt.full { color: var(--danger); }
-
-  .day-detail { 
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border); 
-    border-radius: var(--radius-lg); 
-    padding: 18px; 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    flex-wrap: wrap; 
-    gap: 12px; 
-    margin-bottom: 12px;
-    transition: var(--transition);
-  }
-
-  .day-detail:hover {
-    border-color: rgba(255, 183, 3, 0.3);
-    transform: translateX(4px);
-  }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .stat { background: rgba(255, 255, 255, 0.04); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 20px 12px; text-align: center; }
+  .stat .val { font-size: 1.5rem; font-weight: 800; font-family: 'Poppins', sans-serif; } 
+  .stat .lbl { font-size: 0.7rem; color: var(--text-muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
 
   .sync-status { 
     text-align: center; 
-    font-size: 0.82rem; 
-    padding: 12px 20px; 
+    font-size: 0.8rem; 
+    padding: 10px 20px; 
     border-top: 1px solid var(--glass-border); 
     font-weight: 600;
-    letter-spacing: 0.3px;
+    position: sticky;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.9);
     backdrop-filter: blur(10px);
   }
-  
-  .sync-status.connected { 
-    background: linear-gradient(135deg, rgba(6, 214, 160, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
-    color: var(--success); 
-  }
-  
-  .sync-status.error { 
-    background: linear-gradient(135deg, rgba(239, 71, 111, 0.1) 0%, rgba(239, 71, 111, 0.05) 100%);
-    color: var(--danger); 
-  }
-  
-  .sync-status.loading { 
-    background: linear-gradient(135deg, rgba(255, 183, 3, 0.1) 0%, rgba(255, 183, 3, 0.05) 100%);
-    color: var(--accent); 
-  }
+  .sync-status.connected { color: var(--success); }
+  .sync-status.error { color: var(--danger); }
+  .sync-status.loading { color: var(--accent); }
 
   .toast { 
-    position: fixed; 
-    top: 20px; 
-    right: 20px; 
-    left: 20px;
-    background: linear-gradient(135deg, #06d6a0 0%, #059669 100%);
-    color: #fff; 
-    font-weight: 700; 
-    padding: 18px 24px; 
-    border-radius: var(--radius-lg); 
-    font-size: 0.95rem; 
-    z-index: 10000; 
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 12px 40px rgba(6, 214, 160, 0.4);
-    animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(20px);
+    position: fixed; top: 20px; right: 20px; left: 20px; max-width: 400px; margin: 0 auto;
+    background: var(--success); color: #fff; font-weight: 700; padding: 14px 20px; 
+    border-radius: var(--radius-md); font-size: 0.9rem; z-index: 10000; 
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex; justify-content: space-between; align-items: center;
   }
-
-  @keyframes slideInRight {
-    from { opacity: 0; transform: translateX(120px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-  
-  .toast button { 
-    background: none; 
-    border: none; 
-    float: right; 
-    margin-left: 16px; 
-    cursor: pointer; 
-    font-weight: 700; 
-    font-size: 1.3rem; 
-    color: #fff;
-    transition: var(--transition-fast);
-  }
-
-  .toast button:hover {
-    transform: scale(1.3) rotate(90deg);
-  }
-
-  .toast.error { 
-    background: linear-gradient(135deg, #ef476f 0%, #c9184a 100%);
-    box-shadow: 0 12px 40px rgba(239, 71, 111, 0.4);
-  }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  .toast button { background: none; border: none; cursor: pointer; font-weight: 700; font-size: 1.2rem; color: #fff; padding: 0 0 0 12px; }
+  .toast.error { background: var(--danger); }
 
   .modal-bg { 
-    position: fixed; 
-    inset: 0; 
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(10px);
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    z-index: 200; 
-    padding: 20px;
-    animation: fadeIn 0.3s ease;
+    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    display: flex; align-items: flex-end; justify-content: center; z-index: 200; padding: 0;
+    animation: fadeIn 0.2s ease;
   }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+  @media (min-width: 768px) { .modal-bg { align-items: center; padding: 20px; } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   
   .modal { 
-    background: rgba(26, 26, 46, 0.95);
-    backdrop-filter: blur(30px);
-    color: var(--text-primary); 
-    border-radius: var(--radius-xl); 
-    max-width: 480px; 
-    width: 100%; 
-    padding: 32px 24px; 
-    position: relative; 
-    max-height: 90vh; 
-    overflow-y: auto;
+    background: #1e293b; color: var(--text-primary); 
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0; 
+    max-width: 600px; width: 100%; padding: 24px 20px; 
+    position: relative; max-height: 90vh; overflow-y: auto;
     border: 1px solid var(--glass-border);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    animation: modalSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-bottom: none;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+    animation: modalSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-
-  @keyframes modalSlideUp {
-    from { opacity: 0; transform: translateY(40px) scale(0.95); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+  @media (min-width: 768px) { 
+    .modal { border-radius: var(--radius-xl); border-bottom: 1px solid var(--glass-border); } 
   }
+  @keyframes modalSlideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
   
   .modal .close { 
-    position: absolute; 
-    top: 16px; 
-    right: 16px; 
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid var(--glass-border);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem; 
-    cursor: pointer; 
-    transition: var(--transition);
-    color: var(--text-secondary);
+    position: absolute; top: 16px; right: 16px; background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--glass-border); border-radius: 50%; width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center; font-size: 1.2rem; 
+    cursor: pointer; transition: var(--transition); color: var(--text-secondary);
   }
-
-  .modal .close:hover {
-    background: rgba(239, 71, 111, 0.15);
-    color: var(--danger);
-    border-color: rgba(239, 71, 111, 0.4);
-    transform: rotate(90deg);
-  }
+  .modal .close:active { transform: scale(0.9); background: rgba(239, 71, 111, 0.2); color: var(--danger); }
   
-  .modal h2 { 
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.6rem;
-    font-weight: 800;
-    margin-bottom: 24px;
-    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.9) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+  .modal h2 { font-family: 'Poppins', sans-serif; font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; }
   
-  .modal .row { 
-    display: flex; 
-    justify-content: space-between; 
-    border-bottom: 1px solid var(--glass-border); 
-    padding: 14px 0; 
-    font-size: 0.92rem;
-    transition: var(--transition-fast);
-  }
+  .modal .row { display: flex; justify-content: space-between; border-bottom: 1px solid var(--glass-border); padding: 12px 0; font-size: 0.9rem; }
+  .modal .row span:first-child { color: var(--text-muted); font-weight: 500; }
+  .modal .row.bold span:last-child { font-weight: 700; color: var(--text-primary); }
 
-  .modal .row:hover {
-    background: rgba(255, 255, 255, 0.03);
-    padding-left: 12px;
+  .print-btn, .whatsapp-btn { 
+    width: 100%; color: #fff; font-weight: 700; padding: 16px; 
+    border-radius: var(--radius-md); border: none; cursor: pointer; 
+    font-size: 1rem; margin-top: 12px; transition: var(--transition); min-height: 52px;
   }
-  
-  .modal .row span:first-child { 
-    color: var(--text-muted);
-    font-weight: 500;
-  }
-  
-  .modal .row.bold span:last-child { 
-    font-weight: 700;
-    color: var(--text-primary);
-  }
+  .print-btn { background: var(--gradient-primary); }
+  .whatsapp-btn { background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .print-btn:active, .whatsapp-btn:active { transform: scale(0.98); }
 
-  .print-btn { 
-    margin-top: 20px; 
-    width: 100%; 
-    background: var(--gradient-primary);
-    color: #fff; 
-    font-weight: 700; 
-    padding: 18px; 
-    border-radius: var(--radius-md); 
-    border: none; 
-    cursor: pointer; 
-    margin-bottom: 12px; 
-    font-size: 1.05rem;
-    transition: var(--transition);
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
-    min-height: 56px;
-  }
+  .required-star { color: var(--danger); font-weight: bold; margin-left: 4px; }
 
-  .print-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
-  }
-  
-  .whatsapp-btn { 
-    width: 100%; 
-    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-    color: #fff; 
-    font-weight: 700; 
-    padding: 18px; 
-    border-radius: var(--radius-md); 
-    border: none; 
-    cursor: pointer; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 12px; 
-    font-size: 1.05rem;
-    transition: var(--transition);
-    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
-    min-height: 56px;
-  }
-
-  .whatsapp-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(37, 211, 102, 0.5);
-  }
-
-  .edit-modal-content { 
-    background: rgba(255, 255, 255, 0.03);
-    padding: 24px 20px; 
-    border-radius: var(--radius-lg); 
-    border: 1px solid var(--glass-border);
-  }
-  
-  .edit-modal-content h3 { 
-    color: var(--accent); 
-    margin-top: 0; 
-    font-family: 'Poppins', sans-serif;
-  }
-
-  .required-star { 
-    color: var(--danger); 
-    font-weight: bold; 
-    margin-left: 4px;
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-
-  footer { 
-    text-align: center; 
-    font-size: 0.8rem; 
-    color: var(--text-muted); 
-    padding: 20px; 
-    border-top: 1px solid var(--glass-border);
-    font-weight: 500;
-    letter-spacing: 0.3px;
-    backdrop-filter: blur(10px);
-  }
-
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.02);
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-  }
+  footer { text-align: center; font-size: 0.75rem; color: var(--text-muted); padding: 20px; border-top: 1px solid var(--glass-border); }
 
   @media print {
     .no-print, header, .toolbar, footer, #toastArea, main, #deleteModal, #editModal, .mobile-menu, .mobile-menu-overlay, .hamburger-btn { display: none !important; }
-    .modal-bg { position: static !important; background: #ffffff !important; display: block !important; inset: auto !important; padding: 0 !important; margin: 0 !important; }
-    .modal { box-shadow: none !important; border: 1px solid #000 !important; max-width: 100% !important; width: 100% !important; color: #000 !important; background: #fff !important; padding: 24px !important; }
+    .modal-bg { position: static !important; background: #fff !important; display: block !important; }
+    .modal { box-shadow: none !important; border: 1px solid #000 !important; max-width: 100% !important; color: #000 !important; background: #fff !important; padding: 20px !important; }
     .modal * { color: #000 !important; }
     .modal .close, .modal .print-btn, .modal .whatsapp-btn { display: none !important; }
-  }
-
-  ::selection {
-    background: rgba(255, 183, 3, 0.3);
-    color: var(--text-primary);
-  }
-
-  @media (hover: none) {
-    button.tool:hover {
-      transform: none;
-    }
-    .icon-btn:hover {
-      transform: none;
-    }
-    .submit-btn:hover {
-      transform: none;
-    }
-  }
-
-  @media (min-width: 769px) and (max-width: 1024px) {
-    main {
-      padding: 24px 20px;
-    }
-    .card {
-      padding: 28px 24px;
-    }
-    table {
-      font-size: 0.85rem;
-    }
-    th, td {
-      padding: 14px 16px;
-    }
-  }
-
-  @media (min-width: 1400px) {
-    main {
-      max-width: 1600px;
-    }
   }
 </style>
 </head>
@@ -1531,8 +649,8 @@
     <h2>2K CAR CARE</h2>
     <p>Workshop Scheduler Login</p>
     <form onsubmit="handleLogin(event)">
-      <div class="login-field"><label>User ID</label><input type="text" id="loginUser" placeholder="Enter ID" required></div>
-      <div class="login-field"><label>Password</label><input type="password" id="loginPass" placeholder="Enter Password" required></div>
+      <div class="login-field"><label>User ID</label><input type="text" id="loginUser" placeholder="Enter ID" required autocomplete="username"></div>
+      <div class="login-field"><label>Password</label><input type="password" id="loginPass" placeholder="Enter Password" required autocomplete="current-password"></div>
       <button type="submit" class="login-btn">🔓 Login</button>
       <div id="loginError" class="login-error">Invalid ID or Password</div>
     </form>
@@ -1541,122 +659,67 @@
 
 <div id="appContainer">
   <header class="no-print">
-    <div><h1>2K CAR CARE</h1><p>Workshop Scheduler & Job Card System</p></div>
+    <div><h1>2K CAR CARE</h1><p>Workshop Scheduler</p></div>
     <div class="header-right">
-      <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
-        <div><p>Today: <strong id="todayLabel"></strong></p><p id="saveStatus" style="color:rgba(255,183,3,0.8);font-size:0.75rem;"></p></div>
+      <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+        <p style="font-size:0.8rem; color:var(--text-secondary);">Today: <strong id="todayLabel" style="color:var(--text-primary);"></strong></p>
         <button class="logout-btn" onclick="logout()">🚪 Logout</button>
       </div>
-      <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMobileMenu()">
+      <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="Menu">
         <span class="hamburger-icon"></span>
       </button>
     </div>
   </header>
 
-  <!-- Mobile Menu Overlay -->
   <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
 
-  <!-- Mobile Menu -->
   <div class="mobile-menu" id="mobileMenu">
-    <div class="mobile-menu-header">
-      <div style="font-size: 2rem;">🚗</div>
-      <div class="mobile-menu-title">Menu</div>
-    </div>
-
     <div class="mobile-menu-section">
       <div class="mobile-menu-section-title">Quick Actions</div>
-      <div class="mobile-menu-item" onclick="changeView('add'); toggleMobileMenu();">
-        <span class="mobile-menu-icon">➕</span>
-        <span class="mobile-menu-label">Add Job</span>
-      </div>
-      <div class="mobile-menu-item" onclick="changeView('search'); toggleMobileMenu();">
-        <span class="mobile-menu-icon">🔍</span>
-        <span class="mobile-menu-label">Search</span>
-      </div>
-      <div class="mobile-menu-item" onclick="changeView('dashboard'); toggleMobileMenu();">
-        <span class="mobile-menu-icon">↻</span>
-        <span class="mobile-menu-label">Refresh</span>
-      </div>
+      <div class="mobile-menu-item" onclick="changeView('add'); toggleMobileMenu();"><span class="mobile-menu-icon">➕</span><span class="mobile-menu-label">Add Job</span></div>
+      <div class="mobile-menu-item" onclick="changeView('search'); toggleMobileMenu();"><span class="mobile-menu-icon">🔍</span><span class="mobile-menu-label">Search</span></div>
+      <div class="mobile-menu-item" onclick="changeView('dashboard'); toggleMobileMenu();"><span class="mobile-menu-icon">↻</span><span class="mobile-menu-label">Refresh</span></div>
     </div>
-
     <div class="mobile-menu-section">
       <div class="mobile-menu-section-title">Views</div>
-      <div class="mobile-menu-item" onclick="changeView('capacity'); toggleMobileMenu();">
-        <span class="mobile-menu-icon">📊</span>
-        <span class="mobile-menu-label">Capacity</span>
-      </div>
-      <div class="mobile-menu-item" onclick="changeView('calendar'); toggleMobileMenu();">
-        <span class="mobile-menu-icon">📅</span>
-        <span class="mobile-menu-label">Calendar</span>
-      </div>
-      <div class="mobile-menu-item" onclick="changeView('report'); toggleMobileMenu();">
-        <span class="mobile-menu-icon">📄</span>
-        <span class="mobile-menu-label">Report</span>
-      </div>
-      <div class="mobile-menu-item" onclick="changeView('alerts'); toggleMobileMenu();">
-        <span class="mobile-menu-icon">🔔</span>
-        <span class="mobile-menu-label">Alerts</span>
-        <span class="mobile-menu-badge" id="mobileAlertBadge" style="display:none">0</span>
-      </div>
+      <div class="mobile-menu-item" onclick="changeView('capacity'); toggleMobileMenu();"><span class="mobile-menu-icon">📊</span><span class="mobile-menu-label">Capacity</span></div>
+      <div class="mobile-menu-item" onclick="changeView('calendar'); toggleMobileMenu();"><span class="mobile-menu-icon">📅</span><span class="mobile-menu-label">Calendar</span></div>
+      <div class="mobile-menu-item" onclick="changeView('report'); toggleMobileMenu();"><span class="mobile-menu-icon">📄</span><span class="mobile-menu-label">Report</span></div>
+      <div class="mobile-menu-item" onclick="changeView('alerts'); toggleMobileMenu();"><span class="mobile-menu-icon">🔔</span><span class="mobile-menu-label">Alerts</span><span class="mobile-menu-badge" id="mobileAlertBadge" style="display:none; background:var(--danger); color:#fff; font-size:0.7rem; padding:2px 8px; border-radius:10px; margin-left:auto;">0</span></div>
     </div>
-
     <div class="mobile-menu-section">
       <div class="mobile-menu-section-title">Filters</div>
-      <div class="mobile-menu-filter">
-        <div class="mobile-menu-item" onclick="setFilter('emergency'); toggleMobileMenu();">
-          <span class="mobile-menu-icon">🚨</span>
-          <span class="mobile-menu-label">Emergency</span>
-        </div>
-        <div class="mobile-menu-item" onclick="setFilter('major'); toggleMobileMenu();">
-          <span class="mobile-menu-icon">🔧</span>
-          <span class="mobile-menu-label">Major</span>
-        </div>
-        <div class="mobile-menu-item" onclick="setFilter('minor'); toggleMobileMenu();">
-          <span class="mobile-menu-icon">🔩</span>
-          <span class="mobile-menu-label">Minor</span>
-        </div>
-        <div class="mobile-menu-item" onclick="setWorkTypeFilter('denting'); toggleMobileMenu();">
-          <span class="mobile-menu-icon">🔨</span>
-          <span class="mobile-menu-label">Denting</span>
-        </div>
-        <div class="mobile-menu-item" onclick="setWorkTypeFilter('painting'); toggleMobileMenu();">
-          <span class="mobile-menu-icon">🎨</span>
-          <span class="mobile-menu-label">Painting</span>
-        </div>
-        <div class="mobile-menu-item" onclick="setWorkTypeFilter('polishing'); toggleMobileMenu();">
-          <span class="mobile-menu-icon">✨</span>
-          <span class="mobile-menu-label">Polishing</span>
-        </div>
-      </div>
-      <div class="mobile-menu-item" onclick="clearFilters(); toggleMobileMenu();" style="margin-top: 8px;">
-        <span class="mobile-menu-icon">❌</span>
-        <span class="mobile-menu-label">Clear Filters</span>
-      </div>
+      <div class="mobile-menu-item" onclick="setFilter('emergency'); toggleMobileMenu();"><span class="mobile-menu-icon">🚨</span><span class="mobile-menu-label">Emergency</span></div>
+      <div class="mobile-menu-item" onclick="setFilter('major'); toggleMobileMenu();"><span class="mobile-menu-icon">🔧</span><span class="mobile-menu-label">Major</span></div>
+      <div class="mobile-menu-item" onclick="setFilter('minor'); toggleMobileMenu();"><span class="mobile-menu-icon">🔩</span><span class="mobile-menu-label">Minor</span></div>
+      <div class="mobile-menu-item" onclick="setWorkTypeFilter('denting'); toggleMobileMenu();"><span class="mobile-menu-icon">🔨</span><span class="mobile-menu-label">Denting</span></div>
+      <div class="mobile-menu-item" onclick="setWorkTypeFilter('painting'); toggleMobileMenu();"><span class="mobile-menu-icon">🎨</span><span class="mobile-menu-label">Painting</span></div>
+      <div class="mobile-menu-item" onclick="setWorkTypeFilter('polishing'); toggleMobileMenu();"><span class="mobile-menu-icon">✨</span><span class="mobile-menu-label">Polishing</span></div>
+      <div class="mobile-menu-item" onclick="clearFilters(); toggleMobileMenu();" style="margin-top:8px;"><span class="mobile-menu-icon">❌</span><span class="mobile-menu-label">Clear Filters</span></div>
     </div>
   </div>
 
-  <!-- Desktop Toolbar -->
   <div class="toolbar no-print">
     <button class="tool red" onclick="changeView('add')">+ Add Job</button>
     <button class="tool red" onclick="changeView('search')">🔍 Search</button>
-    <button class="tool gray" onclick="changeView('dashboard'); toast('Refreshed');">↻ Refresh</button>
-    <button class="tool gray" onclick="changeView('capacity')">📊 Capacity</button>
-    <button class="tool gray" onclick="changeView('calendar')">📅 Calendar</button>
+    <button class="tool" onclick="changeView('dashboard'); toast('Refreshed');">↻ Refresh</button>
+    <button class="tool" onclick="changeView('capacity')">📊 Capacity</button>
+    <button class="tool" onclick="changeView('calendar')">📅 Calendar</button>
     <button class="tool yellow" onclick="setFilter('emergency')">Emergency</button>
     <button class="tool yellow" onclick="setFilter('major')">Major</button>
     <button class="tool yellow" onclick="setFilter('minor')">Minor</button>
-    <button class="tool gray" onclick="setWorkTypeFilter('denting')">🔧 Denting</button>
-    <button class="tool gray" onclick="setWorkTypeFilter('painting')">🎨 Painting</button>
-    <button class="tool gray" onclick="setWorkTypeFilter('polishing')">✨ Polishing</button>
-    <button class="tool gray" onclick="clearFilters()">Clear</button>
-    <select id="filterDate" style="background: rgba(255,255,255,0.06); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 12px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 130px;" onchange="setDateFilter(this.value)">
+    <button class="tool" onclick="setWorkTypeFilter('denting')">🔧 Denting</button>
+    <button class="tool" onclick="setWorkTypeFilter('painting')">🎨 Painting</button>
+    <button class="tool" onclick="setWorkTypeFilter('polishing')">✨ Polishing</button>
+    <button class="tool" onclick="clearFilters()">Clear</button>
+    <select id="filterDate" style="background:rgba(255,255,255,0.06); color:var(--text-primary); border:1px solid var(--glass-border); padding:10px 14px; border-radius:var(--radius-md); font-size:0.85rem; font-weight:600; cursor:pointer; flex:1; min-width:120px; min-height:44px;" onchange="setDateFilter(this.value)">
       <option value="all" style="color:#000;background:#fff">All Dates</option>
       <option value="today" style="color:#000;background:#fff">Due Today</option>
       <option value="week" style="color:#000;background:#fff">Due This Week</option>
       <option value="overdue" style="color:#000;background:#fff">Overdue</option>
     </select>
     <button class="tool red" onclick="changeView('report')">📄 Report</button>
-    <button class="tool gray" id="alertBtn" onclick="changeView('alerts')">🔔 Alerts</button>
+    <button class="tool" id="alertBtn" onclick="changeView('alerts')">🔔 Alerts</button>
   </div>
 
   <main id="mainArea"></main>
@@ -1667,69 +730,62 @@
     <div class="modal">
       <button class="close" onclick="closeDeleteModal()">✕</button>
       <h2>⚠️ Confirm Deletion</h2>
-      <p style="color:var(--text-secondary); margin-bottom:20px;">Enter admin password to permanently delete this job card.</p>
+      <p style="color:var(--text-secondary); margin-bottom:20px; font-size:0.9rem;">Enter admin password to permanently delete this job card.</p>
       <div class="field">
-        <input type="password" id="deletePasswordInput" placeholder="Enter Admin Password" style="width:100%; padding:14px; margin-bottom:20px; border-radius:12px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:#fff; font-size:1rem;">
+        <input type="password" id="deletePasswordInput" placeholder="Enter Admin Password" inputmode="text">
       </div>
-      <button class="submit-btn" onclick="executeDelete()" style="background: linear-gradient(135deg, #ef476f 0%, #c9184a 100%);">🗑️ Delete Job</button>
+      <button class="submit-btn" onclick="executeDelete()" style="background: var(--danger);">🗑️ Delete Job</button>
     </div>
   </div>
 
   <div id="editModal" class="modal-bg" style="display:none;">
-    <div class="modal" style="max-width: 700px;">
+    <div class="modal">
       <button class="close" onclick="closeEditModal()">✕</button>
       <h2>✏️ Edit Job Card</h2>
-      <div class="edit-modal-content">
-        <input type="hidden" id="edit_id">
-        <div class="grid2">
-          <label class="field"><span>Vehicle Maker *</span>
-            <select id="edit_maker" required>
-              <option value="">Select Maker</option>
+      <input type="hidden" id="edit_id">
+      <div class="grid2">
+        <label class="field"><span>Vehicle Maker *</span><select id="edit_maker" required></select></label>
+        <label class="field"><span>Vehicle Number *</span><input id="edit_vehicle" maxlength="10" style="text-transform:uppercase;"></label>
+        <label class="field"><span>Customer Name *</span><input id="edit_customer"></label>
+        <label class="field"><span>Phone Number</span>
+          <div style="display: flex; gap: 8px;">
+            <select id="edit_countryCode" style="width: 110px; flex-shrink:0;">
+              <option value="+91" style="color:#000;background:#fff">🇮🇳 +91</option>
+              <option value="+971" style="color:#000;background:#fff">🇦🇪 +971</option>
+              <option value="+968" style="color:#000;background:#fff">🇴🇲 +968</option>
+              <option value="+966" style="color:#000;background:#fff">🇸🇦 +966</option>
+              <option value="+974" style="color:#000;background:#fff">🇶🇦 +974</option>
+              <option value="+1" style="color:#000;background:#fff">🇺🇸 +1</option>
+              <option value="+44" style="color:#000;background:#fff">🇬🇧 +44</option>
+              <option value="+92" style="color:#000;background:#fff">🇵🇰 +92</option>
+              <option value="+880" style="color:#000;background:#fff">🇧🇩 +880</option>
             </select>
-          </label>
-          <label class="field"><span>Vehicle Number *</span><input id="edit_vehicle" maxlength="10"></label>
-          <label class="field"><span>Customer Name *</span><input id="edit_customer"></label>
-          <label class="field"><span>Phone Number</span>
-            <div style="display: flex; gap: 10px;">
-              <select id="edit_countryCode" style="width: 120px;">
-                <option value="+91" style="color:#000;background:#fff">🇮🇳 +91</option>
-                <option value="+971" style="color:#000;background:#fff">🇦🇪 +971</option>
-                <option value="+968" style="color:#000;background:#fff">🇴🇲 +968</option>
-                <option value="+966" style="color:#000;background:#fff">🇸🇦 +966</option>
-                <option value="+974" style="color:#000;background:#fff">🇶 +974</option>
-                <option value="+1" style="color:#000;background:#fff">🇺 +1</option>
-                <option value="+44" style="color:#000;background:#fff">🇬🇧 +44</option>
-                <option value="+92" style="color:#000;background:#fff">🇵🇰 +92</option>
-                <option value="+880" style="color:#000;background:#fff">🇧 +880</option>
-              </select>
-              <input id="edit_phone" maxlength="10" inputmode="numeric">
-            </div>
-          </label>
-          <label class="field"><span>Job Type</span>
-            <select id="edit_type">
-              <option value="Emergency" style="color:#000;background:#fff">Emergency (1 day)</option>
-              <option value="Minor" style="color:#000;background:#fff">Minor Job (3 days)</option>
-              <option value="Major" style="color:#000;background:#fff">Major Job (5-15 days)</option>
-            </select>
-          </label>
-          <label class="field" id="edit_majorDaysField"><span>Major Job Duration (5-15 days)</span><input type="number" id="edit_majorDays" min="5" max="15"></label>
-          <label class="field"><span>Assigned Team</span>
-            <select id="edit_team">
-              <option value="Team 1" style="color:#000;background:#fff">Team 1</option>
-              <option value="Team 2" style="color:#000;background:#fff">Team 2</option>
-              <option value="Team 3" style="color:#000;background:#fff">Team 3</option>
-              <option value="Team 4" style="color:#000;background:#fff">Team 4</option>
-              <option value="Team 5" style="color:#000;background:#fff">Team 5</option>
-            </select>
-          </label>
-          <label class="field"><span>Start Date</span><input type="date" id="edit_start"></label>
-          <label class="field"><span>Delivery Date</span><input type="date" id="edit_delivery"></label>
-        </div>
-        <label class="field"><span>Notes (Separate tasks with commas) <span class="required-star">*</span></span><textarea id="edit_notes" rows="2" placeholder="e.g., denting, painting"></textarea></label>
-        
-        <button class="submit-btn" onclick="saveEdit()">💾 Save Changes</button>
-        <button class="cancel-btn" onclick="closeEditModal()">Cancel</button>
+            <input id="edit_phone" maxlength="15" inputmode="numeric" style="flex:1;">
+          </div>
+        </label>
+        <label class="field"><span>Job Type</span>
+          <select id="edit_type">
+            <option value="Emergency" style="color:#000;background:#fff">Emergency (1 day)</option>
+            <option value="Minor" style="color:#000;background:#fff">Minor Job (3 days)</option>
+            <option value="Major" style="color:#000;background:#fff">Major Job (5-15 days)</option>
+          </select>
+        </label>
+        <label class="field" id="edit_majorDaysField"><span>Major Job Duration (5-15 days)</span><input type="number" id="edit_majorDays" min="5" max="15" inputmode="numeric"></label>
+        <label class="field"><span>Assigned Team</span>
+          <select id="edit_team">
+            <option value="Team 1" style="color:#000;background:#fff">Team 1</option>
+            <option value="Team 2" style="color:#000;background:#fff">Team 2</option>
+            <option value="Team 3" style="color:#000;background:#fff">Team 3</option>
+            <option value="Team 4" style="color:#000;background:#fff">Team 4</option>
+            <option value="Team 5" style="color:#000;background:#fff">Team 5</option>
+          </select>
+        </label>
+        <label class="field"><span>Start Date</span><input type="date" id="edit_start"></label>
+        <label class="field"><span>Delivery Date</span><input type="date" id="edit_delivery"></label>
       </div>
+      <label class="field"><span>Notes (Separate tasks with commas) <span class="required-star">*</span></span><textarea id="edit_notes" rows="2" placeholder="e.g., denting, painting"></textarea></label>
+      <button class="submit-btn" onclick="saveEdit()">💾 Save Changes</button>
+      <button class="cancel-btn" onclick="closeEditModal()">Cancel</button>
     </div>
   </div>
 
@@ -1752,10 +808,9 @@ let firebaseConnected = false;
 try {
     firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
-    console.log("✅ Firebase initialized");
 } catch (e) { 
-    console.error("❌ Firebase init failed:", e);
-    updateSyncStatus("error", "❌ Firebase failed to initialize: " + e.message);
+    console.error("Firebase init failed:", e);
+    updateSyncStatus("error", "❌ Firebase failed to initialize");
 }
 
 const DEFAULT_USER = "admin"; const DEFAULT_PASS = "2kcare"; 
@@ -1769,18 +824,18 @@ let filter = "all";
 let workTypeFilter = "all";
 let dateFilter = "all"; 
 let searchTerm = "";
-let printJob = null; let calendarMonth = new Date().getMonth(); let calendarYear = new Date().getFullYear();
-let selectedDay = null; let capacityCheckDate = todayStr(); 
+let printJob = null; 
+let calendarMonth = new Date().getMonth(); 
+let calendarYear = new Date().getFullYear();
+let selectedDay = null; 
+let capacityCheckDate = todayStr(); 
 let jobToDelete = null;
 const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 const editMakerSelect = document.getElementById('edit_maker');
 VEHICLE_MAKERS.forEach(m => {
     const opt = document.createElement('option');
-    opt.value = m;
-    opt.textContent = m;
-    opt.style.color = '#000';
-    opt.style.backgroundColor = '#fff';
+    opt.value = m; opt.textContent = m; opt.style.color = '#000'; opt.style.backgroundColor = '#fff';
     editMakerSelect.appendChild(opt);
 });
 
@@ -1793,20 +848,15 @@ function updateSyncStatus(type, message) {
 
 function getTeamWorkload() {
   const workload = { "Team 1": 0, "Team 2": 0, "Team 3": 0, "Team 4": 0, "Team 5": 0 };
-  state.jobs.forEach(j => {
-    if (j.status !== "Delivered" && workload[j.team] !== undefined) workload[j.team]++;
-  });
+  state.jobs.forEach(j => { if (j.status !== "Delivered" && workload[j.team] !== undefined) workload[j.team]++; });
   return workload;
 }
 
 function startRealtimeSync() {
-    if (!db) {
-        updateSyncStatus("error", "❌ Firebase not initialized.");
-        return;
-    }
+    if (!db) { updateSyncStatus("error", "❌ Firebase not initialized."); return; }
     updateSyncStatus("loading", "⏳ Connecting to cloud database...");
 
-    db.collection("jobs").get().then((snapshot) => {
+    db.collection("jobs").get().then(() => {
         firebaseConnected = true;
         updateSyncStatus("connected", "✅ Connected to cloud - Syncing with all users");
     }).catch((error) => {
@@ -1847,8 +897,8 @@ function logout() { if(confirm("Logout?")) { sessionStorage.removeItem('2kcc_aut
 
 function toast(msg, isError = false) { 
   const area = document.getElementById("toastArea");
-  area.innerHTML = `<div class="toast no-print ${isError ? 'error' : ''}">${msg}<button onclick="document.getElementById('toastArea').innerHTML=''">✕</button></div>`; 
-  setTimeout(()=>{ area.innerHTML=""; }, 5000);
+  area.innerHTML = `<div class="toast no-print ${isError ? 'error' : ''}"><span>${msg}</span><button onclick="document.getElementById('toastArea').innerHTML=''">✕</button></div>`; 
+  setTimeout(()=>{ area.innerHTML=""; }, 4000);
 }
 
 function todayStr() { return new Date().toISOString().split("T")[0]; }
@@ -1858,83 +908,25 @@ function rangeDates(start,end) { const dates=[]; let cur=new Date(start); const 
 function getDeliveryDate(jobType,startDate,majorDays) { if (jobType === "Emergency") return addDays(startDate, 1); if (jobType === "Minor") return addDays(startDate, 3); return addDays(startDate, majorDays || 5); }
 function getCapacityForDate(date, excludeId) { return state.jobs.filter(j=>{ if(j.id===excludeId) return false; if(j.status==="Delivered") return false; return rangeDates(j.startDate,j.deliveryDate).includes(date); }).length; }
 
-function renderDateSelect(id, selectedDate) {
-  let html = `<select id="${id}" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; padding: 14px 18px; color: #fff; font-size: 1rem; min-height: 48px;">`;
-  for (let i = 0; i < 30; i++) {
-    const d = addDays(todayStr(), i); const count = getCapacityForDate(d, null); const remaining = CAPACITY_PER_DAY - count;
-    let statusText = remaining > 0 ? `(${remaining} slots avail)` : '(FULL)';
-    html += `<option value="${d}" ${d === selectedDate ? 'selected' : ''} ${remaining <= 0 ? 'disabled' : ''} style="color:#000;background:#fff">${formatDate(d)} ${statusText}</option>`;
-  }
-  return html + `</select>`;
-}
-
 function changeView(newView) { 
   view = newView; 
-  // Close mobile menu when changing views
-  if (document.getElementById('mobileMenu').classList.contains('active')) {
-    toggleMobileMenu();
-  }
+  if (document.getElementById('mobileMenu').classList.contains('active')) toggleMobileMenu();
   render(); 
 }
 
-function setFilter(f) { 
-  filter = f; 
-  workTypeFilter = "all"; 
-  view = "dashboard"; 
-  // Close mobile menu
-  if (document.getElementById('mobileMenu').classList.contains('active')) {
-    toggleMobileMenu();
-  }
-  render(); 
-}
+function setFilter(f) { filter = f; workTypeFilter = "all"; view = "dashboard"; if (document.getElementById('mobileMenu').classList.contains('active')) toggleMobileMenu(); render(); }
+function setWorkTypeFilter(workType) { workTypeFilter = workType; filter = "all"; view = "dashboard"; if (document.getElementById('mobileMenu').classList.contains('active')) toggleMobileMenu(); render(); }
+function clearFilters() { filter = "all"; workTypeFilter = "all"; searchTerm = ""; dateFilter = "all"; document.getElementById("filterDate").value = "all"; view = "dashboard"; if (document.getElementById('mobileMenu').classList.contains('active')) toggleMobileMenu(); render(); }
+function setDateFilter(val) { dateFilter = val; view = "dashboard"; render(); }
 
-function setWorkTypeFilter(workType) { 
-  workTypeFilter = workType; 
-  filter = "all"; 
-  view = "dashboard"; 
-  // Close mobile menu
-  if (document.getElementById('mobileMenu').classList.contains('active')) {
-    toggleMobileMenu();
-  }
-  render(); 
-}
-
-function clearFilters() { 
-  filter = "all"; 
-  workTypeFilter = "all"; 
-  searchTerm = ""; 
-  dateFilter = "all"; 
-  document.getElementById("filterDate").value = "all"; 
-  view = "dashboard"; 
-  // Close mobile menu
-  if (document.getElementById('mobileMenu').classList.contains('active')) {
-    toggleMobileMenu();
-  }
-  render(); 
-}
-
-function setDateFilter(val) { 
-  dateFilter = val; 
-  view = "dashboard"; 
-  render(); 
-}
-
-// Mobile Menu Toggle
 function toggleMobileMenu() {
   const hamburgerBtn = document.getElementById('hamburgerBtn');
   const mobileMenu = document.getElementById('mobileMenu');
   const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-  
   hamburgerBtn.classList.toggle('active');
   mobileMenu.classList.toggle('active');
   mobileMenuOverlay.classList.toggle('active');
-  
-  // Prevent body scroll when menu is open
-  if (mobileMenu.classList.contains('active')) {
-    document.body.style.overflow = 'hidden';
-  } else {
-    document.body.style.overflow = '';
-  }
+  document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
 }
 
 function render() {
@@ -1948,7 +940,6 @@ function render() {
   if(filter==="emergency") document.querySelector('button[onclick="setFilter(\'emergency\')"]').classList.add("active");
   if(filter==="major") document.querySelector('button[onclick="setFilter(\'major\')"]').classList.add("active");
   if(filter==="minor") document.querySelector('button[onclick="setFilter(\'minor\')"]').classList.add("active");
-  
   if(workTypeFilter==="denting") document.querySelector('button[onclick="setWorkTypeFilter(\'denting\')"]').classList.add("active");
   if(workTypeFilter==="painting") document.querySelector('button[onclick="setWorkTypeFilter(\'painting\')"]').classList.add("active");
   if(workTypeFilter==="polishing") document.querySelector('button[onclick="setWorkTypeFilter(\'polishing\')"]').classList.add("active");
@@ -1957,31 +948,12 @@ function render() {
   const today = todayStr();
   const dueToday = state.jobs.filter(j=>j.deliveryDate===today && j.status!=="Delivered");
   alertBtn.textContent = "🔔" + (dueToday.length?` (${dueToday.length})`:"");
-  alertBtn.className = "tool no-print " + (dueToday.length ? "alert" : "gray");
+  alertBtn.className = "tool no-print " + (dueToday.length ? "alert" : "");
   if(view==="alerts") alertBtn.classList.add("active");
 
-  // Update mobile alert badge
   const mobileAlertBadge = document.getElementById('mobileAlertBadge');
-  if (dueToday.length > 0) {
-    mobileAlertBadge.textContent = dueToday.length;
-    mobileAlertBadge.style.display = 'inline-block';
-  } else {
-    mobileAlertBadge.style.display = 'none';
-  }
-
-  const activeEl = document.activeElement;
-  let inputStates = {};
-  const currentInputs = document.querySelectorAll("#mainArea input, #mainArea textarea, #mainArea select");
-  currentInputs.forEach(el => {
-    if (el.id) {
-      inputStates[el.id] = { value: el.value, scrollTop: el.scrollTop || 0 };
-      if (el === activeEl) {
-        inputStates[el.id].selectionStart = el.selectionStart;
-        inputStates[el.id].selectionEnd = el.selectionEnd;
-        inputStates[el.id].active = true;
-      }
-    }
-  });
+  if (dueToday.length > 0) { mobileAlertBadge.textContent = dueToday.length; mobileAlertBadge.style.display = 'inline-block'; } 
+  else { mobileAlertBadge.style.display = 'none'; }
 
   const main = document.getElementById("mainArea");
   try {
@@ -1995,28 +967,6 @@ function render() {
   } catch(e) { main.innerHTML = `<div class="empty" style="color:var(--danger)">Error: ${e.message}</div>`; }
 
   renderModal();
-
-  for (const id in inputStates) {
-    const el = document.getElementById(id);
-    if (el) {
-      el.value = inputStates[id].value;
-      el.scrollTop = inputStates[id].scrollTop;
-      if (inputStates[id].active) {
-        setTimeout(() => {
-          el.focus({ preventScroll: true });
-          if (typeof inputStates[id].selectionStart === 'number' && el.setSelectionRange) {
-            try { el.setSelectionRange(inputStates[id].selectionStart, inputStates[id].selectionEnd); } catch (e) {}
-          }
-        }, 0);
-      }
-    }
-  }
-
-  if (view === "search") {
-    const searchInput = document.getElementById("searchInput");
-    if (searchInput) searchInput.value = searchTerm;
-  }
-
   attachHandlers();
   if (view === "search") updateSearchResults();
 }
@@ -2051,6 +1001,7 @@ function getVisibleJobs() {
   }
   return jobs;
 }
+
 function statusClass(s){ return "status-"+s.replace(" ","_"); }
 
 function renderWorkTags(job) {
@@ -2058,14 +1009,14 @@ function renderWorkTags(job) {
   if (items.length === 0) return '';
   const tags = items.map((item, idx) => {
     const isDone = item.done;
-    const bg = isDone ? 'rgba(6, 214, 160, 0.2)' : 'rgba(255, 183, 3, 0.15)';
+    const bg = isDone ? 'rgba(6, 214, 160, 0.15)' : 'rgba(255, 183, 3, 0.15)';
     const border = isDone ? 'var(--success)' : 'var(--accent)';
     const color = isDone ? 'var(--success)' : 'var(--accent)';
     const check = isDone ? '✅ ' : ''; 
-    const strike = isDone ? 'text-decoration: line-through; opacity: 0.8;' : '';
-    return `<span onclick="toggleWorkItem('${job.id}', ${idx})" style="background:${bg}; border:1px solid ${border}; color:${color}; padding:6px 12px; border-radius:20px; font-size:0.75rem; white-space:nowrap; cursor:pointer; user-select:none; ${strike}; transition: all 0.3s ease; font-weight:600;">${check}${item.name}</span>`;
+    const strike = isDone ? 'text-decoration: line-through; opacity: 0.7;' : '';
+    return `<span onclick="toggleWorkItem('${job.id}', ${idx})" style="background:${bg}; border:1px solid ${border}; color:${color}; padding:4px 10px; border-radius:12px; font-size:0.75rem; white-space:nowrap; cursor:pointer; user-select:none; ${strike}; transition: all 0.2s ease; font-weight:600; display:inline-block; margin:2px;">${check}${item.name}</span>`;
   }).join(' ');
-  return `<div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;">${tags}</div>`;
+  return `<div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:6px;">${tags}</div>`;
 }
 
 function toggleWorkItem(jobId, index) {
@@ -2083,54 +1034,64 @@ function renderDashboard() {
   const jobs = getVisibleJobs(); const today = todayStr();
   let html = `<h2>Dashboard</h2>`;
   if(jobs.length===0){ return html + `<div class="empty">No job cards found. Click '+ Add Job' to create one.</div>`; }
-  html += `<div class="table-wrapper"><table><thead><tr><th>S.No</th><th>Job Card</th><th>Maker</th><th>Vehicle</th><th>Customer</th><th>Type</th><th>Team</th><th>Start</th><th>Delivery</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+  
+  html += `<div class="job-list">`;
+  html += `<div class="job-card header">
+    <div>S.No</div><div>Job Card</div><div>Maker</div><div>Vehicle</div><div>Customer</div><div>Type</div><div>Team</div><div>Start</div><div>Delivery</div><div>Status</div><div>Actions</div>
+  </div>`;
+  
   jobs.forEach((j, index)=>{
-    html += `<tr class="${j.deliveryDate===today && j.status!=="Delivered" ? "due-today" : ""}">
-      <td style="font-weight:800; color:var(--accent); text-align:center; font-family:'Poppins',sans-serif;">${index + 1}</td>
-      <td style="font-family:'Poppins',monospace;color:var(--accent); font-weight:700;">${j.jobCardNo}</td>
-      <td>${j.vehicleMaker || '-'}</td>
-      <td><strong>${j.vehicleNo}</strong></td><td>${j.customerName}</td>
-      <td><span class="badge ${j.jobType==="Major"?"badge-major":j.jobType==="Minor"?"badge-minor":"badge-emergency"}">${j.jobType}</span></td><td>${j.team}</td>
-      <td>${formatDate(j.startDate)}</td><td>${formatDate(j.deliveryDate)}</td>
-      <td>
+    const isDueToday = j.deliveryDate===today && j.status!=="Delivered";
+    html += `<div class="job-card ${isDueToday ? 'due-today' : ''}">
+      <div data-label="S.No" style="font-weight:800; color:var(--accent); font-family:'Poppins',sans-serif;">${index + 1}</div>
+      <div data-label="Job Card" style="font-family:'Poppins',monospace; color:var(--accent); font-weight:700;">${j.jobCardNo}</div>
+      <div data-label="Maker">${j.vehicleMaker || '-'}</div>
+      <div data-label="Vehicle"><strong>${j.vehicleNo}</strong></div>
+      <div data-label="Customer">${j.customerName}</div>
+      <div data-label="Type"><span class="badge ${j.jobType==="Major"?"badge-major":j.jobType==="Minor"?"badge-minor":"badge-emergency"}">${j.jobType}</span></div>
+      <div data-label="Team">${j.team}</div>
+      <div data-label="Start">${formatDate(j.startDate)}</div>
+      <div data-label="Delivery">${formatDate(j.deliveryDate)}</div>
+      <div data-label="Status">
         <select class="status-select ${statusClass(j.status)}" onchange="updateStatus('${j.id}',this.value)">
           <option value="In Progress" ${j.status==="In Progress"?"selected":""}>In Progress</option>
           <option value="Ready" ${j.status==="Ready"?"selected":""}>Ready</option>
           <option value="Delivered" ${j.status==="Delivered"?"selected":""}>Delivered</option>
         </select>
         ${renderWorkTags(j)}
-      </td>
-      <td style="text-align:center; white-space:nowrap;">
+      </div>
+      <div data-label="Actions" style="display:flex; gap:8px; justify-content:flex-start; margin-top:4px;">
         <button class="icon-btn edit" onclick="openEdit('${j.id}')" title="Edit">✏️</button>
         <button class="icon-btn" onclick="openPrint('${j.id}')" title="Print">🖨️</button> 
         <button class="icon-btn danger" onclick="requestDelete('${j.id}')" title="Delete">🗑️</button>
-      </td></tr>`;
+      </div>
+    </div>`;
   });
-  return html + `</tbody></table></div>`;
+  return html + `</div>`;
 }
 
 function renderAddForm() {
   const year = new Date().getFullYear();
   const workload = getTeamWorkload();
   const teamOptions = `<option value="Auto">✨ Auto-Assign (Least Workload)</option>` + TEAMS.map(t => `<option value="${t}" style="color:#000;background:#fff">${t} (${workload[t]} active)</option>`).join("");
-  return `<h2>Add New Job</h2><div class="card glass-card">
-    <div class="info-box yellow">Job Card No. (auto): <span style="font-family:'Poppins',monospace;color:var(--accent);font-weight:700">2K-${year}-${String(state.counter).padStart(4,"0")}</span></div>
+  return `<h2>Add New Job</h2><div class="glass-card" style="padding:20px; border-radius:var(--radius-lg);">
+    <div class="info-box">Job Card No. (auto): <span style="font-family:'Poppins',monospace;color:var(--accent);font-weight:700">2K-${year}-${String(state.counter).padStart(4,"0")}</span></div>
     <div class="grid2">
       <label class="field"><span>Vehicle Maker *</span><select id="f_maker" required><option value="">Select Maker</option>${VEHICLE_MAKERS.map(m=>`<option value="${m}" style="color:#000;background:#fff">${m}</option>`).join("")}</select></label>
-      <label class="field"><span>Vehicle Number *</span><input id="f_vehicle" placeholder="e.g. AP16AB1234" maxlength="10"></label>
+      <label class="field"><span>Vehicle Number *</span><input id="f_vehicle" placeholder="e.g. AP16AB1234" maxlength="10" style="text-transform:uppercase;"></label>
       <label class="field"><span>Customer Name *</span><input id="f_customer" placeholder="e.g. Ramesh Kumar"></label>
-      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 10px;"><select id="f_countryCode" style="width: 120px;"><option value="+91" style="color:#000;background:#fff">🇮🇳 +91</option><option value="+971" style="color:#000;background:#fff">🇦🇪 +971</option><option value="+968" style="color:#000;background:#fff">🇴 +968</option><option value="+966" style="color:#000;background:#fff">🇸🇦 +966</option><option value="+974" style="color:#000;background:#fff">🇶🇦 +974</option><option value="+1" style="color:#000;background:#fff">🇺🇸 +1</option><option value="+44" style="color:#000;background:#fff">🇬🇧 +44</option><option value="+92" style="color:#000;background:#fff">🇵🇰 +92</option><option value="+880" style="color:#000;background:#fff">🇧🇩 +880</option></select><input id="f_phone" placeholder="10 digit number" maxlength="10" inputmode="numeric" style="flex:1;"></div></label>
+      <label class="field"><span>Phone Number</span><div style="display: flex; gap: 8px;"><select id="f_countryCode" style="width: 110px; flex-shrink:0;"><option value="+91" style="color:#000;background:#fff">🇮🇳 +91</option><option value="+971" style="color:#000;background:#fff">🇦🇪 +971</option><option value="+968" style="color:#000;background:#fff">🇴🇲 +968</option><option value="+966" style="color:#000;background:#fff">🇸🇦 +966</option><option value="+974" style="color:#000;background:#fff">🇶🇦 +974</option><option value="+1" style="color:#000;background:#fff">🇺🇸 +1</option><option value="+44" style="color:#000;background:#fff">🇬🇧 +44</option><option value="+92" style="color:#000;background:#fff">🇵🇰 +92</option><option value="+880" style="color:#000;background:#fff">🇧🇩 +880</option></select><input id="f_phone" placeholder="Mobile number" maxlength="15" inputmode="numeric" style="flex:1;"></div></label>
       <label class="field"><span>Job Type</span><select id="f_type"><option value="Emergency" style="color:#000;background:#fff">Emergency (1 day)</option><option value="Minor" style="color:#000;background:#fff">Minor Job (3 days)</option><option value="Major" style="color:#000;background:#fff">Major Job (5-15 days)</option></select></label>
       <label class="field" id="majorDaysField"><span>Major Job Duration (5-15 days)</span><input type="number" id="f_majorDays" min="5" max="15" value="5" inputmode="numeric"></label>
       <label class="field"><span>Assigned Team</span><select id="f_team">${teamOptions}</select></label>
-      <label class="field"><span>Start Date</span>${renderDateSelect("f_start", todayStr())}</label>
+      <label class="field"><span>Start Date</span><select id="f_start" style="width:100%; background:rgba(255,255,255,0.06); border:1px solid var(--glass-border); border-radius:var(--radius-md); padding:14px 16px; color:#fff; font-size:16px; min-height:48px;"></select></label>
     </div>
     <label class="field"><span>Notes (Separate tasks with commas) <span class="required-star">*</span></span><textarea id="f_notes" rows="2" placeholder="e.g., denting, painting"></textarea></label>
-    <div class="info-box" id="deliveryPreview" style="background: linear-gradient(135deg, rgba(79, 172, 254, 0.15) 0%, rgba(0, 242, 254, 0.08) 100%); border-color: rgba(79, 172, 254, 0.4); color: var(--info);">📅 Expected Delivery: <strong>${formatDate(getDeliveryDate("Major", todayStr(), 5))}</strong></div>
+    <div class="info-box" id="deliveryPreview" style="background:rgba(79, 172, 254, 0.1); border-color:rgba(79, 172, 254, 0.3); color:var(--info);">📅 Expected Delivery: <strong>${formatDate(getDeliveryDate("Major", todayStr(), 5))}</strong></div>
     <button class="submit-btn" onclick="submitJob()">✓ Add Job</button></div>`;
 }
 
-function renderSearch() { return `<h2>Search Vehicle</h2><div class="search-box"><span class="icon">🔍</span><input id="searchInput" placeholder="Search by maker, vehicle, customer, or job card..."></div><div id="searchResults"></div>`; }
+function renderSearch() { return `<h2>Search Vehicle</h2><div class="search-box"><span class="icon">🔍</span><input id="searchInput" placeholder="Search by maker, vehicle, customer, or job card..." inputmode="search"></div><div id="searchResults"></div>`; }
 
 function updateSearchResults() {
   const resultsContainer = document.getElementById("searchResults");
@@ -2140,9 +1101,16 @@ function updateSearchResults() {
   if(searchTerm.trim()===""){ html += `<div class="empty">Type to search...</div>`; } 
   else if(jobs.length===0){ html += `<div class="empty">No matching job cards found.</div>`; } 
   else {
+    html += `<div class="job-list">`;
     jobs.forEach((j, index)=>{
-      html += `<div class="search-result"><div style="display:flex; align-items:center; gap:14px;"><span style="background:var(--gradient-accent); color:#000; font-weight:800; padding:8px 16px; border-radius:20px; font-family:'Poppins',sans-serif;">${index + 1}</span><div><div class="jobno">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div></div></div><div style="display:flex;align-items:center;gap:12px"><span class="badge ${statusClass(j.status)}" style="background:none;border:1px solid currentColor">${j.status}</span><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button></div></div>`;
+      html += `<div class="job-card" style="cursor:pointer;" onclick="openPrint('${j.id}')">
+        <div data-label="Job Card" style="font-family:'Poppins',monospace; color:var(--accent); font-weight:700;">${j.jobCardNo}</div>
+        <div data-label="Vehicle"><strong>${j.vehicleMaker || ''}</strong> · ${j.vehicleNo}</div>
+        <div data-label="Customer">${j.customerName}</div>
+        <div data-label="Status"><span class="badge ${statusClass(j.status)}" style="background:none;border:1px solid currentColor">${j.status}</span></div>
+      </div>`;
     });
+    html += `</div>`;
   }
   resultsContainer.innerHTML = html;
 }
@@ -2153,28 +1121,52 @@ function renderCapacity() {
   for (let i = 0; i < 30; i++) { const d = addDays(todayStr(), i); dateOptions += `<option value="${d}" ${d === capacityCheckDate ? 'selected' : ''} style="color:#000;background:#fff">${formatDate(d)} (${getCapacityForDate(d, null)}/${CAPACITY_PER_DAY})</option>`; }
   const workload = getTeamWorkload();
   let teamStats = ''; TEAMS.forEach(t => { teamStats += `<div class="stat"><div class="val">${workload[t]}</div><div class="lbl">${t}</div></div>`; });
-  return `<h2>Capacity & Team Workload</h2><div class="card glass-card"><h3 style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px; font-family:'Poppins',sans-serif;">Current Active Jobs per Team</h3><div class="stats-grid">${teamStats}</div><label class="field" style="margin-top:24px"><span>Check daily capacity for date</span><select id="capacityDate" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 12px; padding: 14px; color: #fff;" onchange="updateCapacityDate(this.value)">${dateOptions}</select></label><div class="stats-grid" style="margin-top:20px"><div class="stat"><div class="val">${count}</div><div class="lbl">Scheduled</div></div><div class="stat"><div class="val">${CAPACITY_PER_DAY}</div><div class="lbl">Capacity</div></div><div class="stat"><div class="val" style="color:${remaining>0?'var(--success)':'var(--danger)'}">${remaining}</div><div class="lbl">Remaining</div></div></div></div>`;
+  return `<h2>Capacity & Team Workload</h2><div class="glass-card" style="padding:20px; border-radius:var(--radius-lg);"><h3 style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px; font-family:'Poppins',sans-serif;">Current Active Jobs per Team</h3><div class="stats-grid">${teamStats}</div><label class="field" style="margin-top:24px"><span>Check daily capacity for date</span><select id="capacityDate" style="width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: 14px; color: #fff; font-size:16px; min-height:48px;" onchange="updateCapacityDate(this.value)">${dateOptions}</select></label><div class="stats-grid" style="margin-top:20px"><div class="stat"><div class="val">${count}</div><div class="lbl">Scheduled</div></div><div class="stat"><div class="val">${CAPACITY_PER_DAY}</div><div class="lbl">Capacity</div></div><div class="stat"><div class="val" style="color:${remaining>0?'var(--success)':'var(--danger)'}">${remaining}</div><div class="lbl">Remaining</div></div></div></div>`;
 }
 function updateCapacityDate(val) { capacityCheckDate = val; render(); }
 
 function renderCalendar() {
   const firstDay = new Date(calendarYear, calendarMonth, 1).getDay(); const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
-  let html = `<h2>Calendar View</h2><div class="cal-toolbar"><button class="navbtn" onclick="changeMonth(-1)">&lt;</button><select id="calMonth" onchange="calendarMonth=parseInt(this.value);render();" style="flex:1">${MONTH_NAMES.map((m, i) => `<option value="${i}" ${i === calendarMonth ? 'selected' : ''} style="color:#000;background:#fff">${m}</option>`).join('')}</select><select id="calYear" onchange="calendarYear=parseInt(this.value);render();" style="width: 100px;">${[calendarYear - 2, calendarYear - 1, calendarYear, calendarYear + 1, calendarYear + 2].map(y => `<option value="${y}" ${y === calendarYear ? 'selected' : ''} style="color:#000;background:#fff">${y}</option>`).join('')}</select><button class="navbtn" onclick="changeMonth(1)">&gt;</button></div><div class="cal-weekdays"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div><div class="cal-grid">`;
-  for (let i = 0; i < firstDay; i++) html += `<div class="cal-cell empty"></div>`;
+  let html = `<h2>Calendar View</h2><div style="display:flex; align-items:center; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+    <button class="tool" onclick="changeMonth(-1)">&lt;</button>
+    <select id="calMonth" onchange="calendarMonth=parseInt(this.value);render();" style="flex:1; background:rgba(255,255,255,0.06); color:var(--text-primary); border:1px solid var(--glass-border); padding:10px 14px; border-radius:var(--radius-md); font-size:0.9rem; min-height:44px;">${MONTH_NAMES.map((m, i) => `<option value="${i}" ${i === calendarMonth ? 'selected' : ''} style="color:#000;background:#fff">${m}</option>`).join('')}</select>
+    <select id="calYear" onchange="calendarYear=parseInt(this.value);render();" style="width: 100px; background:rgba(255,255,255,0.06); color:var(--text-primary); border:1px solid var(--glass-border); padding:10px 14px; border-radius:var(--radius-md); font-size:0.9rem; min-height:44px;">${[calendarYear - 2, calendarYear - 1, calendarYear, calendarYear + 1, calendarYear + 2].map(y => `<option value="${y}" ${y === calendarYear ? 'selected' : ''} style="color:#000;background:#fff">${y}</option>`).join('')}</select>
+    <button class="tool" onclick="changeMonth(1)">&gt;</button>
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px; text-align:center; font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; margin-bottom:8px; letter-spacing:0.5px;"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>
+  <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px;">`;
+  
+  for (let i = 0; i < firstDay; i++) html += `<div style="min-height:60px; border-radius:var(--radius-md);"></div>`;
   const today = todayStr();
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     const count = getCapacityForDate(dateStr, null); const isFull = count >= CAPACITY_PER_DAY;
-    html += `<button class="cal-cell ${isFull ? 'full' : ''} ${dateStr === selectedDay ? 'selected' : ''}" onclick="selectDay('${dateStr}')"><div class="num ${dateStr === today ? 'today' : ''}">${d}</div><div class="cnt ${isFull ? 'full' : 'ok'}">${count}/${CAPACITY_PER_DAY}</div></button>`;
+    html += `<button class="job-card" style="min-height:60px; flex-direction:column; align-items:center; justify-content:center; padding:8px; cursor:pointer; ${isFull ? 'border-color:var(--danger); background:rgba(239,71,111,0.1);' : ''} ${dateStr === selectedDay ? 'border-color:var(--accent); background:rgba(255,183,3,0.1);' : ''}" onclick="selectDay('${dateStr}')">
+      <div style="font-size:0.95rem; font-weight:700; ${dateStr === today ? 'color:var(--accent);' : ''}">${d}</div>
+      <div style="font-size:0.7rem; font-weight:700; margin-top:4px; color:${isFull ? 'var(--danger)' : 'var(--success)'}">${count}/${CAPACITY_PER_DAY}</div>
+    </button>`;
   }
   html += `</div>`;
+  
   if (selectedDay) {
     const dayJobs = state.jobs.filter(j => rangeDates(j.startDate, j.deliveryDate).includes(selectedDay));
     html += `<h3 style="margin-top:28px; font-size:1rem; color:var(--accent); font-family:'Poppins',sans-serif;">Jobs on ${formatDate(selectedDay)}</h3>`;
     if (dayJobs.length === 0) html += `<div class="empty" style="padding:20px">No jobs.</div>`;
-    else dayJobs.forEach((j, index) => { 
-      html += `<div class="day-detail"><div style="display:flex; align-items:center; gap:14px;"><span style="background:var(--gradient-accent); color:#000; font-weight:800; padding:8px 16px; border-radius:20px; font-family:'Poppins',sans-serif;">${index + 1}</span><div><div style="font-family:'Poppins',monospace;color:var(--accent); font-weight:700;">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div>${renderWorkTags(j)}</div></div><button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div>`; 
-    });
+    else {
+      html += `<div class="job-list" style="margin-top:16px;">`;
+      dayJobs.forEach((j, index) => { 
+        html += `<div class="job-card" onclick="openPrint('${j.id}')" style="cursor:pointer;">
+          <div data-label="Job Card" style="font-family:'Poppins',monospace; color:var(--accent); font-weight:700;">${j.jobCardNo}</div>
+          <div data-label="Vehicle"><strong>${j.vehicleMaker || ''}</strong> · ${j.vehicleNo}</div>
+          <div data-label="Customer">${j.customerName}</div>
+          <div data-label="Actions" style="grid-column: 1 / -1; display:flex; gap:8px; justify-content:flex-end; margin-top:8px;">
+            <button class="icon-btn" onclick="event.stopPropagation(); openPrint('${j.id}')">🖨️</button> 
+            <button class="icon-btn danger" onclick="event.stopPropagation(); requestDelete('${j.id}')">🗑️</button>
+          </div>
+        </div>`; 
+      });
+      html += `</div>`;
+    }
   }
   return html;
 }
@@ -2190,9 +1182,28 @@ function renderAlerts() {
   const today = todayStr(); const dueToday = state.jobs.filter(j=>j.deliveryDate===today && j.status!=="Delivered");
   let html = `<h2>Delivery Alerts — Due Today</h2>`;
   if(dueToday.length===0) return html + `<div class="empty">No vehicles due today.</div>`;
+  
+  html += `<div class="job-list">`;
   dueToday.forEach((j, index)=>{ 
-    html += `<div class="alert-row"><div style="display:flex; align-items:center; gap:14px;"><span style="background:var(--gradient-accent); color:#000; font-weight:800; padding:8px 16px; border-radius:20px; font-family:'Poppins',sans-serif;">${index + 1}</span><div><div class="jobno">${j.jobCardNo}</div><div><strong>${j.vehicleMaker || ''}</strong> · <strong>${j.vehicleNo}</strong> · ${j.customerName}</div><div style="font-size:0.8rem;color:var(--text-secondary)">${j.jobType} job · ${j.team} · Phone: ${j.phone||"-"}</div>${renderWorkTags(j)}</div></div><div><select class="status-select ${statusClass(j.status)}" onchange="updateStatus('${j.id}',this.value)"><option value="In Progress" ${j.status==="In Progress"?"selected":""}>In Progress</option><option value="Ready" ${j.status==="Ready"?"selected":""}>Ready</option><option value="Delivered" ${j.status==="Delivered"?"selected":""}>Delivered</option></select> <button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button></div></div>`; 
+    html += `<div class="job-card due-today">
+      <div data-label="Job Card" style="font-family:'Poppins',monospace; color:var(--accent); font-weight:700;">${j.jobCardNo}</div>
+      <div data-label="Vehicle"><strong>${j.vehicleMaker || ''}</strong> · ${j.vehicleNo}</div>
+      <div data-label="Customer">${j.customerName}</div>
+      <div data-label="Phone">${j.phone||"-"}</div>
+      <div data-label="Status">
+        <select class="status-select ${statusClass(j.status)}" onchange="updateStatus('${j.id}',this.value)">
+          <option value="In Progress" ${j.status==="In Progress"?"selected":""}>In Progress</option>
+          <option value="Ready" ${j.status==="Ready"?"selected":""}>Ready</option>
+          <option value="Delivered" ${j.status==="Delivered"?"selected":""}>Delivered</option>
+        </select>
+      </div>
+      <div data-label="Actions" style="grid-column: 1 / -1; display:flex; gap:8px; justify-content:flex-end; margin-top:8px;">
+        <button class="icon-btn" onclick="openPrint('${j.id}')">🖨️</button> 
+        <button class="icon-btn danger" onclick="requestDelete('${j.id}')">🗑️</button>
+      </div>
+    </div>`; 
   });
+  html += `</div>`;
   return html;
 }
 
@@ -2217,7 +1228,7 @@ function renderModal() {
   <div class="row"><span>Team</span><span>${j.team}</span></div>
   <div class="row"><span>Start</span><span>${formatDate(j.startDate)}</span></div>
   <div class="row"><span>Delivery</span><span>${formatDate(j.deliveryDate)}</span></div>
-  <div class="row bold"><span>Status</span><span style="color:var(--primary-light); font-weight:800;">${j.status}</span></div>
+  <div class="row bold"><span>Status</span><span style="color:var(--primary); font-weight:800;">${j.status}</span></div>
   ${renderWorkItemsForPrint(j)}
   <div class="row"><span>Notes</span><span>${j.notes||"-"}</span></div>
   <button class="print-btn" onclick="window.print()">🖨️ Print Job Card</button>
@@ -2265,15 +1276,13 @@ function executeDelete() {
 function openEdit(id) {
     const job = state.jobs.find(j => j.id === id);
     if (!job) return;
-    
     document.getElementById('edit_id').value = job.id;
     document.getElementById('edit_maker').value = job.vehicleMaker || '';
     document.getElementById('edit_vehicle').value = job.vehicleNo;
     document.getElementById('edit_customer').value = job.customerName;
     
     const fullPhone = job.phone || '';
-    let code = '+91';
-    let number = fullPhone;
+    let code = '+91'; let number = fullPhone;
     if (fullPhone.startsWith('+971')) { code = '+971'; number = fullPhone.substring(4); }
     else if (fullPhone.startsWith('+968')) { code = '+968'; number = fullPhone.substring(4); }
     else if (fullPhone.startsWith('+966')) { code = '+966'; number = fullPhone.substring(4); }
@@ -2286,7 +1295,6 @@ function openEdit(id) {
     
     document.getElementById('edit_countryCode').value = code;
     document.getElementById('edit_phone').value = number;
-    
     document.getElementById('edit_type').value = job.jobType;
     document.getElementById('edit_majorDays').value = job.durationDays || 5;
     document.getElementById('edit_team').value = job.team;
@@ -2295,16 +1303,11 @@ function openEdit(id) {
     document.getElementById('edit_notes').value = job.notes || '';
     
     const majorDaysField = document.getElementById('edit_majorDaysField');
-    if(majorDaysField) {
-      majorDaysField.style.display = job.jobType === "Major" ? "block" : "none";
-    }
-    
+    if(majorDaysField) majorDaysField.style.display = job.jobType === "Major" ? "block" : "none";
     document.getElementById('editModal').style.display = 'flex';
 }
 
-function closeEditModal() {
-    document.getElementById('editModal').style.display = 'none';
-}
+function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
 
 function saveEdit() {
     const id = document.getElementById('edit_id').value;
@@ -2326,33 +1329,23 @@ function saveEdit() {
     if(!notes || notes.trim() === "") { alert("⚠️ Notes are required! Please add work details."); return; }
     
     const vehicleClean = vehicleNo.toUpperCase().replace(/\s+/g, "");
-    if (!/^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$/.test(vehicleClean) && !/^[A-Z]{2}[0-9]{4}$/.test(vehicleClean)) { 
-        alert("⚠️ Invalid Vehicle Number format"); return; 
-    }
+    if (!/^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$/.test(vehicleClean) && !/^[A-Z]{2}[0-9]{4}$/.test(vehicleClean)) { alert("⚠️ Invalid Vehicle Number format"); return; }
     
     const cleanPhone = phoneInput.replace(/[^0-9]/g, '');
     if (phoneInput) {
         if (countryCode === "+91" && cleanPhone.length !== 10) { alert("⚠️ Indian phone must be 10 digits"); return; }
         if (countryCode !== "+91" && (cleanPhone.length < 7 || cleanPhone.length > 15)) { alert("⚠️ Phone must be 7-15 digits"); return; }
     }
-    
     if(jobType === "Major" && (majorDays < 5 || majorDays > 15)){ alert("⚠️ Major job: 5-15 days only"); return; }
 
     const fullPhone = phoneInput ? countryCode + cleanPhone : "";
     const workItems = notes ? notes.split(',').map(item => ({ name: item.trim(), done: false })).filter(item => item.name !== "") : [];
 
-    const updateData = { 
-        vehicleMaker, vehicleNo: vehicleClean, customerName, phone: fullPhone, jobType, 
-        durationDays: jobType === "Major" ? majorDays : (jobType === "Minor" ? 3 : 1),
-        team: assignedTeam, startDate, deliveryDate, notes, workItems
-    };
+    const updateData = { vehicleMaker, vehicleNo: vehicleClean, customerName, phone: fullPhone, jobType, durationDays: jobType === "Major" ? majorDays : (jobType === "Minor" ? 3 : 1), team: assignedTeam, startDate, deliveryDate, notes, workItems };
 
     if (db) {
         db.collection("jobs").doc(id).update(updateData)
-            .then(() => { 
-                toast("✅ Job updated successfully!"); 
-                closeEditModal(); 
-            })
+            .then(() => { toast("✅ Job updated successfully!"); closeEditModal(); })
             .catch(e => toast("❌ Update failed: " + e.message, true));
     }
 }
@@ -2375,14 +1368,11 @@ function submitJob() {
 
   if(!vehicleMaker || vehicleMaker === "") { alert("⚠️ Please select a Vehicle Maker"); return; }
   if(!vehicleNo || !customerName){ alert("⚠️ Vehicle Number and Customer Name required"); return; }
-  
-  if(!notes || notes.trim() === "") { 
-      alert("⚠️ Notes are required! Please add work details (e.g., denting, painting)."); 
-      return; 
-  }
+  if(!notes || notes.trim() === "") { alert("⚠️ Notes are required! Please add work details (e.g., denting, painting)."); return; }
   
   const vehicleClean = vehicleNo.toUpperCase().replace(/\s+/g, "");
   if (!/^[A-Z]{2}[0-9]{1,2}[A-Z]{1,2}[0-9]{4}$/.test(vehicleClean) && !/^[A-Z]{2}[0-9]{4}$/.test(vehicleClean)) { alert("⚠️ Invalid Vehicle Number format"); return; }
+  
   const cleanPhone = phoneInput ? phoneInput.replace(/[^0-9]/g, '') : '';
   if (phoneInput) {
     if (countryCode === "+91" && cleanPhone.length !== 10) { alert("⚠️ Indian phone must be 10 digits"); return; }
@@ -2403,20 +1393,10 @@ function submitJob() {
   const fullPhone = phoneInput ? countryCode + cleanPhone : "";
   const workItems = notes ? notes.split(',').map(item => ({ name: item.trim(), done: false })).filter(item => item.name !== "") : [];
 
-  const newJob = { 
-    vehicleMaker, jobCardNo, vehicleNo: vehicleClean, customerName, phone: fullPhone, jobType, 
-    durationDays: jobType === "Major" ? majorDays : (jobType === "Minor" ? 3 : 1),
-    team: assignedTeam, startDate, deliveryDate, status: "In Progress", notes, workItems,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  };
+  const newJob = { vehicleMaker, jobCardNo, vehicleNo: vehicleClean, customerName, phone: fullPhone, jobType, durationDays: jobType === "Major" ? majorDays : (jobType === "Minor" ? 3 : 1), team: assignedTeam, startDate, deliveryDate, status: "In Progress", notes, workItems, createdAt: firebase.firestore.FieldValue.serverTimestamp() };
 
   db.collection("jobs").add(newJob)
-    .then(() => { 
-        toast(`✅ Job added successfully! (Card No: ${jobCardNo})`); 
-        state.counter++;
-        db.collection("settings").doc("app").set({ counter: state.counter }, { merge: true });
-        view = "dashboard";
-    })
+    .then(() => { toast(`✅ Job added successfully! (Card No: ${jobCardNo})`); state.counter++; db.collection("settings").doc("app").set({ counter: state.counter }, { merge: true }); view = "dashboard"; render(); })
     .catch(e => alert("❌ Failed to save job!\n\nError: " + e.message));
 }
 
@@ -2427,6 +1407,16 @@ function attachHandlers() {
   const majorDaysField = document.getElementById("majorDaysField");
   const deliveryPreview = document.getElementById("deliveryPreview");
   
+  // Populate start date dropdown
+  if(startInput) {
+    let html = '';
+    for (let i = 0; i < 30; i++) {
+      const d = addDays(todayStr(), i); const count = getCapacityForDate(d, null); const remaining = CAPACITY_PER_DAY - count;
+      html += `<option value="${d}" ${i===0?'selected':''} ${remaining<=0?'disabled':''} style="color:#000;background:#fff">${formatDate(d)} ${remaining>0?`(${remaining} slots)`:'(FULL)'}</option>`;
+    }
+    startInput.innerHTML = html;
+  }
+
   if(startInput && typeSelect && deliveryPreview){
     const updatePreview = ()=>{
       const md = majorDaysInput ? (parseInt(majorDaysInput.value, 10) || 5) : 5;
@@ -2450,8 +1440,10 @@ function attachHandlers() {
     }
     updatePreview();
   }
+  
   const searchInput = document.getElementById("searchInput");
   if(searchInput) searchInput.addEventListener("input", (e)=>{ searchTerm = e.target.value; updateSearchResults(); });
+  
   const vehicleInput = document.getElementById("f_vehicle");
   if(vehicleInput) vehicleInput.addEventListener("input", (e)=>{ e.target.value = e.target.value.toUpperCase().slice(0,10); });
   
