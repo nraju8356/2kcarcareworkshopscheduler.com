@@ -388,7 +388,6 @@
     font-weight: 600;
   }
 
-  /* Make key fields full width on mobile for readability */
   .job-card > div[data-label="Status"],
   .job-card > div[data-label="Actions"],
   .job-card > div[data-label="Customer"],
@@ -396,14 +395,13 @@
     grid-column: 1 / -1;
   }
 
-  .job-card.header { display: none; } /* Hide table header on mobile */
+  .job-card.header { display: none; }
 
   .job-card.due-today {
     border-left: 3px solid var(--primary);
     background: rgba(230, 57, 70, 0.08);
   }
 
-  /* PC/Tablet Table View */
   @media (min-width: 1024px) {
     .hamburger-btn { display: none; }
     .toolbar { display: flex; }
@@ -432,12 +430,12 @@
       vertical-align: middle; 
       font-size: 0.88rem;
     }
-    .job-card > div::before { display: none; } /* Hide labels on PC */
+    .job-card > div::before { display: none; }
     .job-card > div[data-label="Status"],
     .job-card > div[data-label="Actions"],
     .job-card > div[data-label="Customer"],
     .job-card > div[data-label="Vehicle"] {
-      grid-column: auto; /* Reset mobile span */
+      grid-column: auto;
     }
     
     .job-card.header { 
@@ -457,7 +455,7 @@
   }
 
   @media (max-width: 1023px) {
-    .toolbar { display: none; } /* Hide desktop toolbar on mobile/tablet */
+    .toolbar { display: none; }
     .hamburger-btn { display: flex; }
   }
 
@@ -631,7 +629,6 @@
 
   .required-star { color: var(--danger); font-weight: bold; margin-left: 4px; }
 
-  /* Calendar Specific Styles */
   .cal-weekdays { 
     display: grid; 
     grid-template-columns: repeat(7, 1fr); 
@@ -680,12 +677,65 @@
 
   footer { text-align: center; font-size: 0.75rem; color: var(--text-muted); padding: 20px; border-top: 1px solid var(--glass-border); }
 
+  /* --- FIXED IOS PRINT STYLES --- */
   @media print {
-    .no-print, header, .toolbar, footer, #toastArea, main, #deleteModal, #editModal, .mobile-menu, .mobile-menu-overlay, .hamburger-btn { display: none !important; }
-    .modal-bg { position: static !important; background: #fff !important; display: block !important; }
-    .modal { box-shadow: none !important; border: 1px solid #000 !important; max-width: 100% !important; color: #000 !important; background: #fff !important; padding: 20px !important; }
-    .modal * { color: #000 !important; }
-    .modal .close, .modal .print-btn, .modal .whatsapp-btn { display: none !important; }
+    /* Force visibility of print essentials for iOS Safari */
+    html, body { 
+      display: block !important; 
+      background: #fff !important; 
+      color: #000 !important; 
+      height: auto !important; 
+      overflow: visible !important; 
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    
+    /* Hide everything else */
+    .no-print, header, .toolbar, footer, #toastArea, main, #loginScreen, #deleteModal, #editModal, .mobile-menu, .mobile-menu-overlay, .hamburger-btn, #syncStatus { 
+      display: none !important; 
+    }
+    
+    /* Ensure modal area is visible and static */
+    #modalArea { 
+      display: block !important; 
+      position: static !important; 
+    }
+    
+    .modal-bg { 
+      position: static !important; 
+      background: #fff !important; 
+      display: block !important; 
+      inset: auto !important; 
+      padding: 0 !important; 
+      margin: 0 !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    
+    .modal { 
+      box-shadow: none !important; 
+      border: 1px solid #000 !important; 
+      max-width: 100% !important; 
+      width: 100% !important; 
+      color: #000 !important; 
+      background: #fff !important; 
+      padding: 20px !important;
+      position: static !important;
+      transform: none !important;
+      animation: none !important;
+      max-height: none !important;
+      overflow: visible !important;
+    }
+    
+    .modal * { 
+      color: #000 !important; 
+      background: transparent !important;
+      border-color: #ccc !important;
+    }
+    
+    .modal .close, .modal .print-btn, .modal .whatsapp-btn { 
+      display: none !important; 
+    }
   }
 </style>
 </head>
@@ -905,7 +955,7 @@ function startRealtimeSync() {
 
     db.collection("jobs").get().then(() => {
         firebaseConnected = true;
-        updateSyncStatus("connected", "✅ Connected"); // Fixed: Removed job count
+        updateSyncStatus("connected", "✅ Connected");
     }).catch((error) => {
         updateSyncStatus("error", "❌ Connection failed: " + error.message);
     });
@@ -913,7 +963,7 @@ function startRealtimeSync() {
     db.collection("jobs").onSnapshot((snapshot) => {
         state.jobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         if (view === "search") updateSearchResults(); else render();
-        if (firebaseConnected) updateSyncStatus("connected", "✅ Connected"); // Fixed: Removed job count
+        if (firebaseConnected) updateSyncStatus("connected", "✅ Connected");
     }, (error) => {
         updateSyncStatus("error", "❌ Sync error: " + error.message);
     });
@@ -957,7 +1007,7 @@ function getCapacityForDate(date, excludeId) { return state.jobs.filter(j=>{ if(
 
 function changeView(newView) { 
   view = newView; 
-  closeMobileMenu(); // Ensure menu closes on view change
+  closeMobileMenu();
   render(); 
 }
 
@@ -966,7 +1016,6 @@ function setWorkTypeFilter(workType) { workTypeFilter = workType; filter = "all"
 function clearFilters() { filter = "all"; workTypeFilter = "all"; searchTerm = ""; dateFilter = "all"; document.getElementById("filterDate").value = "all"; view = "dashboard"; closeMobileMenu(); render(); }
 function setDateFilter(val) { dateFilter = val; view = "dashboard"; render(); }
 
-// Fixed: Dedicated close function for reliable auto-hiding
 function closeMobileMenu() {
   document.getElementById('hamburgerBtn').classList.remove('active');
   document.getElementById('mobileMenu').classList.remove('active');
@@ -1182,7 +1231,6 @@ function renderCapacity() {
 }
 function updateCapacityDate(val) { capacityCheckDate = val; render(); }
 
-// Fixed: Calendar now uses dedicated .cal-cell class instead of .job-card to prevent mobile layout breaking
 function renderCalendar() {
   const firstDay = new Date(calendarYear, calendarMonth, 1).getDay(); 
   const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
@@ -1292,8 +1340,15 @@ function renderModal() {
   <div class="row bold"><span>Status</span><span style="color:var(--primary); font-weight:800;">${j.status}</span></div>
   ${renderWorkItemsForPrint(j)}
   <div class="row"><span>Notes</span><span>${j.notes||"-"}</span></div>
-  <button class="print-btn" onclick="window.print()">🖨️ Print Job Card</button>
+  <button class="print-btn" onclick="triggerPrint()">🖨️ Print Job Card</button>
   <button class="whatsapp-btn" onclick="shareWhatsApp('${j.id}')">💬 Share via WhatsApp</button></div></div>`;
+}
+
+// FIXED: iOS Safari Print Trigger with slight delay
+function triggerPrint() {
+  setTimeout(() => {
+    window.print();
+  }, 100);
 }
 
 function shareWhatsApp(jobId) {
