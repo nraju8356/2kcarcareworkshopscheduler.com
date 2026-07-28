@@ -631,6 +631,53 @@
 
   .required-star { color: var(--danger); font-weight: bold; margin-left: 4px; }
 
+  /* Calendar Specific Styles */
+  .cal-weekdays { 
+    display: grid; 
+    grid-template-columns: repeat(7, 1fr); 
+    gap: 4px; 
+    text-align: center; 
+    font-size: 0.7rem; 
+    color: var(--text-muted);
+    text-transform: uppercase; 
+    font-weight: 700; 
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+  .cal-grid { 
+    display: grid; 
+    grid-template-columns: repeat(7, 1fr); 
+    gap: 4px; 
+  }
+  .cal-cell { 
+    min-height: 48px; 
+    border-radius: var(--radius-sm); 
+    border: 1px solid var(--glass-border); 
+    background: rgba(255, 255, 255, 0.04);
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    cursor: pointer; 
+    color: var(--text-primary); 
+    padding: 4px;
+    transition: var(--transition);
+    font-size: 0.8rem;
+  }
+  .cal-cell:active { transform: scale(0.95); }
+  .cal-cell.empty { background: transparent; border: none; cursor: default; }
+  .cal-cell.empty:active { transform: none; }
+  .cal-cell.full { border-color: var(--danger); background: rgba(239,71,111,0.1); }
+  .cal-cell.selected { border-color: var(--accent); background: rgba(255,183,3,0.15); }
+  .cal-cell .cnt { font-size: 0.65rem; font-weight: 700; margin-top: 2px; }
+  
+  @media (min-width: 768px) {
+    .cal-grid { gap: 6px; }
+    .cal-weekdays { gap: 6px; font-size: 0.75rem; }
+    .cal-cell { min-height: 70px; font-size: 0.9rem; padding: 8px; }
+    .cal-cell .cnt { font-size: 0.75rem; }
+  }
+
   footer { text-align: center; font-size: 0.75rem; color: var(--text-muted); padding: 20px; border-top: 1px solid var(--glass-border); }
 
   @media print {
@@ -671,31 +718,31 @@
     </div>
   </header>
 
-  <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
+  <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="closeMobileMenu()"></div>
 
   <div class="mobile-menu" id="mobileMenu">
     <div class="mobile-menu-section">
       <div class="mobile-menu-section-title">Quick Actions</div>
-      <div class="mobile-menu-item" onclick="changeView('add'); toggleMobileMenu();"><span class="mobile-menu-icon">➕</span><span class="mobile-menu-label">Add Job</span></div>
-      <div class="mobile-menu-item" onclick="changeView('search'); toggleMobileMenu();"><span class="mobile-menu-icon">🔍</span><span class="mobile-menu-label">Search</span></div>
-      <div class="mobile-menu-item" onclick="changeView('dashboard'); toggleMobileMenu();"><span class="mobile-menu-icon">↻</span><span class="mobile-menu-label">Refresh</span></div>
+      <div class="mobile-menu-item" onclick="changeView('add'); closeMobileMenu();"><span class="mobile-menu-icon">➕</span><span class="mobile-menu-label">Add Job</span></div>
+      <div class="mobile-menu-item" onclick="changeView('search'); closeMobileMenu();"><span class="mobile-menu-icon">🔍</span><span class="mobile-menu-label">Search</span></div>
+      <div class="mobile-menu-item" onclick="changeView('dashboard'); closeMobileMenu();"><span class="mobile-menu-icon">↻</span><span class="mobile-menu-label">Refresh</span></div>
     </div>
     <div class="mobile-menu-section">
       <div class="mobile-menu-section-title">Views</div>
-      <div class="mobile-menu-item" onclick="changeView('capacity'); toggleMobileMenu();"><span class="mobile-menu-icon">📊</span><span class="mobile-menu-label">Capacity</span></div>
-      <div class="mobile-menu-item" onclick="changeView('calendar'); toggleMobileMenu();"><span class="mobile-menu-icon">📅</span><span class="mobile-menu-label">Calendar</span></div>
-      <div class="mobile-menu-item" onclick="changeView('report'); toggleMobileMenu();"><span class="mobile-menu-icon">📄</span><span class="mobile-menu-label">Report</span></div>
-      <div class="mobile-menu-item" onclick="changeView('alerts'); toggleMobileMenu();"><span class="mobile-menu-icon">🔔</span><span class="mobile-menu-label">Alerts</span><span class="mobile-menu-badge" id="mobileAlertBadge" style="display:none; background:var(--danger); color:#fff; font-size:0.7rem; padding:2px 8px; border-radius:10px; margin-left:auto;">0</span></div>
+      <div class="mobile-menu-item" onclick="changeView('capacity'); closeMobileMenu();"><span class="mobile-menu-icon">📊</span><span class="mobile-menu-label">Capacity</span></div>
+      <div class="mobile-menu-item" onclick="changeView('calendar'); closeMobileMenu();"><span class="mobile-menu-icon">📅</span><span class="mobile-menu-label">Calendar</span></div>
+      <div class="mobile-menu-item" onclick="changeView('report'); closeMobileMenu();"><span class="mobile-menu-icon">📄</span><span class="mobile-menu-label">Report</span></div>
+      <div class="mobile-menu-item" onclick="changeView('alerts'); closeMobileMenu();"><span class="mobile-menu-icon">🔔</span><span class="mobile-menu-label">Alerts</span><span class="mobile-menu-badge" id="mobileAlertBadge" style="display:none; background:var(--danger); color:#fff; font-size:0.7rem; padding:2px 8px; border-radius:10px; margin-left:auto;">0</span></div>
     </div>
     <div class="mobile-menu-section">
       <div class="mobile-menu-section-title">Filters</div>
-      <div class="mobile-menu-item" onclick="setFilter('emergency'); toggleMobileMenu();"><span class="mobile-menu-icon">🚨</span><span class="mobile-menu-label">Emergency</span></div>
-      <div class="mobile-menu-item" onclick="setFilter('major'); toggleMobileMenu();"><span class="mobile-menu-icon">🔧</span><span class="mobile-menu-label">Major</span></div>
-      <div class="mobile-menu-item" onclick="setFilter('minor'); toggleMobileMenu();"><span class="mobile-menu-icon">🔩</span><span class="mobile-menu-label">Minor</span></div>
-      <div class="mobile-menu-item" onclick="setWorkTypeFilter('denting'); toggleMobileMenu();"><span class="mobile-menu-icon">🔨</span><span class="mobile-menu-label">Denting</span></div>
-      <div class="mobile-menu-item" onclick="setWorkTypeFilter('painting'); toggleMobileMenu();"><span class="mobile-menu-icon">🎨</span><span class="mobile-menu-label">Painting</span></div>
-      <div class="mobile-menu-item" onclick="setWorkTypeFilter('polishing'); toggleMobileMenu();"><span class="mobile-menu-icon">✨</span><span class="mobile-menu-label">Polishing</span></div>
-      <div class="mobile-menu-item" onclick="clearFilters(); toggleMobileMenu();" style="margin-top:8px;"><span class="mobile-menu-icon">❌</span><span class="mobile-menu-label">Clear Filters</span></div>
+      <div class="mobile-menu-item" onclick="setFilter('emergency'); closeMobileMenu();"><span class="mobile-menu-icon">🚨</span><span class="mobile-menu-label">Emergency</span></div>
+      <div class="mobile-menu-item" onclick="setFilter('major'); closeMobileMenu();"><span class="mobile-menu-icon">🔧</span><span class="mobile-menu-label">Major</span></div>
+      <div class="mobile-menu-item" onclick="setFilter('minor'); closeMobileMenu();"><span class="mobile-menu-icon">🔩</span><span class="mobile-menu-label">Minor</span></div>
+      <div class="mobile-menu-item" onclick="setWorkTypeFilter('denting'); closeMobileMenu();"><span class="mobile-menu-icon">🔨</span><span class="mobile-menu-label">Denting</span></div>
+      <div class="mobile-menu-item" onclick="setWorkTypeFilter('painting'); closeMobileMenu();"><span class="mobile-menu-icon">🎨</span><span class="mobile-menu-label">Painting</span></div>
+      <div class="mobile-menu-item" onclick="setWorkTypeFilter('polishing'); closeMobileMenu();"><span class="mobile-menu-icon">✨</span><span class="mobile-menu-label">Polishing</span></div>
+      <div class="mobile-menu-item" onclick="clearFilters(); closeMobileMenu();" style="margin-top:8px;"><span class="mobile-menu-icon">❌</span><span class="mobile-menu-label">Clear Filters</span></div>
     </div>
   </div>
 
@@ -858,7 +905,7 @@ function startRealtimeSync() {
 
     db.collection("jobs").get().then(() => {
         firebaseConnected = true;
-        updateSyncStatus("connected", "✅ Connected to cloud - Syncing with all users");
+        updateSyncStatus("connected", "✅ Connected"); // Fixed: Removed job count
     }).catch((error) => {
         updateSyncStatus("error", "❌ Connection failed: " + error.message);
     });
@@ -866,7 +913,7 @@ function startRealtimeSync() {
     db.collection("jobs").onSnapshot((snapshot) => {
         state.jobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         if (view === "search") updateSearchResults(); else render();
-        if (firebaseConnected) updateSyncStatus("connected", `✅ Live Sync Active - ${state.jobs.length} jobs`);
+        if (firebaseConnected) updateSyncStatus("connected", "✅ Connected"); // Fixed: Removed job count
     }, (error) => {
         updateSyncStatus("error", "❌ Sync error: " + error.message);
     });
@@ -910,23 +957,33 @@ function getCapacityForDate(date, excludeId) { return state.jobs.filter(j=>{ if(
 
 function changeView(newView) { 
   view = newView; 
-  if (document.getElementById('mobileMenu').classList.contains('active')) toggleMobileMenu();
+  closeMobileMenu(); // Ensure menu closes on view change
   render(); 
 }
 
-function setFilter(f) { filter = f; workTypeFilter = "all"; view = "dashboard"; if (document.getElementById('mobileMenu').classList.contains('active')) toggleMobileMenu(); render(); }
-function setWorkTypeFilter(workType) { workTypeFilter = workType; filter = "all"; view = "dashboard"; if (document.getElementById('mobileMenu').classList.contains('active')) toggleMobileMenu(); render(); }
-function clearFilters() { filter = "all"; workTypeFilter = "all"; searchTerm = ""; dateFilter = "all"; document.getElementById("filterDate").value = "all"; view = "dashboard"; if (document.getElementById('mobileMenu').classList.contains('active')) toggleMobileMenu(); render(); }
+function setFilter(f) { filter = f; workTypeFilter = "all"; view = "dashboard"; closeMobileMenu(); render(); }
+function setWorkTypeFilter(workType) { workTypeFilter = workType; filter = "all"; view = "dashboard"; closeMobileMenu(); render(); }
+function clearFilters() { filter = "all"; workTypeFilter = "all"; searchTerm = ""; dateFilter = "all"; document.getElementById("filterDate").value = "all"; view = "dashboard"; closeMobileMenu(); render(); }
 function setDateFilter(val) { dateFilter = val; view = "dashboard"; render(); }
+
+// Fixed: Dedicated close function for reliable auto-hiding
+function closeMobileMenu() {
+  document.getElementById('hamburgerBtn').classList.remove('active');
+  document.getElementById('mobileMenu').classList.remove('active');
+  document.getElementById('mobileMenuOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
 
 function toggleMobileMenu() {
   const hamburgerBtn = document.getElementById('hamburgerBtn');
   const mobileMenu = document.getElementById('mobileMenu');
   const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-  hamburgerBtn.classList.toggle('active');
-  mobileMenu.classList.toggle('active');
-  mobileMenuOverlay.classList.toggle('active');
-  document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+  const isActive = mobileMenu.classList.contains('active');
+  
+  hamburgerBtn.classList.toggle('active', !isActive);
+  mobileMenu.classList.toggle('active', !isActive);
+  mobileMenuOverlay.classList.toggle('active', !isActive);
+  document.body.style.overflow = isActive ? '' : 'hidden';
 }
 
 function render() {
@@ -1125,35 +1182,39 @@ function renderCapacity() {
 }
 function updateCapacityDate(val) { capacityCheckDate = val; render(); }
 
+// Fixed: Calendar now uses dedicated .cal-cell class instead of .job-card to prevent mobile layout breaking
 function renderCalendar() {
-  const firstDay = new Date(calendarYear, calendarMonth, 1).getDay(); const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
-  let html = `<h2>Calendar View</h2><div style="display:flex; align-items:center; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+  const firstDay = new Date(calendarYear, calendarMonth, 1).getDay(); 
+  const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+  let html = `<h2>Calendar View</h2>
+  <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
     <button class="tool" onclick="changeMonth(-1)">&lt;</button>
-    <select id="calMonth" onchange="calendarMonth=parseInt(this.value);render();" style="flex:1; background:rgba(255,255,255,0.06); color:var(--text-primary); border:1px solid var(--glass-border); padding:10px 14px; border-radius:var(--radius-md); font-size:0.9rem; min-height:44px;">${MONTH_NAMES.map((m, i) => `<option value="${i}" ${i === calendarMonth ? 'selected' : ''} style="color:#000;background:#fff">${m}</option>`).join('')}</select>
-    <select id="calYear" onchange="calendarYear=parseInt(this.value);render();" style="width: 100px; background:rgba(255,255,255,0.06); color:var(--text-primary); border:1px solid var(--glass-border); padding:10px 14px; border-radius:var(--radius-md); font-size:0.9rem; min-height:44px;">${[calendarYear - 2, calendarYear - 1, calendarYear, calendarYear + 1, calendarYear + 2].map(y => `<option value="${y}" ${y === calendarYear ? 'selected' : ''} style="color:#000;background:#fff">${y}</option>`).join('')}</select>
+    <select id="calMonth" onchange="calendarMonth=parseInt(this.value); render();" style="flex:1; background:rgba(255,255,255,0.06); color:var(--text-primary); border:1px solid var(--glass-border); padding:10px 14px; border-radius:var(--radius-md); font-size:0.9rem; min-height:44px;">${MONTH_NAMES.map((m, i) => `<option value="${i}" ${i === calendarMonth ? 'selected' : ''} style="color:#000;background:#fff">${m}</option>`).join('')}</select>
+    <select id="calYear" onchange="calendarYear=parseInt(this.value); render();" style="width: 100px; background:rgba(255,255,255,0.06); color:var(--text-primary); border:1px solid var(--glass-border); padding:10px 14px; border-radius:var(--radius-md); font-size:0.9rem; min-height:44px;">${[calendarYear - 2, calendarYear - 1, calendarYear, calendarYear + 1, calendarYear + 2].map(y => `<option value="${y}" ${y === calendarYear ? 'selected' : ''} style="color:#000;background:#fff">${y}</option>`).join('')}</select>
     <button class="tool" onclick="changeMonth(1)">&gt;</button>
   </div>
-  <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px; text-align:center; font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; margin-bottom:8px; letter-spacing:0.5px;"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>
-  <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px;">`;
+  <div class="cal-weekdays"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>
+  <div class="cal-grid">`;
   
-  for (let i = 0; i < firstDay; i++) html += `<div style="min-height:60px; border-radius:var(--radius-md);"></div>`;
+  for (let i = 0; i < firstDay; i++) html += `<div class="cal-cell empty"></div>`;
   const today = todayStr();
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    const count = getCapacityForDate(dateStr, null); const isFull = count >= CAPACITY_PER_DAY;
-    html += `<button class="job-card" style="min-height:60px; flex-direction:column; align-items:center; justify-content:center; padding:8px; cursor:pointer; ${isFull ? 'border-color:var(--danger); background:rgba(239,71,111,0.1);' : ''} ${dateStr === selectedDay ? 'border-color:var(--accent); background:rgba(255,183,3,0.1);' : ''}" onclick="selectDay('${dateStr}')">
-      <div style="font-size:0.95rem; font-weight:700; ${dateStr === today ? 'color:var(--accent);' : ''}">${d}</div>
-      <div style="font-size:0.7rem; font-weight:700; margin-top:4px; color:${isFull ? 'var(--danger)' : 'var(--success)'}">${count}/${CAPACITY_PER_DAY}</div>
+    const count = getCapacityForDate(dateStr, null); 
+    const isFull = count >= CAPACITY_PER_DAY;
+    html += `<button class="cal-cell ${isFull ? 'full' : ''} ${dateStr === selectedDay ? 'selected' : ''}" onclick="selectDay('${dateStr}')">
+      <div style="font-size:0.9rem; font-weight:700; ${dateStr === today ? 'color:var(--accent);' : ''}">${d}</div>
+      <div class="cnt" style="color:${isFull ? 'var(--danger)' : 'var(--success)'}">${count}/${CAPACITY_PER_DAY}</div>
     </button>`;
   }
   html += `</div>`;
   
   if (selectedDay) {
     const dayJobs = state.jobs.filter(j => rangeDates(j.startDate, j.deliveryDate).includes(selectedDay));
-    html += `<h3 style="margin-top:28px; font-size:1rem; color:var(--accent); font-family:'Poppins',sans-serif;">Jobs on ${formatDate(selectedDay)}</h3>`;
+    html += `<h3 style="margin-top:24px; font-size:1rem; color:var(--accent); font-family:'Poppins',sans-serif;">Jobs on ${formatDate(selectedDay)}</h3>`;
     if (dayJobs.length === 0) html += `<div class="empty" style="padding:20px">No jobs.</div>`;
     else {
-      html += `<div class="job-list" style="margin-top:16px;">`;
+      html += `<div class="job-list" style="margin-top:12px;">`;
       dayJobs.forEach((j, index) => { 
         html += `<div class="job-card" onclick="openPrint('${j.id}')" style="cursor:pointer;">
           <div data-label="Job Card" style="font-family:'Poppins',monospace; color:var(--accent); font-weight:700;">${j.jobCardNo}</div>
@@ -1407,7 +1468,6 @@ function attachHandlers() {
   const majorDaysField = document.getElementById("majorDaysField");
   const deliveryPreview = document.getElementById("deliveryPreview");
   
-  // Populate start date dropdown
   if(startInput) {
     let html = '';
     for (let i = 0; i < 30; i++) {
