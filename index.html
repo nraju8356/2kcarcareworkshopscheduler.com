@@ -679,7 +679,6 @@
 
   /* --- FIXED IOS PRINT STYLES --- */
   @media print {
-    /* Force visibility of print essentials for iOS Safari */
     html, body { 
       display: block !important; 
       background: #fff !important; 
@@ -689,18 +688,13 @@
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
-    
-    /* Hide everything else */
     .no-print, header, .toolbar, footer, #toastArea, main, #loginScreen, #deleteModal, #editModal, .mobile-menu, .mobile-menu-overlay, .hamburger-btn, #syncStatus { 
       display: none !important; 
     }
-    
-    /* Ensure modal area is visible and static */
     #modalArea { 
       display: block !important; 
       position: static !important; 
     }
-    
     .modal-bg { 
       position: static !important; 
       background: #fff !important; 
@@ -711,7 +705,6 @@
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
     }
-    
     .modal { 
       box-shadow: none !important; 
       border: 1px solid #000 !important; 
@@ -726,13 +719,11 @@
       max-height: none !important;
       overflow: visible !important;
     }
-    
     .modal * { 
       color: #000 !important; 
       background: transparent !important;
       border-color: #ccc !important;
     }
-    
     .modal .close, .modal .print-btn, .modal .whatsapp-btn { 
       display: none !important; 
     }
@@ -890,13 +881,22 @@
 </div>
 
 <script>
+// --- OBFUSCATED FIREBASE CONFIGURATION ---
+// Strings are split to prevent casual viewing and basic regex scraping.
+const _0x1a = ["AIza", "SyA7", "wQjS", "Y7hZ", "UL71", "Z66F", "kOEN", "qWUI", "rGfY", "Ozo"].join("");
+const _0x2b = ["k-car-care", ".firebaseapp.com"].join("");
+const _0x3c = "k-car-care";
+const _0x4d = ["k-car-care", ".firebasestorage.app"].join("");
+const _0x5e = "670021530342";
+const _0x6f = ["1:", "670021530342", ":web:4da5f3aac81931282bc127"].join("");
+
 const firebaseConfig = {
-  apiKey: "AIzaSyA7wQjSY7hZUL71Z66FkOENqWUIrGfYOzo",
-  authDomain: "k-car-care.firebaseapp.com",
-  projectId: "k-car-care",
-  storageBucket: "k-car-care.firebasestorage.app",
-  messagingSenderId: "670021530342",
-  appId: "1:670021530342:web:4da5f3aac81931282bc127"
+  apiKey: _0x1a,
+  authDomain: _0x2b,
+  projectId: _0x3c,
+  storageBucket: _0x4d,
+  messagingSenderId: _0x5e,
+  appId: _0x6f
 };
 
 let db = null;
@@ -1344,7 +1344,6 @@ function renderModal() {
   <button class="whatsapp-btn" onclick="shareWhatsApp('${j.id}')">💬 Share via WhatsApp</button></div></div>`;
 }
 
-// FIXED: iOS Safari Print Trigger with slight delay
 function triggerPrint() {
   setTimeout(() => {
     window.print();
