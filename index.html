@@ -221,8 +221,9 @@
     .cal-cell .cnt { font-size: 0.75rem; }
   }
 
-  footer { text-align: center; font-size: 0.75rem; color: var(--text-muted); padding: 20px; border-top: 1px solid var(--glass-border); margin-top: 20px; }
-  footer a { color: var(--accent); text-decoration: none; }
+  footer { text-align: center; font-size: 0.8rem; color: var(--text-muted); padding: 24px 20px; border-top: 1px solid var(--glass-border); margin-top: 40px; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); }
+  footer a { color: var(--accent); text-decoration: none; transition: var(--transition); }
+  footer a:hover { color: #ffd60a; text-decoration: underline; }
 
   @media print {
     html, body { display: block !important; background: #fff !important; color: #000 !important; height: auto !important; overflow: visible !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -385,7 +386,7 @@
   <div id="syncStatus" class="sync-status loading">⏳ Connecting to cloud database...</div>
   
   <footer>
-    <div class="footer-bottom">© 2026 2k workshop schedule | All rights reserved. | Designed by <a href="tel:+919014663217" style="color:var(--accent);font-weight:600">+91 9014663217</a></div> 
+    <div class="footer-bottom">© 2026 2k workshop schedule | All rights reserved. | Designed by <a href="tel:+919014663217" style="color:var(--accent);font-weight:600">+91 9014663217</a></div>
   </footer>
 </div>
 
